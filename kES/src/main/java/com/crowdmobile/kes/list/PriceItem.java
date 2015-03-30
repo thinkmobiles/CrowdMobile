@@ -1,0 +1,41 @@
+package com.crowdmobile.kes.list;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.crowdmobile.kes.R;
+import com.kes.model.CreditOption;
+
+/**
+ * Created by gadza on 2015.03.06..
+ */
+public class PriceItem {
+
+    static class ViewHolder {
+        TextView tvQuantity;
+        TextView tvPrice;
+        TextView tvDiscount;
+    };
+
+
+    public static View createView(LayoutInflater inflater, ViewGroup root)
+    {
+        View result = inflater.inflate(R.layout.item_credit,root,false);
+        ViewHolder holder = new ViewHolder();
+        result.setTag(holder);
+        holder.tvQuantity = (TextView)result.findViewById(R.id.tvQuantity);
+        holder.tvPrice = (TextView)result.findViewById(R.id.tvPrice);
+        holder.tvDiscount = (TextView)result.findViewById(R.id.tvDiscount);
+        return result;
+    }
+
+    public static void updateView(View convertView, CreditOption item, String discountFormat)
+    {
+        ViewHolder holder = (ViewHolder)convertView.getTag();
+        holder.tvQuantity.setText(Integer.toString(item.quantity));
+        holder.tvPrice.setText(item.currency + Float.toString(item.price));
+        holder.tvDiscount.setText(String.format(discountFormat, item.discount));
+    }
+}

@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">KesSDK</string>
+
+    <!-- Preferences -->
+    <string name="key_logout">key_logout</string>
+    <string name="key_user_id">key_userid</string>
+    <string name="key_user_firstname">key_userfirstname</string>
+    <string name="key_user_lastname">key_userlastname</string>
+    <string name="key_user_email">key_useremail</string>
+    <string name="key_user_authtoken">key_userauthtoken</string>
+    <string name="key_user_show_last_name">key_user_show_last_name</string>
+    <string name="key_user_show_profile_photo">key_user_show_profile_photo</string>
+    <string name="key_user_profile_photo_url">key_user_profile_photo_url</string>
+    <string name="key_user_balance">key_user_balance</string>
+    <string name="key_user_unread_count">key_user_unread_count</string>
+    <string name="key_user_login_type">key_user_login_type</string>
+
+</resources>

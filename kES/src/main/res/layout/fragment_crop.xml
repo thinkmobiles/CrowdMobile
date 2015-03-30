@@ -1,0 +1,39 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.crowdmobile.kes.widget.CropView
+        android:id="@+id/cropImage"
+        android:layout_above="@+id/holderBtn"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="0px" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/holderBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btOK"
+            android:text="OK"
+            android:layout_weight="1"
+            android:layout_width="0px"
+            android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/btCancel"
+            android:text="Cancel"
+            android:layout_weight="1"
+            android:layout_width="0px"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</RelativeLayout>

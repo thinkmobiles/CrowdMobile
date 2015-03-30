@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:elevation="3dp"
+    android:orientation="vertical"
+    android:background="@color/navbarbackground"
+    android:paddingTop="@dimen/navbar_padding"
+    android:paddingBottom="@dimen/navbar_padding"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+    <LinearLayout
+        android:layout_gravity="clip_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent" android:layout_height="@dimen/navbar_height">
+
+    <ImageView
+        android:id="@+id/btFeed"
+        android:src="@drawable/ic_tabbar_newsfeed"
+        android:layout_width="0px"
+        android:layout_weight="1"
+        android:layout_height="match_parent" />
+    <View
+        android:background="@color/navbarseparator"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"/>
+    <ImageView
+        android:id="@+id/btMyFeed"
+        android:src="@drawable/ic_tabbar_myfeed"
+        android:layout_width="0px"
+        android:layout_weight="1"
+        android:layout_height="match_parent" />
+    <View
+        android:background="@color/navbarseparator"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"/>
+    <ImageView
+        android:id="@+id/btCompose"
+        android:src="@drawable/ic_tabbar_post"
+        android:layout_width="0px"
+        android:layout_weight="1"
+        android:layout_height="match_parent" />
+    <View
+        android:background="@color/navbarseparator"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"/>
+    <ImageView
+        android:id="@+id/btCheckout"
+        android:src="@drawable/ic_tabbar_shop"
+        android:layout_width="0px"
+        android:layout_weight="1"
+        android:layout_height="match_parent" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/item_background"
+    android:paddingTop="@dimen/item_padding_top"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include
+            android:id="@+id/itemTitle"
+            layout="@layout/item_title"/>
+        <com.crowdmobile.kes.widget.FixedARImageView
+            android:id="@+id/imgFeedPic"
+            android:scaleType="centerCrop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <RelativeLayout
+            android:padding="@dimen/item_header_sidepadding"
+            android:background="@color/answerBackground"
+            android:layout_marginTop="@dimen/share_closed_height"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imgTimeAnswer"
+                android:src="@drawable/ic_feed_item_footer_timestamp"
+                android:layout_width="@dimen/item_header_icon_height"
+                android:layout_height="@dimen/item_header_icon_height"/>
+            <TextView
+                android:id="@+id/tvTimeAnswer"
+                android:textColor="@color/answerFont"
+                android:text="35 min"
+                android:layout_toRightOf="@+id/imgTimeAnswer"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:layout_centerHorizontal="true"
+                android:id="@+id/imgBongo"
+                android:src="@drawable/ic_feed_item_footer_icon"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+        <TextView
+            android:id="@+id/tvAnswer"
+            android:paddingLeft="@dimen/item_header_sidepadding"
+            android:paddingRight="@dimen/item_header_sidepadding"
+            android:paddingBottom="@dimen/item_header_sidepadding"
+            android:background="@color/answerBackground"
+            android:text="@string/loremipsum"
+            android:textColor="@color/answerFont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/item_share_visible_height"
+        android:background="@color/shareBackground"/>
+    <include
+        android:visibility="invisible"
+        layout="@layout/item_share"/>
+</RelativeLayout>

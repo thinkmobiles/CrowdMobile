@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/login_background"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/not_reg_paddingtop"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:layout_width="0px"
+            android:layout_height="1px"
+            android:layout_weight="1"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0px"
+                android:layout_weight="3"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@drawable/inaccessible"
+                    android:adjustViewBounds="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:paddingTop="@dimen/not_reg_titletext_padding"
+                    android:gravity="center_horizontal"
+                    android:text="@string/not_registered_title"
+                    android:textSize="@dimen/not_reg_titletext"
+                    android:textColor="@color/not_registered_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:paddingTop="@dimen/not_reg_titletext_padding"
+                    android:gravity="center_horizontal"
+                    android:text="@string/not_registered_message"
+                    android:textSize="@dimen/not_reg_messagetext"
+                    android:textColor="@color/not_registered_font"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        <View
+            android:layout_width="0px"
+            android:layout_height="1px"
+            android:layout_weight="1"/>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/not_reg_btn_padding"/>
+    <TextView
+        android:id="@+id/btGetStarted"
+        android:gravity="center"
+        android:background="@color/not_registered_btstart"
+        android:textSize="@dimen/not_reg_btn_start_font"
+        android:text="@string/not_registered_btstart"
+        android:textColor="@color/not_registered_btstart_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/not_reg_btn_start" />
+</LinearLayout>

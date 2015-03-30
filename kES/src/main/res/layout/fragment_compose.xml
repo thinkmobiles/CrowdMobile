@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/appbackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:background="@drawable/composegradient"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/compose_shader"/>
+            <EditText
+                android:id="@+id/edMessage"
+                android:gravity="center"
+                android:textColor="@color/apptextcolor"
+                android:textColorHint="@color/apptextcolorhint"
+                android:hint="@string/compose_hint"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/compose_edit" />
+
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imgCamera"
+                android:background="@color/colorPrimary"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/ic_tabbar_post_pressed"
+                android:layout_width="match_parent"
+                android:paddingTop="@dimen/takepicbuttonpadding"
+                android:paddingBottom="@dimen/takepicbuttonpadding"
+                android:layout_height="@dimen/takepicbutton" />
+
+            <LinearLayout
+                android:id="@+id/holderBubble"
+                android:orientation="vertical"
+                android:padding="@dimen/bubblepadding"
+                android:layout_below="@+id/imgCamera"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/triangle"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/triangleheight"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="@dimen/bubblepadding"
+                    android:layout_marginRight="@dimen/bubblepadding"
+                    android:background="@color/bubblecolor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@color/bubbletextcolor"
+                        android:gravity="center_vertical"
+                        android:padding="@dimen/bubbletextpadding"
+                        android:textSize="@dimen/bubblefont"
+                        android:layout_weight="1"
+                        android:layout_width="0px"
+                        android:layout_height="wrap_content"
+                        android:text="@string/bubble_text" />
+                    <TextView
+                        android:textColor="@color/bubbletextcolor"
+                        android:gravity="center"
+                        android:text="X"
+                        android:layout_width="@dimen/bubbleclose"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+            <RelativeLayout
+                android:background="#0f0"
+                android:visibility="gone"
+                android:id="@+id/holderImage"
+                android:layout_alignParentTop="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgPreview"
+                    android:adjustViewBounds="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/ivPreviewClose"
+                    android:layout_marginRight="@dimen/imgclosespace"
+                    android:layout_marginTop="@dimen/imgclosespace"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_post_remove_image"
+                    android:layout_width="@dimen/imgclose"
+                    android:layout_height="@dimen/imgclose" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>
