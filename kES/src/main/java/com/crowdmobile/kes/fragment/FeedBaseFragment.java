@@ -71,13 +71,10 @@ public abstract class FeedBaseFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         list.clear();
-        PhotoComment cached[] = session.getFeedManager().feed(getFeedType()).getCache();
-        if (cached != null) {
-            for (int i = 0; i < cached.length; i++)
-                list.add(cached[i]);
-        } else {
+        session.getFeedManager().feed(getFeedType()).getCache(list);
+        if (list.size() == 0) {
             lastNetworkAction = session.getFeedManager().feed(getFeedType());
-            lastNetworkAction.setMaxID(164).load();
+            lastNetworkAction.setMaxID(400).load();
         }
     }
 
@@ -109,46 +106,27 @@ public abstract class FeedBaseFragment extends Fragment {
             if (wrapper.feedType != getFeedType())
                 return;
 
-            if (wrapper.flag_feedBottomReached)
-            {
-                footer.hide();
-                return;
-            }
-
             if (wrapper.since_id != null)
-            {
                 swipeContainer.setRefreshing(false);
-                if (wrapper.comments != null && wrapper.comments.length > 0) {
-                    int index = lvFeed.getFirstVisiblePosition();
-                    View v = lvFeed.getChildAt(lvFeed.getHeaderViewsCount());
-                    int top = (v == null) ? 0 : v.getTop();
-
-                    PhotoComment[] cached = session.getFeedManager().feed(getFeedType()).getCache();
-                    int diff = cached.length - list.size();
-                    list.clear();
-
-                    for (int i = 0; i < cached.length; i++)
-                        list.add(cached[i]);
-                    adapter.notifyDataSetChanged();
-                    lvFeed.setSelectionFromTop(index + diff, top);
-                }
-                return;
-            }
 
             if (wrapper.exception != null)
             {
                 footer.setLoading(false);
                 return;
             }
-            if (wrapper.comments == null || wrapper.comments.length == 0) {
+
+            if (wrapper.flag_feedBottomReached)
+            {
                 footer.hide();
                 return;
             }
-            list.clear();
-            PhotoComment[] cached = session.getFeedManager().feed(getFeedType()).getCache();
 
-            for (int i = 0; i < cached.length; i++)
-                list.add(cached[i]);
+            if (wrapper.comments == null && wrapper.comments.length == 0)
+                return;
+
+            list.clear();
+            session.getFeedManager().feed(getFeedType()).getCache(list);
+
             adapter.notifyDataSetChanged();
 //            if (!scrollInitialized)
 //                listScroll.onScroll(lvFeed,0,0,0);

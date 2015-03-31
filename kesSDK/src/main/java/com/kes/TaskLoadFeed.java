@@ -67,7 +67,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
                 com.kes.net.NetworkAPI.getFeed(token,wrapper.max_id,wrapper.since_id, null, filter, wrapper.tags);
-        //Thread.sleep(2000);
+        Thread.sleep(2000);
         if (wrapper.max_id == null || wrapper.since_id == null && photoCommentWrapper.photo_comments != null)
         {
             int max = Integer.MIN_VALUE;

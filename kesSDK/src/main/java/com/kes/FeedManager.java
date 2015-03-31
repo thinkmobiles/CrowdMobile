@@ -126,9 +126,8 @@ public class FeedManager {
             TaskLoadFeed.loadFeed(manager.mSession.getContext(), token, feedWrapper);
         }
 
-        public PhotoComment[] getCache()
+        public void getCache(ArrayList<PhotoComment> dest)
         {
-            PhotoComment result[] = null;
             SparseArray<PhotoComment> cache = manager.getCache(feedWrapper.feedType);
             int len = cache.size();
 
@@ -136,35 +135,62 @@ public class FeedManager {
                 len += manager.pending.size();
 
             if (len == 0)
-                return null;
+                return;
             int idx = 0;
-            result = new PhotoComment[len];
 
             if (feedWrapper.feedType == FeedType.Public.My)
                 for (int i = manager.pending.size() ; i > 0; i--)
-                    result[idx++] = manager.pending.get(i - 1);
+                    dest.add(manager.pending.get(i - 1));
 
-            for (int i = 0, l = cache.size(); i < l ; i++)
-                result[idx++] = cache.valueAt(l - i - 1);
-            return result;
+            for (int i = 0, l = cache.size(); i < l ; i++) {
+                PhotoComment item = cache.valueAt(l - i - 1);
+                dest.add(cache.valueAt(l - i - 1));
+                if (item.flag_last)
+                    break;
+            }
         }
     }
 
 
     protected void updateData(FeedWrapper feedWrapper) {
-        if (feedWrapper.exception == null && (feedWrapper.comments == null || feedWrapper.comments.length == 0) && feedWrapper.max_id != null)
+        if (feedWrapper.exception == null && (feedWrapper.comments == null || feedWrapper.comments.length == 0))
         {
+            int maxid = 0;
+            if (feedWrapper.max_id != null)
+                maxid = feedWrapper.max_id;
+
             if (feedWrapper.feedType == FeedType.Public)
-                minIDPublicFeed = feedWrapper.max_id;
+                minIDPublicFeed = maxid;
             else if (feedWrapper.feedType == FeedType.My)
-                minIDMyFeed = feedWrapper.max_id;
+                minIDMyFeed = maxid;
             feedWrapper.flag_feedBottomReached = true;
         }
 
         SparseArray<PhotoComment> cache = getCache(feedWrapper.feedType);
-        if (feedWrapper.comments != null) {
-            for (int i = 0; i < feedWrapper.comments.length; i++)
-                cache.put(feedWrapper.comments[i].id, feedWrapper.comments[i]);
+
+        if (feedWrapper.comments != null && feedWrapper.comments.length > 0 && feedWrapper.max_id != null)
+        {
+            PhotoComment item = cache.get(feedWrapper.max_id + 1);
+            if (item != null)
+                item.flag_last = false;
+        }
+
+        if (feedWrapper.comments != null && feedWrapper.comments.length > 0) {
+
+            feedWrapper.comments[0].flag_first = true;
+            feedWrapper.comments[feedWrapper.comments.length - 1].flag_last = true;
+
+            for (int i = 0; i < feedWrapper.comments.length; i++) {
+                PhotoComment newItem = feedWrapper.comments[i];
+                PhotoComment oldItem = cache.get(feedWrapper.comments[i].id);
+                if (oldItem != null)
+                {
+                    oldItem.flag_first &= newItem.flag_first;
+                    oldItem.flag_last &= newItem.flag_last;
+                    continue;
+                }
+                cache.put(newItem.id, newItem);
+            }
         }
         postChange(feedWrapper);
     }

@@ -58,6 +58,28 @@ public class DataFetcher {
 	
 	private long lastTime = 0;
 
+    private static ArrayList<String> networkLog = new ArrayList<String>();
+
+    public static String[] getNetworkLog()
+    {
+        synchronized (DataFetcher.class)
+        {
+            if (networkLog.size() == 0)
+                return null;
+            String[] result = new String[networkLog.size()];
+            networkLog.toArray(result);
+            networkLog.clear();
+            return result;
+        }
+    }
+
+    private static void addNetworkLog(String s)
+    {
+        synchronized (DataFetcher.class) {
+            networkLog.add(s);
+        }
+    }
+
     public static class KESNetworkException extends Exception {
         public static final int CODE_Invalid_Response = -1;
         public static final int CODE_Unsupported_Encoding = -2;
@@ -111,7 +133,7 @@ public class DataFetcher {
 
 	public static DefaultHttpClient getHttpClient()
 	{
-        Log.d(TAG,"Initializing HTTP client");
+        //Log.d(TAG,"Initializing HTTP client");
 		DefaultHttpClient result = null;
 		HttpParams params = new BasicHttpParams();
 		// Set the timeout in milliseconds until a connection is established.
@@ -263,7 +285,7 @@ public class DataFetcher {
 				throws KESNetworkException,InterruptedException {
 
 				url = buildGetUrl(url, getParams);
-
+                addNetworkLog(url.toString());
 				HttpResponse response = null;
 				HttpUriRequest request = null;
 
@@ -307,9 +329,7 @@ public class DataFetcher {
                     throw new KESNetworkException(KESNetworkException.CODE_Unsupported_Encoding,null);
                 }
 				setHeaders(request, headers);
-				Log.d(TAG, "HTTP Connection to: " + url);
                 DefaultHttpClient client = getHttpClient();
-
                 try {
                     response = client.execute(request);
                 } catch (IOException e) {

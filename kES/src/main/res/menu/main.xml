@@ -8,7 +8,7 @@
         android:enabled="false"
         android:title="0"
         android:orderInCategory="9" app:showAsAction="always" />
-    <item android:id="@+id/action_banana"
+    <item android:id="@+id/action_crediticon"
         android:icon="@drawable/ic_navbar_credit_icon"
         android:orderInCategory="10" app:showAsAction="always|withText" />
     <item

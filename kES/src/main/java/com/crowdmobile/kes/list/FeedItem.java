@@ -207,7 +207,6 @@ public class FeedItem {
         View imgOpenShare;
         View holderShare;
         View btShareClose;
-
         ImageView ivTitle;
         View btRetry;
 
@@ -277,10 +276,12 @@ public class FeedItem {
 
         if (item.responses == null || item.responses.length == 0)
         {
+//            holder.fadeLayer.setVisibility(View.VISIBLE);
             holder.tvAnswer.setText(R.string.item_noanswer);
             holder.tvTimeAnswer.setVisibility(View.INVISIBLE);
         } else
         {
+//            holder.fadeLayer.setVisibility(View.INVISIBLE);
             holder.tvAnswer.setText(item.responses[0].comment);
             holder.tvTimeAnswer.setVisibility(View.VISIBLE);
             String elapsedStr = null;
@@ -301,6 +302,7 @@ public class FeedItem {
             }
             holder.tvTimeAnswer.setText(elapsedStr);
         }
+//        holder.fadeLayer.setVisibility(View.VISIBLE);
 
     }
 

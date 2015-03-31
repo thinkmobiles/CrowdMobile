@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="signature_public">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjHI+QVkSBJwiO6Upz2wkM1kpz2TVlbd5yVot1y/Ktx4cB54zV3m2hD4ZLlYroTphkR9Bcd0W1icPebuDiiacGJYy6FjuO+hd/Omsw9/3Uve47c7013zmCilYezZuPOvax3GpGa/6I4TtwnB8VUBddb1bC0CexLQPHG5T+R9oCLoob2+pgFkpZiv1YpNUW1HsaphTxq7/wfKqdYtJ3O47ZFwGD/Q2HqW02eUsdq4MBCQvGoomycc9llLG4JPd15jzUS7bZysdF15ZFEkd6AX88gqH3zZrIJL/+smlDcDby+lxDAbNvtA3hwE4/LpX7/lxNdxSwLOG3qKD3rz+uTjiMwIDAQAB</string>
+    <plurals name="credits_purchase_messgae_plurals">
+        <item quantity="one">DO YOU WANT TO BUY %1$d CREDIT FOR %2$s?</item>
+        <item quantity="other">DO YOU WANT TO BUY %1$d CREDITS FOR %2$s?</item>
+    </plurals>
+
+    <plurals name="credits_plurals">
+        <item quantity="one">credit</item>
+        <item quantity="other">credits</item>
+    </plurals>
 
  	<string name="fb_app_id">760239814072784</string>
     <string name="app_name">KES</string>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,24 +16,37 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
 import com.kes.Session;
 import com.kes.model.User;
+import com.kes.net.DataFetcher;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 public class MainActivity extends ActionBarActivity implements NavigationBar.NavigationCallback {
 
-
+    private Handler mHandler;
     private Toolbar toolbar;
     private boolean profileVisible = false;
     private Session mSession;
     private NavigationBar navigationBar;
     private MenuItem mCredit;
+    ArrayAdapter<String> networkAdapter;
+    ArrayList<String> networkComm = new ArrayList<String>();
+    LogCatThread logCatThread;
+    ListView lvLogcat;
+    boolean networkVisible = false;
 
 	public static void open(Context context)
 	{
@@ -78,9 +92,9 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
             UpdateManager.register(this, KesApplication.HOCKEYAPP_ID);
         }
-
        // if (true)
        //     throw new IllegalStateException("HockeyAPP Crash test onCreate2()");
+        mHandler = new Handler();
 
         mSession = Session.getInstance(this);
 		if (!mSession.getAccountManager().getUser().isRegistered() && !PreferenceUtils.getSkipLogin(this))
@@ -90,7 +104,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		}
         mSession.getAccountManager().registerListener(accountListener);
         setContentView(R.layout.activity_main);
-
+        lvLogcat = (ListView)findViewById(R.id.lvLogcat);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -98,13 +112,12 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         navigationBar = new NavigationBar(this,findViewById(R.id.navigationBar));
 
         navigationBar.navigateTo(NavigationBar.Attached.values()[PreferenceUtils.getActiveFragment(this)]);
-        /*
-        //Todo: remember last fragment on exit
-        getFragmentManager().
-                beginTransaction().
-                replace(R.id.fragmentHolder, new NewsFeedFragment()).
-                commit();
-        */
+
+        networkAdapter = new ArrayAdapter<String>(this,
+                R.layout.item_logcat, android.R.id.text1, networkComm);
+        lvLogcat.setAdapter(networkAdapter);
+
+
         /*
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -133,6 +146,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onResume() {
         super.onResume();
+        logCatThread = new LogCatThread();
+        logCatThread.start();
         if (KesApplication.enableHockey)
             CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
     }
@@ -140,6 +155,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onPause() {
         super.onPause();
+        logCatThread.interrupt();
+        logCatThread = null;
         if (navigationBar != null)
             navigationBar.saveState();
     }
@@ -150,6 +167,14 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
+        if (id == R.id.action_crediticon) {
+            networkVisible = !networkVisible;
+            if (networkVisible)
+                lvLogcat.setVisibility(View.VISIBLE);
+            else
+                lvLogcat.setVisibility(View.INVISIBLE);
+            return true;
+        }
 		if (id == R.id.action_settings) {
             profileVisible = true;
             if (Build.VERSION.SDK_INT >= 21) {
@@ -219,4 +244,51 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     public NavigationBar getNavigationBar() {
         return navigationBar;
     }
+
+    class UIUpdate implements Runnable {
+        String data[];
+        public UIUpdate(String[] data) {
+            super();
+            this.data = data;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < data.length; i++)
+                networkComm.add(0,data[i]);
+            networkAdapter.notifyDataSetChanged();
+        }
+    };
+
+    class LogCatThread extends Thread
+    {
+        @Override
+        public void run() {
+            BufferedReader bufferedReader = null;
+            Process process = null;
+            try {
+                process = Runtime.getRuntime().exec("logcat");
+                bufferedReader = new BufferedReader(
+                        new InputStreamReader(process.getInputStream()));
+                String line = "";
+                while (!interrupted())
+                {
+                    Thread.sleep(1000);
+                    String[] log = DataFetcher.getNetworkLog();
+                    if (log == null)
+                        continue;
+                    mHandler.post(new UIUpdate(log));
+                }
+            } catch (IOException | InterruptedException e) {
+            }
+            finally {
+                try {
+                    bufferedReader.close();
+                } catch (IOException ignored) {}
+                if (process != null)
+                    process.destroy();
+            }
+        }
+    }
+
 }

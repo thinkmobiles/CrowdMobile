@@ -5,9 +5,11 @@
     <item name="appTitleColor" type="color">#4aaefc</item>
     <item name="colorPrimary" type="color">#3682bf</item>
 
+    <item name="questionFont" type="color">#555</item>
     <item name="shareBackground" type="color">#25c793</item>
-    <item name="answerBackground" type="color">#2972ac</item>
-    <item name="answerFont" type="color">#aecadc</item>
+    <item name="answerBackground" type="color">#aadae7</item>
+    <item name="answerFont" type="color">#555</item>
+    <item name="item_fade_layer" type="color">#8fff</item>
 
     <item name="appbackground" type="color">#fff</item>
     <item name="apptextcolor" type="color">#444</item>

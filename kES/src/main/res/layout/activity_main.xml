@@ -59,4 +59,11 @@
             android:layout_height="0px"/>
     </RelativeLayout>
 </RelativeLayout>
+    <ListView
+        android:id="@+id/lvLogcat"
+        android:visibility="invisible"
+        android:background="#a000"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

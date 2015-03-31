@@ -19,6 +19,8 @@ public class PhotoComment {
     public boolean is_private;
 
     public PostStatus status = PostStatus.Posted;
+    public boolean flag_first = false;
+    public boolean flag_last = false;
 
     public void copyFrom(PhotoComment src)
     {
