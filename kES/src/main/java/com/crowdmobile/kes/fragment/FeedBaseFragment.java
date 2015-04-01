@@ -1,19 +1,16 @@
 package com.crowdmobile.kes.fragment;
 
 import android.app.Fragment;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.crowdmobile.kes.R;
-import com.crowdmobile.kes.list.FeedItem;
+import com.crowdmobile.kes.adapter.FeedAdapter;
 import com.kes.FeedManager;
 import com.kes.Session;
 import com.kes.model.PhotoComment;
@@ -25,7 +22,8 @@ public abstract class FeedBaseFragment extends Fragment {
 
     private static final String TAG = FeedBaseFragment.class.getSimpleName();
     Session session;
-    ListView lvFeed;
+    RecyclerView lvFeed;
+    LinearLayoutManager mLayoutManager;
     FeedAdapter adapter;
     ArrayList<PhotoComment> list;
 //    View itemTitle;
@@ -33,18 +31,40 @@ public abstract class FeedBaseFragment extends Fragment {
     boolean scrollInitialized;
     boolean titleVisible = false;
 //    FeedItem.ShareController shareController;
-    FeedFooter footer;
     FeedManager.QueryParams lastNetworkAction = null;
     SwipeRefreshLayout swipeContainer;
+    View holderNoPost;
     int minID = 0;
+    boolean hasFooterView = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         session = Session.getInstance(getActivity());
         list = new ArrayList<PhotoComment>();
-        adapter = new FeedAdapter();
+        adapter = new FeedAdapter(getActivity(),list,feedAdapterListener);
     }
+
+    FeedAdapter.FeedAdapterListener feedAdapterListener = new FeedAdapter.FeedAdapterListener() {
+        @Override
+        public void onLastItemReached() {
+            if (list.size() > 0) {
+                lastNetworkAction =
+                        session.getFeedManager().feed(getFeedType())
+                                .setMaxID(list.get(list.size() - 1).id - 1);
+                lastNetworkAction.load();
+            }
+        }
+
+        @Override
+        public void retryClick() {
+            if (lastNetworkAction != null)
+            {
+                adapter.setFooterLoading(true);
+                lastNetworkAction.load();
+            }
+        }
+    };
 
     public abstract FeedManager.FeedType getFeedType();
 
@@ -56,11 +76,14 @@ public abstract class FeedBaseFragment extends Fragment {
 //        itemTitle = result.findViewById(R.id.itemTitle);
 //        itemShare = result.findViewById(R.id.itemShare);
 //        shareController = FeedItem.createHolder(itemTitle,itemShare).shareController;
-        lvFeed = (ListView)result.findViewById(R.id.lvFeed);
-        footer = new FeedFooter(inflater,lvFeed, footerListener);
+        lvFeed = (RecyclerView)result.findViewById(R.id.lvFeed);
+        lvFeed.setHasFixedSize(false);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        lvFeed.setLayoutManager(mLayoutManager);
         lvFeed.setAdapter(adapter);
 //        lvFeed.setOnScrollListener(listScroll);
         session.getFeedManager().registerOnChangeListener(onFeedChange);
+        holderNoPost = result.findViewById(R.id.holderNoPost);
         scrollInitialized = false;
         titleVisible = false;
         //shareController = new FeedItem.ShareController(itemTitle, itemShare);
@@ -83,18 +106,12 @@ public abstract class FeedBaseFragment extends Fragment {
         public void onRefresh() {
             if (getFeedType() == FeedManager.FeedType.My)
             {
+                holderNoPost.setVisibility(View.GONE);
                 session.getFeedManager().feed(getFeedType()).clear();
                 list.clear();
                 adapter.notifyDataSetChanged();
             }
-            if (list.size() > 0)
-                session.getFeedManager().feed(getFeedType())
-                        .setSinceID(list.get(0).id).load();
-            else {
-                swipeContainer.setRefreshing(false);
-                footer.setLoading(true);
-                session.getFeedManager().feed(getFeedType()).load();
-            }
+            session.getFeedManager().feed(getFeedType()).load();
         }
     };
 
@@ -106,28 +123,35 @@ public abstract class FeedBaseFragment extends Fragment {
             if (wrapper.feedType != getFeedType())
                 return;
 
-            if (wrapper.since_id != null)
+            if (wrapper.max_id == null) {
                 swipeContainer.setRefreshing(false);
+            }
 
             if (wrapper.exception != null)
             {
-                footer.setLoading(false);
+                adapter.setFooterLoading(false);
                 return;
             }
 
             if (wrapper.flag_feedBottomReached)
-            {
-                footer.hide();
-                return;
-            }
-
-            if (wrapper.comments == null && wrapper.comments.length == 0)
-                return;
+                adapter.setFooterVisible(false);
 
             list.clear();
             session.getFeedManager().feed(getFeedType()).getCache(list);
 
             adapter.notifyDataSetChanged();
+            if (getFeedType() == FeedManager.FeedType.My)
+            {
+                if (list.size() == 0 && wrapper.exception == null)
+                    holderNoPost.setVisibility(View.VISIBLE);
+                else
+                    holderNoPost.setVisibility(View.GONE);
+            }
+
+            if (wrapper.max_id == null) {
+                lvFeed.scrollToPosition(0);
+            }
+
 //            if (!scrollInitialized)
 //                listScroll.onScroll(lvFeed,0,0,0);
         }
@@ -212,131 +236,13 @@ public abstract class FeedBaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        footer = null;
         swipeContainer = null;
         lvFeed = null;
+        mLayoutManager = null;
+        holderNoPost = null;
         session.getFeedManager().unRegisterOnChangeListener(onFeedChange);
         list.clear();
     }
 
 
-    public class FeedAdapter extends ArrayAdapter<PhotoComment> {
-
-        private LayoutInflater inflater;
-        private Resources resources;
-
-        public FeedAdapter() {
-            super(getActivity(), 0, list);
-            inflater = getActivity().getLayoutInflater();
-            resources = getActivity().getResources();
-        }
-
-
-        View.OnClickListener retryClick = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PhotoComment p = (PhotoComment)v.getTag();
-                session.getFeedManager().postQuestion(p);
-                notifyDataSetChanged();
-            }
-        };
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null)
-                convertView = FeedItem.createView(inflater, parent, retryClick);
-            FeedItem.updateView(resources, convertView,getItem(position));
-            int l = list.size();
-            if (l > 0 && position == l - 1)
-            {
-                lastNetworkAction =
-                        session.getFeedManager().feed(getFeedType())
-                                .setMaxID(list.get(list.size() - 1).id - 1);
-                lastNetworkAction.load();
-            }
-            return convertView;
-        }
-
-    }
-
-    FeedFooter.FooterListener footerListener = new FeedFooter.FooterListener() {
-        @Override
-        public void onRetry() {
-            if (lastNetworkAction != null)
-            {
-                footer.setLoading(true);
-                lastNetworkAction.load();
-            }
-        }
-    };
-
-    private static class FeedFooter {
-        interface FooterListener {
-            void onRetry();
-        }
-
-        boolean visible = false;
-        ListView listView;
-        FooterListener footerListener;
-        View footerView;
-        TextView tvFooterStatus;
-        Button btRetry;
-        View progress;
-
-        View getView()
-        {
-            return footerView;
-        }
-
-        void setLoading(boolean enabled)
-        {
-            show();
-            if (enabled) {
-                progress.setVisibility(View.VISIBLE);
-                btRetry.setVisibility(View.GONE);
-                tvFooterStatus.setText(R.string.item_loading);
-            } else
-            {
-                progress.setVisibility(View.GONE);
-                btRetry.setVisibility(View.VISIBLE);
-                tvFooterStatus.setText(R.string.item_loaderror);
-            }
-        }
-
-        public void show()
-        {
-            if (visible)
-                return;
-            visible = true;
-            listView.addFooterView(footerView);
-        }
-
-        public void hide()
-        {
-            if (!visible)
-                return;
-            visible = false;
-            listView.removeFooterView(footerView);
-        }
-
-        public FeedFooter(LayoutInflater inflater,ListView listView, FooterListener footerChange)
-        {
-            this.listView = listView;
-            this.footerListener = footerChange;
-            footerView = inflater.inflate(R.layout.footer_feed, null, false);
-            tvFooterStatus = (TextView)footerView.findViewById(R.id.tvFooterStatus);
-            btRetry = (Button)footerView.findViewById(R.id.btRetry);
-            btRetry.setOnClickListener(onClickListener);
-            progress = footerView.findViewById(R.id.progress);
-            setLoading(true);
-        }
-
-        View.OnClickListener onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setLoading(true);
-                footerListener.onRetry();
-            }
-        };
-    }
 }

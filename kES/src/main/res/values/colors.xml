@@ -2,11 +2,10 @@
 <resources>
 
     <item name="white" type="color">#fff</item>
-    <item name="appTitleColor" type="color">#4aaefc</item>
-    <item name="colorPrimary" type="color">#3682bf</item>
+    <item name="appTitleColor" type="color">#0a93ff</item>
+    <item name="colorPrimary" type="color">#096fc2</item>
 
     <item name="questionFont" type="color">#555</item>
-    <item name="shareBackground" type="color">#25c793</item>
     <item name="answerBackground" type="color">#aadae7</item>
     <item name="answerFont" type="color">#555</item>
     <item name="item_fade_layer" type="color">#8fff</item>
@@ -15,7 +14,7 @@
     <item name="apptextcolor" type="color">#444</item>
     <item name="apptextcolorhint" type="color">#ccc</item>
 
-    <item name="navbarbackground" type="color">#4aaefc</item>
+    <item name="navbarbackground" type="color">#0a93ff</item>
     <item name="navbarseparator" type="color">#46a7f2</item>
 
     <item name="credittextcolor" type="color">#444</item>
@@ -37,5 +36,10 @@
 
     <!-- Feed item -->
     <item name="item_background" type="color">#fff</item>
+
+    <!-- Gallery -->
+    <item name="gallery_title_font" type="color">#808080</item>
+    <item name="gallery_background" type="color">#fff</item>
+    <item name="gallery_item_background" type="color">#d8d8d8</item>
 
 </resources>

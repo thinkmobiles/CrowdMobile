@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -25,20 +29,28 @@ import java.util.Date;
 /**
  * Created by gadza on 2015.03.20..
  */
-public class PictureActivity extends Activity implements GalleryFragment.GalleryFragmentListener,CropFragment.CropFragmentResult {
+public class PictureActivity extends ActionBarActivity implements GalleryFragment.GalleryFragmentListener,CropFragment.CropFragmentResult {
     static final int REQUEST_IMAGE_CAPTURE = 0x5678;
-
+    private Toolbar toolbar;
     private ImageView transfer = null;
     private File mCameraPicture;
     private File mComposedPicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        }
         super.onCreate(savedInstanceState);
         if (KesApplication.enableHockey) {
             CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
         }
         setContentView(R.layout.activity_picture);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
+        getSupportActionBar().setTitle("XXXXXXXX");
         //transfer = (ImageView)findViewById(R.id.imgTransfer);
         getFragmentManager().beginTransaction().replace(R.id.fragmentHolder,new GalleryFragment()).commit();
     }

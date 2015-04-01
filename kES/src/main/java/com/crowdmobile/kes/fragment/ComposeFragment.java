@@ -43,6 +43,7 @@ public class ComposeFragment extends Fragment {
     View holderImage;
     View previewClose;
 
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_compose,menu);
@@ -250,6 +251,5 @@ public class ComposeFragment extends Fragment {
         edMessage.setText("");
         ((NavigationBar.NavigationCallback)getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.MyFeed);
     }
-
 
 }

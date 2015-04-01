@@ -1,7 +1,5 @@
 package com.crowdmobile.kes;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -38,7 +35,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
     private Handler mHandler;
     private Toolbar toolbar;
-    private boolean profileVisible = false;
     private Session mSession;
     private NavigationBar navigationBar;
     private MenuItem mCredit;
@@ -174,27 +170,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             else
                 lvLogcat.setVisibility(View.INVISIBLE);
             return true;
-        }
-		if (id == R.id.action_settings) {
-            profileVisible = true;
-            if (Build.VERSION.SDK_INT >= 21) {
-                View myView = findViewById(R.id.holderProfile);
-
-// get the center for the clipping circle
-                int cx = myView.getRight();
-                int cy = myView.getTop();
-
-// get the final radius for the clipping circle
-                int finalRadius = Math.max(myView.getWidth(), myView.getHeight());
-
-// create the animator for this view (the start radius is zero)
-                Animator anim =
-                        ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0, finalRadius);
-
-// make the view visible and start the animation
-                myView.setVisibility(View.VISIBLE);
-                anim.start();
-            }
 		} else if (id == R.id.action_logout) {
             AccountActivity.logout(MainActivity.this);
             navigationBar = null;
@@ -205,38 +180,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
     @Override
     public void onBackPressed() {
-        if (profileVisible)
-        {
-            if (Build.VERSION.SDK_INT >= 21) {
-                final View myView = findViewById(R.id.holderProfile);
-
-// get the center for the clipping circle
-                int cx = myView.getRight();
-                int cy = myView.getTop();
-
-// get the initial radius for the clipping circle
-                int initialRadius = myView.getWidth();
-
-// create the animation (the final radius is zero)
-                Animator anim =
-                        ViewAnimationUtils.createCircularReveal(myView, cx, cy, initialRadius, 0);
-
-// make the view invisible when the animation is done
-                anim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        myView.setVisibility(View.INVISIBLE);
-                    }
-                });
-
-// start the animation
-                anim.start();
-                profileVisible = false;
-                return;
-            }
-        }
-
         super.onBackPressed();
     }
 
