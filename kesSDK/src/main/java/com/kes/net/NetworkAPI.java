@@ -48,7 +48,7 @@ public class NetworkAPI {
 
 	public static User updatePushToken(String auth_token, String ua_token)
 			throws DataFetcher.KESNetworkException, InterruptedException {
-		String url = com.kes.net.ServerNavigator.registerDevice();
+		String url = com.kes.net.ServerNavigator.push_token();
 		String json = ModelFactory.getUpdatePushTokenJson(auth_token, ua_token);
 		String result = DataFetcher.requestAction(url, RequestType.PUT, null, null, json);
         return ModelFactory.getAccount(result);

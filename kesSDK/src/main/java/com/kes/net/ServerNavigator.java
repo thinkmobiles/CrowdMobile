@@ -21,12 +21,12 @@ public class ServerNavigator {
         return BASE_URL + "photo_comments/";
     }
 
-	public static String registerDevice() {
-		return BASE_URL + "register_device.json";
-	}
-
     public static String postComment() {
         return BASE_URL + "photo_comment_requests/";
+    }
+
+    public static String push_token() {
+        return BASE_URL + "push_token/";
     }
 
     public static String report(int id) {

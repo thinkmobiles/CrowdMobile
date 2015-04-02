@@ -22,6 +22,9 @@
     <item name="bubblecolor" type="color">#000</item>
     <item name="bubbletextcolor" type="color">#fff</item>
 
+    <!-- Compose -->
+    <item name="compose_background" type="color">#e3f1f5</item>
+
     <!-- Login -->
     <item name="login_background" type="color">#e3f1f5</item>
     <item name="login_button_text" type="color">#fff</item>

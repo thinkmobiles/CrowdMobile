@@ -11,7 +11,7 @@ public class User {
     public boolean show_last_name;
     public boolean show_profile_photo;
     public String profile_photo_url;
-
+    public String UA_ChannelID;
     public boolean upToDate;
 
 	public boolean isRegistered()

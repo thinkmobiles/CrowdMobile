@@ -138,6 +138,22 @@ public class ModelFactory {
         result.photo_comment_request.is_private = is_private;
         return gson.toJson(result);
     }
+    //--------------------------------------------------------------------------------------------------
+    static class PushTokenRequestWrapper {
+        String push_token;
+        String auth_token;
+    }
+
+
+    public static String getPushTokenJson(
+            String auth_token,
+            String push_token)
+    {
+        PushTokenRequestWrapper result = new PushTokenRequestWrapper();
+        result.auth_token = auth_token;
+        result.push_token = push_token;
+        return gson.toJson(result);
+    }
 
     //--------------------------------------------------------------------------------------------------
     static class UpdateAccountWrapper {

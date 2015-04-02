@@ -102,6 +102,13 @@ public class AccountManager {
         }
     }
 
+    public void setUAChannelID(String channelID)
+    {
+        ua_token = channelID;
+        if (getCachedUser(mSession.getContext()).isRegistered())
+            TaskPostToken.updatePushToken(mSession.getContext(), user.auth_token,ua_token);
+    }
+
     public User getUser()
     {
         getCachedUser(mSession.getContext());

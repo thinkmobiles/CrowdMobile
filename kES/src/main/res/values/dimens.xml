@@ -53,7 +53,8 @@
 
     <!-- Compose -->
     <dimen name="compose_shader">25dp</dimen>
-    <dimen name="compose_edit">200dp</dimen>
+    <dimen name="compose_buttonheight">40dp</dimen>
+
     <dimen name="takepicbutton">60dp</dimen>
     <dimen name="takepicbuttonpadding">10dp</dimen>
     <dimen name="triangleheight">15dp</dimen>
