@@ -1,3 +1,4 @@
+*.apk
 .gradle
 .idea
 .navigation
