@@ -51,9 +51,12 @@
 
     <!-- Not registered -->
     <string name="not_registered_title">See what bongo knows about you</string>
-    <string name="not_registered_message">This page is inaccessible for users without an account. Get started and make an account now!</string>
+    <string name="not_registered_message">This page is inaccessible for users without an account. Sign up NOW!</string>
     <string name="not_registered_btstart">Get started</string>
     <string name="not_registered_dialog_message">This feature is inaccessible for users without an account. Get started and make an account now!</string>
+
+    <string name="myfeed_noposts_title">Uh oh, You have no posts</string>
+    <string name="myfeed_noposts_message">You don\'t have any questions for bongo yet.Ask him a question now!</string>
 
     <!-- Feed -->
     <string name="newsfeed">Newsfeed</string>
@@ -72,19 +75,20 @@
 
     <!-- Credit -->
     <string name="fragment_credit_title">Get bananas</string>
-    <string name="credit_info">Choose the amount of bananas you\'d like to add to your credits. Remember : \'20 bananas are 1 message to bongo\'</string>
+    <string name="credit_info">1 banana = 1 question</string>
     <string name="discountformat">(%d%% OFF)</string>
     <string name="btn_buy">BUY</string>
 
     <!-- Compose -->
     <string name="compose_title">Ask Bongo</string>
-    <string name="compose_hint">Tap to ask your question to Bongo</string>
+    <string name="compose_hint">Ask your question to Bongo</string>
     <string name="bubble_text">Add a photo or a question to submit to Bongo, or both!</string>
     <string name="error_nocamera">Sorry, camera isn\'t available.</string>
     <string name="error_storagewrite">Error writing to external storage.</string>
-    <string name="nothingtopost">Please ask a question or pick a picture.</string>
     <!-- Gallery -->
     <string name="gallery_title">Choose a picture</string>
+    <!-- Crop -->
+    <string name="crop_title">Crop your image</string>
 
     <!-- Preferences -->
     <string name="key_skip_login">skip_login</string>

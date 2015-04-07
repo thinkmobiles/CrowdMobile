@@ -2,32 +2,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:id="@+id/holderBtn"
+        android:background="@color/gallery_background"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/gallery_title_height">
+        <ImageView
+            android:id="@+id/btOK"
+            android:src="@drawable/ic_confirm"
+            android:padding="@dimen/gallery_title_iconpadding"
+            android:layout_width="@dimen/gallery_title_height"
+            android:layout_height="@dimen/gallery_title_height" />
+        <TextView
+            android:text="@string/crop_title"
+            android:gravity="center_horizontal"
+            android:textColor="@color/gallery_title_font"
+            android:textSize="@dimen/gallery_title_font"
+            android:layout_weight="1"
+            android:layout_width="0px"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/btCancel"
+            android:src="@drawable/ic_cancel"
+            android:padding="@dimen/gallery_title_iconpadding"
+            android:layout_width="@dimen/gallery_title_height"
+            android:layout_height="@dimen/gallery_title_height" />
+    </LinearLayout>
+
     <com.crowdmobile.kes.widget.CropView
         android:id="@+id/cropImage"
-        android:layout_above="@+id/holderBtn"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/holderBtn"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="0px" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:id="@+id/holderBtn"
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/btOK"
-            android:text="OK"
-            android:layout_weight="1"
-            android:layout_width="0px"
-            android:layout_height="wrap_content" />
-        <Button
-            android:id="@+id/btCancel"
-            android:text="Cancel"
-            android:layout_weight="1"
-            android:layout_width="0px"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
     <ProgressBar
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleLarge"

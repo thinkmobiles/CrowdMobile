@@ -36,6 +36,11 @@ public class PriceItem {
         ViewHolder holder = (ViewHolder)convertView.getTag();
         holder.tvQuantity.setText(Integer.toString(item.quantity));
         holder.tvPrice.setText(item.currency + Float.toString(item.price));
-        holder.tvDiscount.setText(String.format(discountFormat, item.discount));
+        if (item.discount == 0)
+            holder.tvDiscount.setVisibility(View.GONE);
+        else {
+            holder.tvDiscount.setVisibility(View.VISIBLE);
+            holder.tvDiscount.setText(String.format(discountFormat, item.discount));
+        }
     }
 }

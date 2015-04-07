@@ -6,15 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -37,27 +35,22 @@ public class ComposeFragment extends Fragment {
     static final int REQUEST_IMAGE_CAPTURE = 0x1234;
     private final static int maxlines = 4;
 
+    boolean hasImage = false;
     EditText edMessage;
     View imgCamera;
     ImageView imgPreview;
+    ImageView imgPost;
     View holderImage;
     View previewClose;
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_compose,menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+    View tvHint;
+    TransitionDrawable transitionPost;
+    int postEnabled = -1;
+    boolean afterResume = false;
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_post)
-        {
-            postQuestion();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public void onResume() {
+        super.onResume();
+        afterResume = true;
     }
 
     @Override
@@ -74,10 +67,15 @@ public class ComposeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(R.string.compose_title);
         setHasOptionsMenu(true);
+        afterResume = false;
         View result = inflater.inflate(R.layout.fragment_compose,container,false);
+        tvHint = result.findViewById(R.id.tvHint);
         holderImage = result.findViewById(R.id.holderImage);
         imgCamera = result.findViewById(R.id.imgCamera);
         imgCamera.setOnClickListener(onClickListener);
+        imgPost = (ImageView)result.findViewById(R.id.imgPost);
+        imgPost.setOnClickListener(onClickListener);
+        transitionPost = (TransitionDrawable)imgPost.getDrawable();
         edMessage = (EditText)result.findViewById(R.id.edMessage);
         edMessage.addTextChangedListener(tv);
         edMessage.setOnKeyListener(kl);
@@ -85,6 +83,7 @@ public class ComposeFragment extends Fragment {
         previewClose = result.findViewById(R.id.ivPreviewClose);
         previewClose.setOnClickListener(onClickListener);
         edMessage.setText(PreferenceUtils.getComposeText(getActivity()));
+
         loadPic();
         return result;
     }
@@ -104,7 +103,11 @@ public class ComposeFragment extends Fragment {
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (v == imgCamera)
+            if (v == imgPost)
+            {
+                postQuestion();
+            }
+            else if (v == imgCamera)
                 takePicture();
             else if (v == previewClose)
             {
@@ -114,6 +117,8 @@ public class ComposeFragment extends Fragment {
                     new File(filePath).delete();
                     holderImage.setVisibility(View.GONE);
                 }
+                hasImage = false;
+                checkPostEnabled();
             }
         }
     };
@@ -125,6 +130,7 @@ public class ComposeFragment extends Fragment {
 
         Intent intent = new Intent(getActivity(), PictureActivity.class);
         startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+        getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
         /*
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -142,6 +148,8 @@ public class ComposeFragment extends Fragment {
     private void loadPic() {
         String photoPath = PreferenceUtils.getComposedPicture(getActivity());
         if (photoPath == null) {
+            hasImage = false;
+            checkPostEnabled();
             holderImage.setVisibility(View.GONE);
             return;
         }
@@ -169,6 +177,8 @@ public class ComposeFragment extends Fragment {
             Toast.makeText(getActivity(),"Failed to load photo",Toast.LENGTH_SHORT).show();
         }
         imgPreview.setImageBitmap(bitmap);
+        hasImage = true;
+        checkPostEnabled();
         holderImage.setVisibility(View.VISIBLE);
     }
 
@@ -178,8 +188,10 @@ public class ComposeFragment extends Fragment {
         edMessage.removeTextChangedListener(tv);
         edMessage = null;
         imgCamera = null;
+        imgPost = null;
         imgPreview = null;
         previewClose = null;
+        tvHint = null;
         super.onDestroyView();
     }
 
@@ -200,10 +212,41 @@ public class ComposeFragment extends Fragment {
             if (lineCount > maxlines) {
                 edMessage.setText(text);
             }
+            checkPostEnabled();
         }
 
         ;
     };
+
+    private void checkPostEnabled()
+    {
+        int time = 0;
+        if (afterResume)
+            time = 300;
+
+        boolean enabled = false;
+        String s = edMessage.getText().toString();
+        if (s != null && s.length() > 0) {
+            enabled = true;
+            tvHint.setVisibility(View.GONE);
+        } else
+            tvHint.setVisibility(View.VISIBLE);
+
+        enabled |= hasImage;
+        if (enabled && postEnabled != 1)
+        {
+            postEnabled = 1;
+            transitionPost.setLevel(1);
+            transitionPost.startTransition(time);
+            return;
+        }
+        if (!enabled && postEnabled != -1)
+        {
+            postEnabled = -1;
+            transitionPost.reverseTransition(time);
+            return;
+        }
+    }
 
     View.OnKeyListener kl = new View.OnKeyListener() {
 
@@ -243,10 +286,7 @@ public class ComposeFragment extends Fragment {
         String question = edMessage.getText().toString();
         String picturePath = PreferenceUtils.getComposedPicture(getActivity());
         if (question == null || question.length() == 0 && picturePath == null)
-        {
-            Toast.makeText(getActivity(),R.string.nothingtopost,Toast.LENGTH_SHORT).show();
             return;
-        }
         Session.getInstance(getActivity()).getFeedManager().postQuestion(question, picturePath);
         edMessage.setText("");
         ((NavigationBar.NavigationCallback)getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.MyFeed);

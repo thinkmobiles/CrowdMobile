@@ -158,7 +158,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
         if (item.photo_url != null && item.photo_url.length() > 0) {
             holder.imgFeedPic.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgFeedPic.getContext()).load(item.photo_url).fit().centerCrop().placeholder(R.drawable.ic_settings_logo).into(holder.imgFeedPic);
+            Picasso.with(holder.imgFeedPic.getContext()).load(item.photo_url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
         } else
             holder.imgFeedPic.setVisibility(View.GONE);
 

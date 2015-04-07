@@ -21,7 +21,7 @@ public class NotRegisteredFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View result = inflater.inflate(R.layout.fragment_notregistered, container, false);
+        View result = inflater.inflate(R.layout.fragment_access, container, false);
         btGetStarted = result.findViewById(R.id.btGetStarted);
         btGetStarted.setOnClickListener(onClickListener);
         return result;

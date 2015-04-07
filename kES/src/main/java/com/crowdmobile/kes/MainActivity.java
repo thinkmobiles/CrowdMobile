@@ -107,7 +107,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         }
         navigationBar = new NavigationBar(this,findViewById(R.id.navigationBar));
 
-        navigationBar.navigateTo(NavigationBar.Attached.values()[PreferenceUtils.getActiveFragment(this)]);
+        navigationBar.navigateTo(NavigationBar.Attached.values()[PreferenceUtils.getActiveFragment(this,NavigationBar.Attached.Feed.ordinal())]);
 
         networkAdapter = new ArrayAdapter<String>(this,
                 R.layout.item_logcat, android.R.id.text1, networkComm);

@@ -25,9 +25,9 @@ public class PreferenceUtils {
                 .commit();
     }
 
-    public static int getActiveFragment(Context context) {
+    public static int getActiveFragment(Context context, int defValue) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt(context.getString(R.string.key_active_fragment), 0);
+                .getInt(context.getString(R.string.key_active_fragment), defValue);
     }
 
     public static void setComposeText(Context context, String value) {

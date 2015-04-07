@@ -17,13 +17,15 @@
     <dimen name="bt_login_text">15sp</dimen>
 
     <!-- Not registered -->
-    <dimen name="not_reg_paddingtop">50dp</dimen>
-    <dimen name="not_reg_titletext_padding">10dp</dimen>
-    <dimen name="not_reg_titletext">20sp</dimen>
-    <dimen name="not_reg_messagetext">15sp</dimen>
-    <dimen name="not_reg_btn_padding">30dp</dimen>
-    <dimen name="not_reg_btn_start">50dp</dimen>
-    <dimen name="not_reg_btn_start_font">20sp</dimen>
+    <dimen name="access_iconpaddingside">60dp</dimen>
+    <dimen name="access_cardmargin">10dp</dimen>
+    <dimen name="access_cardpadding">20dp</dimen>
+    <dimen name="access_titletext_padding">10dp</dimen>
+    <dimen name="access_titletext">15sp</dimen>
+    <dimen name="access_messagetext">12sp</dimen>
+    <dimen name="access_btn_margintop">20dp</dimen>
+    <dimen name="access_btn_padding">10dp</dimen>
+    <dimen name="access_btn_start_font">15sp</dimen>
 
 
     <!-- Feed item -->
@@ -37,23 +39,32 @@
     <dimen name="item_text_size">15sp</dimen>
 
     <!-- Checkout -->
+    <dimen name="credit_title_height">120dp</dimen>
     <dimen name="credit_fontsize">20sp</dimen>
+    <dimen name="credit_item_height">50dp</dimen>
+    <dimen name="credit_item_title_width">50dp</dimen>
+    <dimen name="credit_item_price_width">90dp</dimen>
 
     <dimen name="credit_item_vspace">20dp</dimen>
-    <dimen name="credit_item_height">40dp</dimen>
-    <dimen name="credit_item_padding">5dp</dimen>
+    <dimen name="credit_item_padding">10dp</dimen>
     <dimen name="credit_padding">10dp</dimen>
-    <dimen name="credit_item_fontsize">20sp</dimen>
-    <dimen name="credit_item_prize_fontsize">22sp</dimen>
+    <dimen name="credit_item_fontsize">18sp</dimen>
+    <dimen name="credit_item_prize_fontsize">18sp</dimen>
     <dimen name="credit_item_discount_fontsize">16sp</dimen>
-    <dimen name="credit_item_buy_padding">10dp</dimen>
-    <dimen name="credit_item_buy_spaceleft">10dp</dimen>
+    <dimen name="credit_item_buy_paddingv">10dp</dimen>
+    <dimen name="credit_item_buy_paddingh">30dp</dimen>
     <dimen name="credit_item_buy_font">20sp</dimen>
-    <dimen name="credit_item_space">20dp</dimen>
+    <dimen name="credit_item_buy_rightspace">10sp</dimen>
+    <dimen name="credit_item_space">1dp</dimen>
 
     <!-- Compose -->
     <dimen name="compose_shader">25dp</dimen>
     <dimen name="compose_buttonheight">40dp</dimen>
+    <dimen name="compose_buttonpadding">10dp</dimen>
+    <dimen name="compose_editpadding">10dp</dimen>
+
+    <dimen name="compose_imagewidth">60dp</dimen>
+    <dimen name="compose_imagepadding">7dp</dimen>
 
     <dimen name="takepicbutton">60dp</dimen>
     <dimen name="takepicbuttonpadding">10dp</dimen>
@@ -64,12 +75,12 @@
     <dimen name="bubbletextpadding">7dp</dimen>
     <dimen name="bubbleclose">40dp</dimen>
     <dimen name="imgclose">25dp</dimen>
-    <dimen name="imgclosespace">10dp</dimen>
 
     <!-- Gallery -->
     <dimen name="gallery_margin">15dp</dimen>
     <dimen name="gallery_gridspace">5dp</dimen>
     <dimen name="gallery_title_height">50dp</dimen>
     <dimen name="gallery_title_font">16sp</dimen>
+    <dimen name="gallery_title_iconpadding">10dp</dimen>
 
 </resources>

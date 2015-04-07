@@ -50,9 +50,9 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-        getSupportActionBar().setTitle("XXXXXXXX");
         //transfer = (ImageView)findViewById(R.id.imgTransfer);
-        getFragmentManager().beginTransaction().replace(R.id.fragmentHolder,new GalleryFragment()).commit();
+        getFragmentManager().beginTransaction()
+            .replace(R.id.fragmentHolder,new GalleryFragment()).commit();
     }
 
     @Override
@@ -85,12 +85,14 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
             PreferenceUtils.setComposedPicture(this,null);
         }
         setResult(success ? RESULT_OK : RESULT_CANCELED);
-        finish();
+        onBackPressed();
     }
 
     @Override
     public void onCropCanceled() {
-        getFragmentManager().beginTransaction().replace(R.id.fragmentHolder,new GalleryFragment()).commit();
+        getFragmentManager().beginTransaction()
+            .setCustomAnimations(R.anim.oa_fade_in, R.anim.oa_fade_out)
+            .replace(R.id.fragmentHolder,new GalleryFragment()).commit();
     }
 
     @Override
@@ -174,6 +176,7 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
         getFragmentManager().beginTransaction()
                 .setCustomAnimations(R.anim.oa_fade_in, R.anim.oa_fade_out)
                 .replace(R.id.fragmentHolder, cropFragment)
+                .addToBackStack("crop")
                 .commit();
     }
 
@@ -189,4 +192,11 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            super.onBackPressed();
+            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        }
+    }
 }

@@ -14,16 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     </android.support.v4.widget.SwipeRefreshLayout>
-    <RelativeLayout
-        android:visibility="gone"
+    <include
         android:id="@+id/holderNoPost"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:text="Post something dude..."
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
-
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/fragment_access"/>
 </RelativeLayout>

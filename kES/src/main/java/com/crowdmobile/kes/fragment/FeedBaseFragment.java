@@ -8,9 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.crowdmobile.kes.MainActivity;
 import com.crowdmobile.kes.R;
 import com.crowdmobile.kes.adapter.FeedAdapter;
+import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.FeedManager;
 import com.kes.Session;
 import com.kes.model.PhotoComment;
@@ -71,6 +74,15 @@ public abstract class FeedBaseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_feed, container,false);
+        holderNoPost = result.findViewById(R.id.holderNoPost);
+        ((TextView)holderNoPost.findViewById(R.id.tvAccessTitle)).setText(R.string.myfeed_noposts_title);
+        ((TextView)holderNoPost.findViewById(R.id.tvAccessMessage)).setText(R.string.myfeed_noposts_message);
+        holderNoPost.findViewById(R.id.btGetStarted).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.Compose);
+            }
+        });
         swipeContainer = (SwipeRefreshLayout)result.findViewById(R.id.swipe_container);
         swipeContainer.setOnRefreshListener(onRefreshListener);
 //        itemTitle = result.findViewById(R.id.itemTitle);
@@ -83,7 +95,6 @@ public abstract class FeedBaseFragment extends Fragment {
         lvFeed.setAdapter(adapter);
 //        lvFeed.setOnScrollListener(listScroll);
         session.getFeedManager().registerOnChangeListener(onFeedChange);
-        holderNoPost = result.findViewById(R.id.holderNoPost);
         scrollInitialized = false;
         titleVisible = false;
         //shareController = new FeedItem.ShareController(itemTitle, itemShare);
