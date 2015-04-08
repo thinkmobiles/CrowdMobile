@@ -18,6 +18,10 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_stripe_height"
+                android:background="@color/item_stripe"/>
             <include
                 android:id="@+id/itemTitle"
                 layout="@layout/item_title"/>
@@ -26,6 +30,10 @@
                 android:scaleType="centerCrop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_separator_height"
+                android:background="@color/item_separator"/>
             <RelativeLayout
                 android:padding="@dimen/item_header_sidepadding"
                 android:background="@color/answerBackground"

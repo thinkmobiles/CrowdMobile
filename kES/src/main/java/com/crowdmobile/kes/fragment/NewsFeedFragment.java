@@ -21,7 +21,6 @@ public class NewsFeedFragment extends FeedBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(R.string.newsfeed);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 

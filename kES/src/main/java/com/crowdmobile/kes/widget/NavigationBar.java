@@ -1,7 +1,10 @@
 package com.crowdmobile.kes.widget;
 
-import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -23,12 +26,16 @@ public class NavigationBar {
 
 	public enum Attached {Empty, Feed, MyFeed, Compose, Checkout};
 	private ImageView btFeed,btMyFeed,btCompose,btCheckout;
-	private Activity mActivity;
+	private ActionBarActivity mActivity;
 	private Attached attached = Attached.Empty;
-	
-	public NavigationBar(Activity activity, View v)
+	private ViewPager mViewPager;
+
+	public NavigationBar(ActionBarActivity activity, View v,ViewPager viewPager)
 	{
 		mActivity = activity;
+        mViewPager = viewPager;
+        mViewPager.setAdapter(new NavbarAdapter(activity.getSupportFragmentManager()));
+        mViewPager.setOnPageChangeListener(pageChangeListener);
 		btFeed = (ImageView)v.findViewById(R.id.btFeed);
 		btMyFeed = (ImageView)v.findViewById(R.id.btMyFeed);
 		btCompose = (ImageView)v.findViewById(R.id.btCompose);
@@ -40,6 +47,23 @@ public class NavigationBar {
 		btCheckout.setOnClickListener(onClickListener);
 	}
 
+    ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            updateIcons(Attached.values()[position + 1]);
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+
+        }
+    };
+
     public Attached getAttached()
     {
         return attached;
@@ -50,7 +74,27 @@ public class NavigationBar {
         PreferenceUtils.setActiveFragment(mActivity, attached.ordinal());
     }
 
-	public void navigateTo(Attached dest)
+    private Fragment getFragment(Attached src)
+    {
+        if (src == Attached.Feed)
+            return new NewsFeedFragment();
+
+        if (!Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
+            return new NotRegisteredFragment();
+
+        if (src == Attached.MyFeed)
+            return new MyFeedFragment();
+
+        if (src == Attached.Checkout)
+            return new CheckoutFragment();
+
+        if (src == Attached.Compose)
+            return new ComposeFragment();
+
+        return null;
+    }
+
+	public void updateIcons(Attached dest)
 	{
 		if (attached == dest)
 			return;
@@ -58,43 +102,32 @@ public class NavigationBar {
 		Fragment f = null;
 
 		if (attached == Attached.Feed) {
+            mActivity.getSupportActionBar().setTitle(R.string.newsfeed);
             btFeed.setImageResource(R.drawable.ic_tabbar_newsfeed_pressed);
-            f = new NewsFeedFragment();
-        } else
+        }
+        else
             btFeed.setImageResource(R.drawable.ic_tabbar_newsfeed);
 
         if (attached == Attached.MyFeed) {
             btMyFeed.setImageResource(R.drawable.ic_tabbar_myfeed_pressed);
-            if (Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
-                f = new MyFeedFragment();
-            else
-                f = new NotRegisteredFragment();
-        } else
+            mActivity.getSupportActionBar().setTitle(R.string.myfeed);
+        }
+        else
             btMyFeed.setImageResource(R.drawable.ic_tabbar_myfeed);
 
 		if (attached == Attached.Checkout) {
             btCheckout.setImageResource(R.drawable.ic_tabbar_shop_pressed);
-            if (Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
-                f = new CheckoutFragment();
-            else
-                f = new NotRegisteredFragment();
-        } else
+            mActivity.getSupportActionBar().setTitle(R.string.fragment_credit_title);
+        }
+        else
             btCheckout.setImageResource(R.drawable.ic_tabbar_shop);
 
         if (attached == Attached.Compose) {
             btCompose.setImageResource(R.drawable.ic_tabbar_post_pressed);
-            if (Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
-                f = new ComposeFragment();
-            else
-                f = new NotRegisteredFragment();
-        } else
+            mActivity.getSupportActionBar().setTitle(R.string.compose_title);
+        }
+        else
             btCompose.setImageResource(R.drawable.ic_tabbar_post);
-
-
-		mActivity.getFragmentManager().beginTransaction()
-//    	.setCustomAnimations(R.anim.oa_fade_in, R.anim.oa_fade_out)
-    	.replace(R.id.fragmentHolder, f)
-    	.commit();
 	}
 	
 	OnClickListener onClickListener = new OnClickListener()
@@ -113,5 +146,31 @@ public class NavigationBar {
 		}
 		
 	};
+
+    public void navigateTo(Attached dest)
+    {
+        if (attached == dest)
+            return;
+        mViewPager.setCurrentItem(dest.ordinal() - 1);
+    }
+
+    class NavbarAdapter extends FragmentPagerAdapter {
+
+
+        public NavbarAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public android.support.v4.app.Fragment getItem(int position) {
+            return getFragment(Attached.values()[position + 1]);
+        }
+
+        @Override
+        public int getCount() {
+            return Attached.values().length - 1;
+        }
+
+    }
 
 }

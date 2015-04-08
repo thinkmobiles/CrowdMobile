@@ -1,11 +1,14 @@
 package com.crowdmobile.kes;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
@@ -43,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     LogCatThread logCatThread;
     ListView lvLogcat;
     boolean networkVisible = false;
+    ViewPager viewPager;
 
 	public static void open(Context context)
 	{
@@ -100,12 +105,13 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		}
         mSession.getAccountManager().registerListener(accountListener);
         setContentView(R.layout.activity_main);
+        viewPager = (ViewPager)findViewById(R.id.viewPager);
         lvLogcat = (ListView)findViewById(R.id.lvLogcat);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-        navigationBar = new NavigationBar(this,findViewById(R.id.navigationBar));
+        navigationBar = new NavigationBar(this,findViewById(R.id.navigationBar),viewPager);
 
         navigationBar.navigateTo(NavigationBar.Attached.values()[PreferenceUtils.getActiveFragment(this,NavigationBar.Attached.Feed.ordinal())]);
 
@@ -174,9 +180,29 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             AccountActivity.logout(MainActivity.this);
             navigationBar = null;
 			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		} else if (id == R.id.action_support) {
+            openURL("http://www.askbongo.com");
+            return true;
+        } else if (id == R.id.action_about) {
+            openURL("http://www.askbongo.com");
+            return true;
+        } else if (id == R.id.action_privacy) {
+            openURL("http://www.askbongo.com");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
 	}
+
+    private void openURL(String url)
+    {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "No application can handle this request."
+                    + " Please install a webbrowser", Toast.LENGTH_LONG).show();
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -233,5 +259,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             }
         }
     }
+
+
 
 }

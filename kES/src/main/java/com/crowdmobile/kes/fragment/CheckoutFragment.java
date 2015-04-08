@@ -1,9 +1,8 @@
 package com.crowdmobile.kes.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +65,6 @@ public class CheckoutFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(R.string.fragment_credit_title);
         View result = inflater.inflate(R.layout.fragment_credit,container,false);
         lvPriceList = (ListView)result.findViewById(R.id.lvPricelist);
         lvPriceList.setAdapter(priceAdapter);

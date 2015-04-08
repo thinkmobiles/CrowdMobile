@@ -1,7 +1,7 @@
 package com.crowdmobile.kes.fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,12 +60,18 @@ public abstract class FeedBaseFragment extends Fragment {
         }
 
         @Override
-        public void retryClick() {
+        public void retryLoadClick() {
             if (lastNetworkAction != null)
             {
                 adapter.setFooterLoading(true);
                 lastNetworkAction.load();
             }
+        }
+
+        @Override
+        public void retryPostClick(PhotoComment p) {
+            p.status = PhotoComment.PostStatus.Pending;
+            Session.getInstance(getActivity()).getFeedManager().postQuestion(p);
         }
     };
 

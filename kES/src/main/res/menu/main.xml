@@ -31,10 +31,5 @@
         android:orderInCategory="104"
         kes:showAsAction="never"
         android:title="@string/action_logout"/>
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="105"
-        kes:showAsAction="never"
-        android:title="Profile"/>
 
 </menu>

@@ -32,6 +32,8 @@
     <dimen name="item_padding">5dp</dimen>
     <dimen name="item_header_sidepadding">10dp</dimen>
     <dimen name="share_closed_height">5dp</dimen>
+    <dimen name="item_stripe_height">5dp</dimen>
+    <dimen name="item_separator_height">3dp</dimen>
     <dimen name="item_header_icon_height">25dp</dimen>
     <dimen name="item_header_icon_margin">5dp</dimen>
     <dimen name="item_share_visible_height">5dp</dimen>

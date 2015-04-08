@@ -67,6 +67,7 @@ public class CropFragment extends Fragment {
         Bundle extras = getArguments();
         filePath = extras.getString(TAG_FILEPATH);
 
+        Picasso.with(getActivity()).invalidate("file://" + filePath);
         Picasso.with(getActivity()).load("file://" + filePath).transform(transformation).into(cropView, picassoCallback);
         return holder;
     }

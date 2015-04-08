@@ -1,6 +1,8 @@
 package com.crowdmobile.kes.adapter;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -10,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crowdmobile.kes.R;
-import com.kes.Session;
 import com.kes.model.PhotoComment;
 import com.squareup.picasso.Picasso;
 
@@ -34,7 +36,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
     public interface FeedAdapterListener {
         public void onLastItemReached();
-        public void retryClick();
+        public void retryLoadClick();
+        public void retryPostClick(PhotoComment p);
     }
 
     public void setFooterVisible(boolean visible)
@@ -58,28 +61,42 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
         TextView tvAnswer;
         TextView tvTimeAnswer;
-
         //Footer
         TextView tvFooterStatus;
         Button btRetry;
         View progress;
         View layerBrightness;
 
-        public ItemHolder(View view, View.OnClickListener retryClick) {
+        public ItemHolder(View view, int viewType, View.OnClickListener retryClick,View.OnClickListener retryPostClick) {
             super(view);
-            tvTimeQuestion = (TextView)view.findViewById(R.id.tvTimeQuestion);
-            tvQuestion = (TextView)view.findViewById(R.id.tvMessage);
-            imgFeedPic = (ImageView)view.findViewById(R.id.imgFeedPic);
-            imgOpenShare = view.findViewById(R.id.imgOpenShare);
-            tvAnswer = (TextView)view.findViewById(R.id.tvAnswer);
-            tvTimeAnswer = (TextView)view.findViewById(R.id.tvTimeAnswer);
-            ivTitle = (ImageView)view.findViewById(R.id.ivTitle);
-            layerBrightness = view.findViewById(R.id.layerBrightness);
+            if (viewType == TYPE_ITEM) {
+                tvTimeQuestion = (TextView) view.findViewById(R.id.tvTimeQuestion);
+                tvQuestion = (TextView) view.findViewById(R.id.tvMessage);
+                imgFeedPic = (ImageView) view.findViewById(R.id.imgFeedPic);
+                imgOpenShare = view.findViewById(R.id.imgOpenShare);
+                if (imgOpenShare != null) {
+                    imgOpenShare.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String url = (String) v.getTag();
+                            shareUrl(v.getContext(), url);
+                        }
+                    });
+                }
+                tvAnswer = (TextView) view.findViewById(R.id.tvAnswer);
+                tvTimeAnswer = (TextView) view.findViewById(R.id.tvTimeAnswer);
+                ivTitle = (ImageView) view.findViewById(R.id.ivTitle);
+                layerBrightness = view.findViewById(R.id.layerBrightness);
 
-            tvFooterStatus = (TextView)view.findViewById(R.id.tvFooterStatus);
-            btRetry = (Button)view.findViewById(R.id.btRetry);
-            btRetry.setOnClickListener(retryClick);
-            progress = view.findViewById(R.id.progress);
+                btRetry = (Button) view.findViewById(R.id.btRetry);
+                btRetry.setOnClickListener(retryPostClick);
+            } else {
+                tvFooterStatus = (TextView) view.findViewById(R.id.tvFooterStatus);
+                progress = view.findViewById(R.id.progress);
+                btRetry = (Button) view.findViewById(R.id.btRetry);
+                btRetry.setOnClickListener(retryClick);
+            }
+
         }
     };
 
@@ -115,7 +132,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                     from(viewGroup.getContext()).
                     inflate(R.layout.footer_feed, viewGroup, false);
 
-        return new ItemHolder(result, retryClick);
+        return new ItemHolder(result, viewType, retryClick, retryPostClick);
     }
 
     @Override
@@ -140,6 +157,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         }
 
         PhotoComment item = list.get(i);
+        holder.imgOpenShare.setTag(item.share_url);
         holder.tvTimeQuestion.setText(Integer.toString(item.id));
         holder.tvQuestion.setText(item.message);
 
@@ -206,13 +224,37 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     View.OnClickListener retryClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            listener.retryClick();
+            listener.retryLoadClick();
+            /*
             PhotoComment p = (PhotoComment) v.getTag();
             Session.getInstance(v.getContext()).getFeedManager().postQuestion(p);
+            */
             notifyDataSetChanged();
         }
     };
 
+    View.OnClickListener retryPostClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            listener.retryPostClick((PhotoComment) v.getTag());
+            notifyDataSetChanged();
+        }
+    };
+
+    private static void shareUrl(Context context, String url)
+    {
+        try {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TEXT, url);
+            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, context.getResources().getString(R.string.share_subject));
+            context.startActivity(Intent.createChooser(intent, context.getResources().getString(R.string.share_title)));
+
+        } catch (Exception e)
+        {
+            Toast.makeText(context,R.string.share_unavailable,Toast.LENGTH_SHORT).show();
+        }
+    }
 
     /*
 FooterListener footerListener = new FooterListener() {

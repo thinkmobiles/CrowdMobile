@@ -1,14 +1,13 @@
 package com.crowdmobile.kes.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -65,7 +64,6 @@ public class ComposeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle(R.string.compose_title);
         setHasOptionsMenu(true);
         afterResume = false;
         View result = inflater.inflate(R.layout.fragment_compose,container,false);

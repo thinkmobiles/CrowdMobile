@@ -59,6 +59,10 @@
     <string name="myfeed_noposts_message">You don\'t have any questions for bongo yet.Ask him a question now!</string>
 
     <!-- Feed -->
+    <string name="share_title">Share question</string>
+    <string name="share_unavailable">Share is not available</string>
+    <string name="share_subject">Check out Bongo!</string>
+
     <string name="newsfeed">Newsfeed</string>
     <string name="myfeed">My questions</string>
     <string name="item_share">SHARE</string>
