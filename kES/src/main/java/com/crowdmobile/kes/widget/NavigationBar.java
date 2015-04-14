@@ -1,12 +1,14 @@
 package com.crowdmobile.kes.widget;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.crowdmobile.kes.R;
@@ -17,6 +19,8 @@ import com.crowdmobile.kes.fragment.NewsFeedFragment;
 import com.crowdmobile.kes.fragment.NotRegisteredFragment;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.kes.Session;
+
+import java.util.ArrayList;
 
 public class NavigationBar {
 
@@ -29,12 +33,15 @@ public class NavigationBar {
 	private ActionBarActivity mActivity;
 	private Attached attached = Attached.Empty;
 	private ViewPager mViewPager;
+    private NavbarAdapter adapter;
+    private boolean flag_myfeedInvalidate = false;
 
 	public NavigationBar(ActionBarActivity activity, View v,ViewPager viewPager)
 	{
 		mActivity = activity;
         mViewPager = viewPager;
-        mViewPager.setAdapter(new NavbarAdapter(activity.getSupportFragmentManager()));
+        adapter = new NavbarAdapter(activity.getSupportFragmentManager());
+        mViewPager.setAdapter(adapter);
         mViewPager.setOnPageChangeListener(pageChangeListener);
 		btFeed = (ImageView)v.findViewById(R.id.btFeed);
 		btMyFeed = (ImageView)v.findViewById(R.id.btMyFeed);
@@ -47,7 +54,14 @@ public class NavigationBar {
 		btCheckout.setOnClickListener(onClickListener);
 	}
 
+    public void invalidateMyFeed()
+    {
+        flag_myfeedInvalidate = true;
+    }
+
     ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
+        Attached attached = Attached.Empty;
+
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -55,12 +69,35 @@ public class NavigationBar {
 
         @Override
         public void onPageSelected(int position) {
-            updateIcons(Attached.values()[position + 1]);
+            attached = Attached.values()[position + 1];
+            updateIcons(attached);
+            if (attached == Attached.MyFeed && flag_myfeedInvalidate) {
+                flag_myfeedInvalidate = false;
+                ((MyFeedFragment) adapter.getItem(position)).reload();
+            }
+
+            if (attached != Attached.Compose) {
+                final InputMethodManager imm = (InputMethodManager)mActivity.getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
+            }
+
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
-
+            if (attached == Attached.Compose) {
+                final InputMethodManager imm = (InputMethodManager)mActivity.getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
+            }
+            /*
+            if (state == ViewPager.SCROLL_STATE_DRAGGING && attached == Attached.Compose)
+            {
+                InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+            }
+            */
         }
     };
 
@@ -73,6 +110,7 @@ public class NavigationBar {
     {
         PreferenceUtils.setActiveFragment(mActivity, attached.ordinal());
     }
+
 
     private Fragment getFragment(Attached src)
     {
@@ -154,21 +192,24 @@ public class NavigationBar {
         mViewPager.setCurrentItem(dest.ordinal() - 1);
     }
 
-    class NavbarAdapter extends FragmentPagerAdapter {
+    class NavbarAdapter extends FragmentStatePagerAdapter {
 
-
+        ArrayList<Fragment> fragments = new ArrayList<Fragment>();
         public NavbarAdapter(FragmentManager fm) {
             super(fm);
+            Attached[] a = Attached.values();
+            for (int i = 1; i < a.length; i++)
+                fragments.add(getFragment(a[i]));
         }
 
         @Override
         public android.support.v4.app.Fragment getItem(int position) {
-            return getFragment(Attached.values()[position + 1]);
+            return fragments.get(position);
         }
 
         @Override
         public int getCount() {
-            return Attached.values().length - 1;
+            return fragments.size();
         }
 
     }

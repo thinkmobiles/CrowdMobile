@@ -4,6 +4,7 @@ package com.kes;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -11,6 +12,7 @@ import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 //TODO : weakhashmap to all worker theads and shut them down when service stops
 
@@ -168,17 +170,25 @@ public class NetworkService extends Service {
 	
 	private boolean areEqual(Intent a, Intent b) {
         if (a.filterEquals(b)) {
-	        if (a.getExtras() != null && b.getExtras() != null) {
+            Bundle aExtras = a.getExtras();
+            Bundle bExtras = b.getExtras();
+
+	        if (aExtras != null && bExtras != null) {
+                Set<String> aKeySet = aExtras.keySet();
+                Set<String> bKeySet = bExtras.keySet();
+
 	            // check if the keysets are the same size
-	            if (a.getExtras().keySet().size() != b.getExtras().keySet().size()) return false;
+	            if (aKeySet.size() != bKeySet.size()) return false;
+                if (aKeySet.size() == 0)
+                    return true;    //there was a nullpointerexception
 	            // compare all of a's extras to b
-	            for (String key : a.getExtras().keySet()) {
-	                if (!b.getExtras().containsKey(key))
+	            for (String key : aKeySet) {
+	                if (!bExtras.containsKey(key))
 	                    return false;
 	                else
 	                {
-	                	Object o1 = a.getExtras().get(key);
-	                	Object o2 = b.getExtras().get(key);
+	                	Object o1 = aExtras.get(key);
+	                	Object o2 = bExtras.get(key);
 	                	if (o1 == null)
                             return o2 == null;
 
@@ -187,13 +197,13 @@ public class NetworkService extends Service {
 	                }
 	            }
 	            // compare all of b's extras to a
-	            for (String key : b.getExtras().keySet()) {
-	                if (!a.getExtras().containsKey(key))
+	            for (String key : bKeySet) {
+	                if (!aExtras.containsKey(key))
 	                    return false;
                     else
                     {
-                        Object o1 = a.getExtras().get(key);
-                        Object o2 = b.getExtras().get(key);
+                        Object o1 = aExtras.get(key);
+                        Object o2 = bExtras.get(key);
                         if (o1 == null)
                             return o2 == null;
 
@@ -203,7 +213,7 @@ public class NetworkService extends Service {
 	            }
                 return true;
 	        }
-	        if (a.getExtras() == null && b.getExtras() == null) return true;
+	        if (aExtras == null && bExtras == null) return true;
 	        // either a has extras and b doesn't or b has extras and a doesn't
 	        return false;
 	    } else

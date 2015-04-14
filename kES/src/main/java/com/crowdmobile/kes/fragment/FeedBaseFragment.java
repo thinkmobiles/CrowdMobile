@@ -39,6 +39,7 @@ public abstract class FeedBaseFragment extends Fragment {
     View holderNoPost;
     int minID = 0;
     boolean hasFooterView = false;
+    boolean isViewCreated = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,18 +104,40 @@ public abstract class FeedBaseFragment extends Fragment {
         session.getFeedManager().registerOnChangeListener(onFeedChange);
         scrollInitialized = false;
         titleVisible = false;
-        //shareController = new FeedItem.ShareController(itemTitle, itemShare);
+        isViewCreated = true;
+        reload();
         return result;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    private void setEmptyLayoutVisibility(boolean visible)
+    {
+        if (getFeedType() == FeedManager.FeedType.My)
+        {
+            if (visible)
+                holderNoPost.setVisibility(View.VISIBLE);
+            else
+                holderNoPost.setVisibility(View.GONE);
+        }
+    }
+
+    public void reload()
+    {
+        if (!isViewCreated)
+            return;
         list.clear();
         session.getFeedManager().feed(getFeedType()).getCache(list);
+        setEmptyLayoutVisibility(list.size() == 0);
         if (list.size() == 0) {
             lastNetworkAction = session.getFeedManager().feed(getFeedType());
             lastNetworkAction.setMaxID(400).load();
+        } else {
+            lvFeed.scrollToPosition(0);
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -157,13 +180,7 @@ public abstract class FeedBaseFragment extends Fragment {
             session.getFeedManager().feed(getFeedType()).getCache(list);
 
             adapter.notifyDataSetChanged();
-            if (getFeedType() == FeedManager.FeedType.My)
-            {
-                if (list.size() == 0 && wrapper.exception == null)
-                    holderNoPost.setVisibility(View.VISIBLE);
-                else
-                    holderNoPost.setVisibility(View.GONE);
-            }
+            setEmptyLayoutVisibility(list.size() == 0 && wrapper.exception == null);
 
             if (wrapper.max_id == null) {
                 lvFeed.scrollToPosition(0);
@@ -172,6 +189,7 @@ public abstract class FeedBaseFragment extends Fragment {
 //            if (!scrollInitialized)
 //                listScroll.onScroll(lvFeed,0,0,0);
         }
+
 
         @Override
         public void onMarkAsReadResult(int questionID, int commentID, Exception error) {
@@ -259,6 +277,7 @@ public abstract class FeedBaseFragment extends Fragment {
         holderNoPost = null;
         session.getFeedManager().unRegisterOnChangeListener(onFeedChange);
         list.clear();
+        isViewCreated = false;
     }
 
 

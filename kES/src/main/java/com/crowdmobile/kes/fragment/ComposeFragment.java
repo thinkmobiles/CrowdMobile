@@ -86,16 +86,20 @@ public class ComposeFragment extends Fragment {
         return result;
     }
 
-
+    /*
+    public void hideInput()
+    {
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(edMessage.getWindowToken(), 0);
+    }
+    */
 
     @Override
     public void onPause() {
         super.onPause();
         PreferenceUtils.setComposeText(getActivity(), edMessage.getText().toString());
         //PreferenceUtils.setComposePicture(getActivity(), mCurrentPhoto != null ? mCurrentPhoto.getAbsolutePath() : null);
-        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(edMessage.getWindowToken(), 0);
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -285,9 +289,14 @@ public class ComposeFragment extends Fragment {
         String picturePath = PreferenceUtils.getComposedPicture(getActivity());
         if (question == null || question.length() == 0 && picturePath == null)
             return;
+
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(edMessage.getWindowToken(), 0);
         Session.getInstance(getActivity()).getFeedManager().postQuestion(question, picturePath);
         edMessage.setText("");
-        ((NavigationBar.NavigationCallback)getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.MyFeed);
+        NavigationBar nb = ((NavigationBar.NavigationCallback)getActivity()).getNavigationBar();
+        nb.invalidateMyFeed();
+        nb.navigateTo(NavigationBar.Attached.MyFeed);
     }
 
 }

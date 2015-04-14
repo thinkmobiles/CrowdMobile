@@ -140,7 +140,7 @@ public class DataFetcher {
 		// The default value is zero, that means the timeout is not used. 
 		int timeoutConnection = 10000;
 		HttpConnectionParams.setConnectionTimeout(params, timeoutConnection);
-		// Set the default socket timeout (SO_TIMEOUT) 
+		// Set the default socket timeout (SO_TIMEOUT)
 		// in milliseconds which is the timeout for waiting for data.
 		int timeoutSocket = 10000;
 		HttpConnectionParams.setSoTimeout(params, timeoutSocket);
@@ -292,7 +292,15 @@ public class DataFetcher {
                 try {
                     switch (type) {
                         case GET:
+                            DefaultHttpClient result = null;
+                            HttpParams params = new BasicHttpParams();
+                            int timeoutConnection = 1000;
+                            HttpConnectionParams.setConnectionTimeout(params, timeoutConnection);
+                            int timeoutSocket = 1000;
+                            HttpConnectionParams.setSoTimeout(params, timeoutSocket);
+                            HttpProtocolParams.setUserAgent(params, defaultUserAgent);
                             HttpGet get = new HttpGet(url);
+                            get.setParams(params);
                             request = get;
                             break;
                         case POST:

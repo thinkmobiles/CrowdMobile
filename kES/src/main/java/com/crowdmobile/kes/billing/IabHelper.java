@@ -30,11 +30,18 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.crowdmobile.kes.billing.IabException;
+import com.crowdmobile.kes.billing.IabResult;
+import com.crowdmobile.kes.billing.Inventory;
+import com.crowdmobile.kes.billing.Purchase;
+import com.crowdmobile.kes.billing.Security;
+import com.crowdmobile.kes.billing.SkuDetails;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Provides convenience methods for in-app billing. You can create one instance of this
@@ -189,7 +196,7 @@ public class IabHelper {
          *
          * @param result The result of the setup process.
          */
-        public void onIabSetupFinished(com.crowdmobile.kes.billing.IabResult result);
+        public void onIabSetupFinished(IabResult result);
     }
 
     /**
@@ -225,7 +232,7 @@ public class IabHelper {
                     // check for in-app billing v3 support
                     int response = mService.isBillingSupported(3, packageName, ITEM_TYPE_INAPP);
                     if (response != BILLING_RESPONSE_RESULT_OK) {
-                        if (listener != null) listener.onIabSetupFinished(new com.crowdmobile.kes.billing.IabResult(response,
+                        if (listener != null) listener.onIabSetupFinished(new IabResult(response,
                                 "Error checking for billing v3 support."));
 
                         // if in-app purchases aren't supported, neither are subscriptions.
@@ -248,7 +255,7 @@ public class IabHelper {
                 }
                 catch (RemoteException e) {
                     if (listener != null) {
-                        listener.onIabSetupFinished(new com.crowdmobile.kes.billing.IabResult(IABHELPER_REMOTE_EXCEPTION,
+                        listener.onIabSetupFinished(new IabResult(IABHELPER_REMOTE_EXCEPTION,
                                                     "RemoteException while setting up in-app billing."));
                     }
                     e.printStackTrace();
@@ -256,7 +263,7 @@ public class IabHelper {
                 }
 
                 if (listener != null) {
-                    listener.onIabSetupFinished(new com.crowdmobile.kes.billing.IabResult(BILLING_RESPONSE_RESULT_OK, "Setup successful."));
+                    listener.onIabSetupFinished(new IabResult(BILLING_RESPONSE_RESULT_OK, "Setup successful."));
                 }
             }
         };
@@ -271,7 +278,7 @@ public class IabHelper {
             // no service available to handle that Intent
             if (listener != null) {
                 listener.onIabSetupFinished(
-                        new com.crowdmobile.kes.billing.IabResult(BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE,
+                        new IabResult(BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE,
                         "Billing service unavailable on device."));
             }
         }
@@ -321,7 +328,7 @@ public class IabHelper {
          * @param result The result of the purchase.
          * @param info The purchase information (null if purchase failed)
          */
-        public void onIabPurchaseFinished(com.crowdmobile.kes.billing.IabResult result, Purchase info);
+        public void onIabPurchaseFinished(IabResult result, Purchase info);
     }
 
     // The listener registered on launchPurchaseFlow, which we have to call back when
@@ -370,10 +377,10 @@ public class IabHelper {
         checkNotDisposed();
         checkSetupDone("launchPurchaseFlow");
         flagStartAsync("launchPurchaseFlow");
-        com.crowdmobile.kes.billing.IabResult result;
+        IabResult result;
 
         if (itemType.equals(ITEM_TYPE_SUBS) && !mSubscriptionsSupported) {
-            com.crowdmobile.kes.billing.IabResult r = new com.crowdmobile.kes.billing.IabResult(IABHELPER_SUBSCRIPTIONS_NOT_AVAILABLE,
+            IabResult r = new IabResult(IABHELPER_SUBSCRIPTIONS_NOT_AVAILABLE,
                     "Subscriptions are not available.");
             flagEndAsync();
             if (listener != null) listener.onIabPurchaseFinished(r, null);
@@ -387,7 +394,7 @@ public class IabHelper {
             if (response != BILLING_RESPONSE_RESULT_OK) {
                 logError("Unable to buy item, Error response: " + getResponseDesc(response));
                 flagEndAsync();
-                result = new com.crowdmobile.kes.billing.IabResult(response, "Unable to buy item");
+                result = new IabResult(response, "Unable to buy item");
                 if (listener != null) listener.onIabPurchaseFinished(result, null);
                 return;
             }
@@ -407,7 +414,7 @@ public class IabHelper {
             e.printStackTrace();
             flagEndAsync();
 
-            result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_SEND_INTENT_FAILED, "Failed to send intent.");
+            result = new IabResult(IABHELPER_SEND_INTENT_FAILED, "Failed to send intent.");
             if (listener != null) listener.onIabPurchaseFinished(result, null);
         }
         catch (RemoteException e) {
@@ -415,7 +422,7 @@ public class IabHelper {
             e.printStackTrace();
             flagEndAsync();
 
-            result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_REMOTE_EXCEPTION, "Remote exception while starting purchase flow");
+            result = new IabResult(IABHELPER_REMOTE_EXCEPTION, "Remote exception while starting purchase flow");
             if (listener != null) listener.onIabPurchaseFinished(result, null);
         }
     }
@@ -434,7 +441,7 @@ public class IabHelper {
      *     handle it normally.
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        com.crowdmobile.kes.billing.IabResult result;
+        IabResult result;
         if (requestCode != mRequestCode) return false;
 
         checkNotDisposed();
@@ -445,7 +452,7 @@ public class IabHelper {
 
         if (data == null) {
             logError("Null data in IAB activity result.");
-            result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_BAD_RESPONSE, "Null data in IAB result");
+            result = new IabResult(IABHELPER_BAD_RESPONSE, "Null data in IAB result");
             if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);
             return true;
         }
@@ -464,7 +471,7 @@ public class IabHelper {
             if (purchaseData == null || dataSignature == null) {
                 logError("BUG: either purchaseData or dataSignature is null.");
                 logDebug("Extras: " + data.getExtras().toString());
-                result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_UNKNOWN_ERROR, "IAB returned null purchaseData or dataSignature");
+                result = new IabResult(IABHELPER_UNKNOWN_ERROR, "IAB returned null purchaseData or dataSignature");
                 if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);
                 return true;
             }
@@ -477,7 +484,7 @@ public class IabHelper {
                 // Verify signature
                 if (!Security.verifyPurchase(mSignatureBase64, purchaseData, dataSignature)) {
                     logError("Purchase signature verification FAILED for sku " + sku);
-                    result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_VERIFICATION_FAILED, "Signature verification failed for sku " + sku);
+                    result = new IabResult(IABHELPER_VERIFICATION_FAILED, "Signature verification failed for sku " + sku);
                     if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, purchase);
                     return true;
                 }
@@ -486,38 +493,38 @@ public class IabHelper {
             catch (JSONException e) {
                 logError("Failed to parse purchase data.");
                 e.printStackTrace();
-                result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_BAD_RESPONSE, "Failed to parse purchase data.");
+                result = new IabResult(IABHELPER_BAD_RESPONSE, "Failed to parse purchase data.");
                 if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);
                 return true;
             }
 
             if (mPurchaseListener != null) {
-                mPurchaseListener.onIabPurchaseFinished(new com.crowdmobile.kes.billing.IabResult(BILLING_RESPONSE_RESULT_OK, "Success"), purchase);
+                mPurchaseListener.onIabPurchaseFinished(new IabResult(BILLING_RESPONSE_RESULT_OK, "Success"), purchase);
             }
         }
         else if (resultCode == Activity.RESULT_OK) {
             // result code was OK, but in-app billing response was not OK.
             logDebug("Result code was OK but in-app billing response was not OK: " + getResponseDesc(responseCode));
             if (mPurchaseListener != null) {
-                result = new com.crowdmobile.kes.billing.IabResult(responseCode, "Problem purchashing item.");
+                result = new IabResult(responseCode, "Problem purchashing item.");
                 mPurchaseListener.onIabPurchaseFinished(result, null);
             }
         }
         else if (resultCode == Activity.RESULT_CANCELED) {
             logDebug("Purchase canceled - Response: " + getResponseDesc(responseCode));
-            result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_USER_CANCELLED, "User canceled.");
+            result = new IabResult(IABHELPER_USER_CANCELLED, "User canceled.");
             if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);
         }
         else {
             logError("Purchase failed. Result code: " + Integer.toString(resultCode)
                     + ". Response: " + getResponseDesc(responseCode));
-            result = new com.crowdmobile.kes.billing.IabResult(IABHELPER_UNKNOWN_PURCHASE_RESPONSE, "Unknown purchase response.");
+            result = new IabResult(IABHELPER_UNKNOWN_PURCHASE_RESPONSE, "Unknown purchase response.");
             if (mPurchaseListener != null) mPurchaseListener.onIabPurchaseFinished(result, null);
         }
         return true;
     }
 
-    public com.crowdmobile.kes.billing.Inventory queryInventory(boolean querySkuDetails, List<String> moreSkus) throws com.crowdmobile.kes.billing.IabException {
+    public Inventory queryInventory(boolean querySkuDetails, List<String> moreSkus) throws IabException {
         return queryInventory(querySkuDetails, moreSkus, null);
     }
 
@@ -534,21 +541,21 @@ public class IabHelper {
      *     Ignored if null or if querySkuDetails is false.
      * @throws IabException if a problem occurs while refreshing the inventory.
      */
-    public com.crowdmobile.kes.billing.Inventory queryInventory(boolean querySkuDetails, List<String> moreItemSkus,
-                                        List<String> moreSubsSkus) throws com.crowdmobile.kes.billing.IabException {
+    public Inventory queryInventory(boolean querySkuDetails, List<String> moreItemSkus,
+                                        List<String> moreSubsSkus) throws IabException {
         checkNotDisposed();
         checkSetupDone("queryInventory");
         try {
-            com.crowdmobile.kes.billing.Inventory inv = new com.crowdmobile.kes.billing.Inventory();
+            Inventory inv = new Inventory();
             int r = queryPurchases(inv, ITEM_TYPE_INAPP);
             if (r != BILLING_RESPONSE_RESULT_OK) {
-                throw new com.crowdmobile.kes.billing.IabException(r, "Error refreshing inventory (querying owned items).");
+                throw new IabException(r, "Error refreshing inventory (querying owned items).");
             }
 
             if (querySkuDetails) {
                 r = querySkuDetails(ITEM_TYPE_INAPP, inv, moreItemSkus);
                 if (r != BILLING_RESPONSE_RESULT_OK) {
-                    throw new com.crowdmobile.kes.billing.IabException(r, "Error refreshing inventory (querying prices of items).");
+                    throw new IabException(r, "Error refreshing inventory (querying prices of items).");
                 }
             }
 
@@ -556,13 +563,13 @@ public class IabHelper {
             if (mSubscriptionsSupported) {
                 r = queryPurchases(inv, ITEM_TYPE_SUBS);
                 if (r != BILLING_RESPONSE_RESULT_OK) {
-                    throw new com.crowdmobile.kes.billing.IabException(r, "Error refreshing inventory (querying owned subscriptions).");
+                    throw new IabException(r, "Error refreshing inventory (querying owned subscriptions).");
                 }
 
                 if (querySkuDetails) {
                     r = querySkuDetails(ITEM_TYPE_SUBS, inv, moreItemSkus);
                     if (r != BILLING_RESPONSE_RESULT_OK) {
-                        throw new com.crowdmobile.kes.billing.IabException(r, "Error refreshing inventory (querying prices of subscriptions).");
+                        throw new IabException(r, "Error refreshing inventory (querying prices of subscriptions).");
                     }
                 }
             }
@@ -570,10 +577,10 @@ public class IabHelper {
             return inv;
         }
         catch (RemoteException e) {
-            throw new com.crowdmobile.kes.billing.IabException(IABHELPER_REMOTE_EXCEPTION, "Remote exception while refreshing inventory.", e);
+            throw new IabException(IABHELPER_REMOTE_EXCEPTION, "Remote exception while refreshing inventory.", e);
         }
         catch (JSONException e) {
-            throw new com.crowdmobile.kes.billing.IabException(IABHELPER_BAD_RESPONSE, "Error parsing JSON response while refreshing inventory.", e);
+            throw new IabException(IABHELPER_BAD_RESPONSE, "Error parsing JSON response while refreshing inventory.", e);
         }
     }
 
@@ -587,7 +594,7 @@ public class IabHelper {
          * @param result The result of the operation.
          * @param inv The inventory.
          */
-        public void onQueryInventoryFinished(com.crowdmobile.kes.billing.IabResult result, com.crowdmobile.kes.billing.Inventory inv);
+        public void onQueryInventoryFinished(IabResult result, Inventory inv);
     }
 
 
@@ -610,19 +617,19 @@ public class IabHelper {
         flagStartAsync("refresh inventory");
         (new Thread(new Runnable() {
             public void run() {
-                com.crowdmobile.kes.billing.IabResult result = new com.crowdmobile.kes.billing.IabResult(BILLING_RESPONSE_RESULT_OK, "Inventory refresh successful.");
-                com.crowdmobile.kes.billing.Inventory inv = null;
+                IabResult result = new IabResult(BILLING_RESPONSE_RESULT_OK, "Inventory refresh successful.");
+                Inventory inv = null;
                 try {
                     inv = queryInventory(querySkuDetails, moreSkus);
                 }
-                catch (com.crowdmobile.kes.billing.IabException ex) {
+                catch (IabException ex) {
                     result = ex.getResult();
                 }
 
                 flagEndAsync();
 
-                final com.crowdmobile.kes.billing.IabResult result_f = result;
-                final com.crowdmobile.kes.billing.Inventory inv_f = inv;
+                final IabResult result_f = result;
+                final Inventory inv_f = inv;
                 if (!mDisposed && listener != null) {
                     handler.post(new Runnable() {
                         public void run() {
@@ -652,12 +659,12 @@ public class IabHelper {
      * @param itemInfo The PurchaseInfo that represents the item to consume.
      * @throws IabException if there is a problem during consumption.
      */
-    void consume(com.crowdmobile.kes.billing.Purchase itemInfo) throws com.crowdmobile.kes.billing.IabException {
+    void consume(Purchase itemInfo) throws IabException {
         checkNotDisposed();
         checkSetupDone("consume");
 
         if (!itemInfo.mItemType.equals(ITEM_TYPE_INAPP)) {
-            throw new com.crowdmobile.kes.billing.IabException(IABHELPER_INVALID_CONSUMPTION,
+            throw new IabException(IABHELPER_INVALID_CONSUMPTION,
                     "Items of type '" + itemInfo.mItemType + "' can't be consumed.");
         }
 
@@ -666,7 +673,7 @@ public class IabHelper {
             String sku = itemInfo.getSku();
             if (token == null || token.equals("")) {
                logError("Can't consume "+ sku + ". No token.");
-               throw new com.crowdmobile.kes.billing.IabException(IABHELPER_MISSING_TOKEN, "PurchaseInfo is missing token for sku: "
+               throw new IabException(IABHELPER_MISSING_TOKEN, "PurchaseInfo is missing token for sku: "
                    + sku + " " + itemInfo);
             }
 
@@ -677,11 +684,11 @@ public class IabHelper {
             }
             else {
                logDebug("Error consuming consuming sku " + sku + ". " + getResponseDesc(response));
-               throw new com.crowdmobile.kes.billing.IabException(response, "Error consuming sku " + sku);
+               throw new IabException(response, "Error consuming sku " + sku);
             }
         }
         catch (RemoteException e) {
-            throw new com.crowdmobile.kes.billing.IabException(IABHELPER_REMOTE_EXCEPTION, "Remote exception while consuming. PurchaseInfo: " + itemInfo, e);
+            throw new IabException(IABHELPER_REMOTE_EXCEPTION, "Remote exception while consuming. PurchaseInfo: " + itemInfo, e);
         }
     }
 
@@ -695,7 +702,7 @@ public class IabHelper {
          * @param purchase The purchase that was (or was to be) consumed.
          * @param result The result of the consumption operation.
          */
-        public void onConsumeFinished(Purchase purchase, com.crowdmobile.kes.billing.IabResult result);
+        public void onConsumeFinished(Purchase purchase, IabResult result);
     }
 
     /**
@@ -709,7 +716,7 @@ public class IabHelper {
          * @param results The results of each consumption operation, corresponding to each
          *     sku.
          */
-        public void onConsumeMultiFinished(List<Purchase> purchases, List<com.crowdmobile.kes.billing.IabResult> results);
+        public void onConsumeMultiFinished(List<Purchase> purchases, List<IabResult> results);
     }
 
     /**
@@ -829,7 +836,7 @@ public class IabHelper {
     }
 
 
-    int queryPurchases(com.crowdmobile.kes.billing.Inventory inv, String itemType) throws JSONException, RemoteException {
+    int queryPurchases(Inventory inv, String itemType) throws JSONException, RemoteException {
         // Query purchases
         logDebug("Querying owned items, item type: " + itemType);
         logDebug("Package name: " + mContext.getPackageName());
@@ -892,7 +899,7 @@ public class IabHelper {
         return verificationFailed ? IABHELPER_VERIFICATION_FAILED : BILLING_RESPONSE_RESULT_OK;
     }
 
-    int querySkuDetails(String itemType, com.crowdmobile.kes.billing.Inventory inv, List<String> moreSkus)
+    int querySkuDetails(String itemType, Inventory inv, List<String> moreSkus)
                                 throws RemoteException, JSONException {
         logDebug("Querying SKU details.");
         ArrayList<String> skuList = new ArrayList<String>();
@@ -931,7 +938,7 @@ public class IabHelper {
                 RESPONSE_GET_SKU_DETAILS_LIST);
 
         for (String thisResponse : responseList) {
-            com.crowdmobile.kes.billing.SkuDetails d = new com.crowdmobile.kes.billing.SkuDetails(itemType, thisResponse);
+            SkuDetails d = new SkuDetails(itemType, thisResponse);
             logDebug("Got sku details: " + d);
             inv.addSkuDetails(d);
         }
@@ -939,20 +946,20 @@ public class IabHelper {
     }
 
 
-    void consumeAsyncInternal(final List<com.crowdmobile.kes.billing.Purchase> purchases,
+    void consumeAsyncInternal(final List<Purchase> purchases,
                               final OnConsumeFinishedListener singleListener,
                               final OnConsumeMultiFinishedListener multiListener) {
         final Handler handler = new Handler();
         flagStartAsync("consume");
         (new Thread(new Runnable() {
             public void run() {
-                final List<com.crowdmobile.kes.billing.IabResult> results = new ArrayList<com.crowdmobile.kes.billing.IabResult>();
-                for (com.crowdmobile.kes.billing.Purchase purchase : purchases) {
+                final List<IabResult> results = new ArrayList<IabResult>();
+                for (Purchase purchase : purchases) {
                     try {
                         consume(purchase);
-                        results.add(new com.crowdmobile.kes.billing.IabResult(BILLING_RESPONSE_RESULT_OK, "Successful consume of sku " + purchase.getSku()));
+                        results.add(new IabResult(BILLING_RESPONSE_RESULT_OK, "Successful consume of sku " + purchase.getSku()));
                     }
-                    catch (com.crowdmobile.kes.billing.IabException ex) {
+                    catch (IabException ex) {
                         results.add(ex.getResult());
                     }
                 }

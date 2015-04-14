@@ -22,27 +22,23 @@ public class BillingManager {
 
     private boolean isPrepared = false;
     private Activity activity;
-    private com.crowdmobile.kes.billing.IabHelper iabHelper;
+    private IabHelper iabHelper;
     
-    private OnBillingPreparedListener preparedListener;
+    private BillingListener billingListener;
     
-    public interface OnRetoredPurchasesListenter{
+    public interface OnRestoredPurchasesListenter{
+    }
+    
+    public interface BillingListener {
+        void onPrepared(IabResult result);
         void onRestored(boolean success, List<String> restoredItems);
+        void onInventoryReceived(SkuDetails details, boolean isPurchased);
+        void onCreditsReceived(ArrayList<CreditItem> items);
+        void onIabPurchaseFinished(IabResult result, Purchase info);
     }
     
-    public interface OnBillingPreparedListener{
-        void onPrepared(com.crowdmobile.kes.billing.IabResult result);
-    }
-    
-    public interface OnDetailsReceivedCallback{
-        void onReceived(com.crowdmobile.kes.billing.SkuDetails details, boolean isPurchased);
-    }
-    
-    public interface OnCreditsReceivedCallback{
-        void onReceived(ArrayList<CreditsItem> items);
-    }
 
-    public BillingManager(Activity activity, OnBillingPreparedListener listener) {
+    public BillingManager(Activity activity, BillingListener listener) {
         if(activity == null){
             throw new IllegalArgumentException("activity must be not NULL");
         }
@@ -50,20 +46,17 @@ public class BillingManager {
             throw new IllegalArgumentException("preparedListener must be not NULL");
         }
         this.activity = activity;
-        this.preparedListener = listener;
+        this.billingListener = listener;
 
         iabHelper = new com.crowdmobile.kes.billing.IabHelper(activity, activity.getString(R.string.signature_public));
+        iabHelper.enableDebugLogging(true);
         iabHelper.startSetup(iabSetupFinishedListener);
     }
 
     IabHelper.OnIabSetupFinishedListener iabSetupFinishedListener = new IabHelper.OnIabSetupFinishedListener() {
         public void onIabSetupFinished(IabResult result) {
-            if (!result.isSuccess()) {
-                preparedListener.onPrepared(result);
-                return;
-            }
-            isPrepared = true;
-            preparedListener.onPrepared(result);
+            isPrepared = result.isSuccess();
+            billingListener.onPrepared(result);
         }
     };
 
@@ -71,55 +64,44 @@ public class BillingManager {
         if(iabHelper != null){
             iabHelper.dispose();
         }
+        iabHelper = null;
     }
 
-    public boolean isPrepared() {
-        return isPrepared;
-    }
-    
-    public void requestCreditsList(String[] list, final String creditsPrefix, final OnCreditsReceivedCallback callback){
+    public void requestCreditsList(String[] list){
         if(!isPrepared){
             Log.e(TAG, "requestCreditsList FAILED: manager is not prepared");
             return;
         }
-        iabHelper.queryInventoryAsync(true, 
-                Arrays.asList(list), 
+        iabHelper.queryInventoryAsync(true,
+                Arrays.asList(list),
+
                 new QueryInventoryFinishedListener() {
                 @Override
                 public void onQueryInventoryFinished(IabResult result, Inventory inventory) {
                     if (result.isFailure()) {
                         Log.e(TAG, "onQueryInventoryFinished " + result.getMessage());
-                        if(callback != null){
-                            callback.onReceived(null);
-                        }
+                        billingListener.onCreditsReceived(null);
                         return;
                       }
-                    ArrayList<CreditsItem> items = new ArrayList<CreditsItem>();
+                    ArrayList<CreditItem> items = new ArrayList<CreditItem>();
                     if(inventory == null || inventory.mSkuMap == null){
-                        if(callback != null){
-                            callback.onReceived(items);
-                        }
+                        billingListener.onCreditsReceived(items);
                         return;
                     }
                     Log.d(TAG, "--- requestCreditsList: " + inventory.mSkuMap.keySet().size());
                     for(String productId : inventory.mSkuMap.keySet()){
                         Log.d(TAG, "productId: " + productId);
-                        if(CreditsItem.validateProductId(productId, creditsPrefix)){
-                            SkuDetails skuDetails = inventory.mSkuMap.get(productId);
-                            if (skuDetails.mType != null) {
-                                items.add(new CreditsItem(skuDetails));
-                            }
-                        }
+                        SkuDetails skuDetails = inventory.mSkuMap.get(productId);
+                        if (skuDetails.mType != null)
+                            items.add(new CreditItem(skuDetails));
                     }
                     Log.d(TAG, "---");
-                    if(callback != null){
-                        callback.onReceived(items);
-                    }
+                    billingListener.onCreditsReceived(items);
                 }
             });
     }
 
-    public void requestItemDetails(final String productId, final OnDetailsReceivedCallback l){
+    public void requestItemDetails(final String productId){
         iabHelper.queryInventoryAsync(true, new ArrayList<String>(){
             {
                 add(productId);
@@ -127,14 +109,14 @@ public class BillingManager {
         }, new QueryInventoryFinishedListener() {
             @Override
             public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-                if(l != null && result.isSuccess()){
+                if(result.isSuccess()){
                     if(inv.hasDetails(productId)){
-                        l.onReceived(inv.getSkuDetails(productId), inv.hasPurchase(productId));
+                        billingListener.onInventoryReceived(inv.getSkuDetails(productId), inv.hasPurchase(productId));
                     } else {
-                        l.onReceived(null, false);
+                        billingListener.onInventoryReceived(null, false);
                     }
                 } else {
-                    l.onReceived(null, false);
+                    billingListener.onInventoryReceived(null, false);
                     Log.e("ERROR in Billing manage", "ERROR requestItemDetails: failed result");
                 }
             }
@@ -162,15 +144,31 @@ public class BillingManager {
             }
         });
     }
-    
-    public void buyCredits(CreditsItem item, final OnIabPurchaseFinishedListener listener){
-        iabHelper.launchPurchaseFlow(activity,item.productId, RC_REQUEST, new OnIabPurchaseFinishedListener() {
+
+    public void buyCredits(String productId){
+        iabHelper.launchPurchaseFlow(activity,productId, RC_REQUEST, new OnIabPurchaseFinishedListener() {
             @Override
-            public void onIabPurchaseFinished(IabResult result, com.crowdmobile.kes.billing.Purchase info) {
+            public void onIabPurchaseFinished(IabResult result, Purchase info) {
                 if(result.isSuccess()){
                     try {
                         iabHelper.consume(info);
-                    } catch (com.crowdmobile.kes.billing.IabException e) {
+                    } catch (IabException e) {
+                        e.printStackTrace();
+                    }
+                }
+                billingListener.onIabPurchaseFinished(result, info);
+            }
+        });
+    }
+
+    public void buyCredits(CreditItem item, final OnIabPurchaseFinishedListener listener){
+        iabHelper.launchPurchaseFlow(activity,item.productId, RC_REQUEST, new OnIabPurchaseFinishedListener() {
+            @Override
+            public void onIabPurchaseFinished(IabResult result, Purchase info) {
+                if(result.isSuccess()){
+                    try {
+                        iabHelper.consume(info);
+                    } catch (IabException e) {
                         e.printStackTrace();
                     }
                 }
@@ -180,7 +178,7 @@ public class BillingManager {
     }
     
 
-    public void restorePurchases(final OnRetoredPurchasesListenter l){
+    public void restorePurchases(final OnRestoredPurchasesListenter l){
         iabHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
             @Override
             public void onQueryInventoryFinished(IabResult result, Inventory inv) {

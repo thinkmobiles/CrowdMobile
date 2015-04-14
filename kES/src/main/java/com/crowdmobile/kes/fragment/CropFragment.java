@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.Display;
@@ -13,10 +14,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.crowdmobile.kes.R;
+import com.crowdmobile.kes.util.Graphic;
 import com.crowdmobile.kes.widget.CropView;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 /**
  * Created by gadza on 2015.03.25..
@@ -37,7 +36,9 @@ public class CropFragment extends Fragment {
     String filePath;
     BtnClick btnClick;
     View progress;
+    Point displaySize;
     boolean animated = false;
+    LoadImage loadImage;
 
     @Override
     public void onAttach(Activity activity) {
@@ -67,11 +68,34 @@ public class CropFragment extends Fragment {
         Bundle extras = getArguments();
         filePath = extras.getString(TAG_FILEPATH);
 
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        displaySize = new Point();
+        display.getSize(displaySize);
+        loadImage = new LoadImage();
+        loadImage.execute(filePath);
+        /*
         Picasso.with(getActivity()).invalidate("file://" + filePath);
-        Picasso.with(getActivity()).load("file://" + filePath).transform(transformation).into(cropView, picassoCallback);
+        Picasso.with(getActivity()).load("file://" + filePath).fit().transform(transformation).into(cropView, picassoCallback);
+        */
         return holder;
     }
 
+    class LoadImage extends AsyncTask<String, Void, Bitmap> {
+        @Override
+        protected Bitmap doInBackground(String[] params) {
+            return Graphic.decodeBitmap(params[0],displaySize.x,displaySize.y);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            holder.removeView(progress);
+            progress = null;
+            cropView.setImageBitmap(result);
+        }
+    };
+
+
+    /*
     Transformation transformation = new Transformation() {
 
         @Override public Bitmap transform(Bitmap source) {
@@ -96,7 +120,9 @@ public class CropFragment extends Fragment {
             return "transformation" + " desiredWidth";
         }
     };
+    */
 
+    /*
     Callback picassoCallback = new Callback() {
         @Override
         public void onSuccess() {
@@ -110,6 +136,7 @@ public class CropFragment extends Fragment {
             progress = null;
         }
     };
+    */
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -158,6 +185,10 @@ public class CropFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (loadImage != null) {
+            loadImage.cancel(true);
+            loadImage = null;
+        }
         holder = null;
         progress = null;
         cropView = null;

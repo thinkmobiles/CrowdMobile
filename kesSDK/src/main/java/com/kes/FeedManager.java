@@ -95,8 +95,10 @@ public class FeedManager {
         }
 
         public void clear() {
-            if (feedWrapper.feedType == FeedType.My)
+            if (feedWrapper.feedType == FeedType.My) {
+                manager.pending.clear();
                 manager.myCache.clear();
+            }
             if (feedWrapper.feedType == FeedType.Public)
                 manager.publicCache.clear();
         }

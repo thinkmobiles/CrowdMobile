@@ -3,8 +3,6 @@
     android:elevation="@dimen/navbar_elevation"
     android:orientation="vertical"
     android:background="@color/navbarbackground"
-    android:paddingTop="@dimen/navbar_padding"
-    android:paddingBottom="@dimen/navbar_padding"
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
     <LinearLayout
@@ -15,6 +13,8 @@
     <ImageView
         android:id="@+id/btFeed"
         android:src="@drawable/ic_tabbar_newsfeed"
+        android:paddingTop="@dimen/navbar_padding"
+        android:paddingBottom="@dimen/navbar_padding"
         android:layout_width="0px"
         android:layout_weight="1"
         android:layout_height="match_parent" />
@@ -25,6 +25,8 @@
     <ImageView
         android:id="@+id/btMyFeed"
         android:src="@drawable/ic_tabbar_myfeed"
+        android:paddingTop="@dimen/navbar_padding"
+        android:paddingBottom="@dimen/navbar_padding"
         android:layout_width="0px"
         android:layout_weight="1"
         android:layout_height="match_parent" />
@@ -35,6 +37,8 @@
     <ImageView
         android:id="@+id/btCompose"
         android:src="@drawable/ic_tabbar_post"
+        android:paddingTop="@dimen/navbar_padding"
+        android:paddingBottom="@dimen/navbar_padding"
         android:layout_width="0px"
         android:layout_weight="1"
         android:layout_height="match_parent" />
@@ -45,6 +49,8 @@
     <ImageView
         android:id="@+id/btCheckout"
         android:src="@drawable/ic_tabbar_shop"
+        android:paddingTop="@dimen/navbar_padding"
+        android:paddingBottom="@dimen/navbar_padding"
         android:layout_width="0px"
         android:layout_weight="1"
         android:layout_height="match_parent" />

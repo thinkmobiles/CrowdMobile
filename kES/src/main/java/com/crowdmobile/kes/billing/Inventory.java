@@ -25,18 +25,18 @@ import java.util.Map;
  * An Inventory is returned by such methods as {@link IabHelper#queryInventory}.
  */
 public class Inventory {
-    Map<String, com.crowdmobile.kes.billing.SkuDetails> mSkuMap = new HashMap<String, com.crowdmobile.kes.billing.SkuDetails>();
-    Map<String, com.crowdmobile.kes.billing.Purchase> mPurchaseMap = new HashMap<String, com.crowdmobile.kes.billing.Purchase>();
+    Map<String, SkuDetails> mSkuMap = new HashMap<String, SkuDetails>();
+    Map<String, Purchase> mPurchaseMap = new HashMap<String, Purchase>();
 
     Inventory() { }
 
     /** Returns the listing details for an in-app product. */
-    public com.crowdmobile.kes.billing.SkuDetails getSkuDetails(String sku) {
+    public SkuDetails getSkuDetails(String sku) {
         return mSkuMap.get(sku);
     }
 
     /** Returns purchase information for a given product, or null if there is no purchase. */
-    public com.crowdmobile.kes.billing.Purchase getPurchase(String sku) {
+    public Purchase getPurchase(String sku) {
         return mPurchaseMap.get(sku);
     }
 
@@ -70,22 +70,22 @@ public class Inventory {
     /** Returns a list of all owned product IDs of a given type */
     List<String> getAllOwnedSkus(String itemType) {
         List<String> result = new ArrayList<String>();
-        for (com.crowdmobile.kes.billing.Purchase p : mPurchaseMap.values()) {
+        for (Purchase p : mPurchaseMap.values()) {
             if (p.getItemType().equals(itemType)) result.add(p.getSku());
         }
         return result;
     }
 
     /** Returns a list of all purchases. */
-    List<com.crowdmobile.kes.billing.Purchase> getAllPurchases() {
-        return new ArrayList<com.crowdmobile.kes.billing.Purchase>(mPurchaseMap.values());
+    List<Purchase> getAllPurchases() {
+        return new ArrayList<Purchase>(mPurchaseMap.values());
     }
 
-    void addSkuDetails(com.crowdmobile.kes.billing.SkuDetails d) {
+    void addSkuDetails(SkuDetails d) {
         mSkuMap.put(d.getSku(), d);
     }
 
-    void addPurchase(com.crowdmobile.kes.billing.Purchase p) {
+    void addPurchase(Purchase p) {
         mPurchaseMap.put(p.getSku(), p);
     }
 }

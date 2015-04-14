@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.crowdmobile.kes.R;
-import com.kes.model.CreditOption;
+import com.crowdmobile.kes.billing.CreditItem;
 
 /**
  * Created by gadza on 2015.03.06..
@@ -16,7 +16,6 @@ public class PriceItem {
     static class ViewHolder {
         TextView tvQuantity;
         TextView tvPrice;
-        TextView tvDiscount;
     };
 
 
@@ -27,20 +26,13 @@ public class PriceItem {
         result.setTag(holder);
         holder.tvQuantity = (TextView)result.findViewById(R.id.tvQuantity);
         holder.tvPrice = (TextView)result.findViewById(R.id.tvPrice);
-        holder.tvDiscount = (TextView)result.findViewById(R.id.tvDiscount);
         return result;
     }
 
-    public static void updateView(View convertView, CreditOption item, String discountFormat)
+    public static void updateView(View convertView, CreditItem item,String priceFormat)
     {
         ViewHolder holder = (ViewHolder)convertView.getTag();
         holder.tvQuantity.setText(Integer.toString(item.quantity));
-        holder.tvPrice.setText(item.currency + Float.toString(item.price));
-        if (item.discount == 0)
-            holder.tvDiscount.setVisibility(View.GONE);
-        else {
-            holder.tvDiscount.setVisibility(View.VISIBLE);
-            holder.tvDiscount.setText(String.format(discountFormat, item.discount));
-        }
+        holder.tvPrice.setText(String.format(priceFormat, item.currency, item.price / item.quantity));
     }
 }

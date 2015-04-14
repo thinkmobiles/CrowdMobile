@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="signature_public">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjHI+QVkSBJwiO6Upz2wkM1kpz2TVlbd5yVot1y/Ktx4cB54zV3m2hD4ZLlYroTphkR9Bcd0W1icPebuDiiacGJYy6FjuO+hd/Omsw9/3Uve47c7013zmCilYezZuPOvax3GpGa/6I4TtwnB8VUBddb1bC0CexLQPHG5T+R9oCLoob2+pgFkpZiv1YpNUW1HsaphTxq7/wfKqdYtJ3O47ZFwGD/Q2HqW02eUsdq4MBCQvGoomycc9llLG4JPd15jzUS7bZysdF15ZFEkd6AX88gqH3zZrIJL/+smlDcDby+lxDAbNvtA3hwE4/LpX7/lxNdxSwLOG3qKD3rz+uTjiMwIDAQAB</string>
+    <string name="signature_public">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsHJ3bgCj053qh1OUD7m9Aw9X6qXUJkf12FVIt0Umzlmb45wgfN0BrTpOlSuiuu/6O1fuN4cZsee9tdq1JSw7muk10Vii6E7EaEDofP9TJoQaV1R8GwpE2xUqoyVmC0/lZ7A2RAu9dKIadwPfCDgTMxz+Swk9OpEVAic6O7vhmJmgQ7pk3OuRhMzFwgQBto8zNwdMexGWWsmMvMg08PZOH+Y+JHjZqUP/Ke5KU0nyt1JowHedDWctYC0mEtYeDU9jUzCT5u2aj8Wz0TOc9hj16T0htSlS2lURw408lm6q9XWQ/FjlJ5xveKvRlhD+ADytnedgV/gkTjEsXFrWD6izEwIDAQAB</string>
+
     <plurals name="credits_purchase_messgae_plurals">
         <item quantity="one">DO YOU WANT TO BUY %1$d CREDIT FOR %2$s?</item>
         <item quantity="other">DO YOU WANT TO BUY %1$d CREDITS FOR %2$s?</item>
@@ -78,9 +79,12 @@
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
     <!-- Credit -->
+    <string name="credit_price_format" formatted="false">%s %.2f</string>
+    <string name="connecting_playstore">Connecting</string>
     <string name="fragment_credit_title">Get bananas</string>
-    <string name="credit_info">1 banana = 1 question</string>
-    <string name="discountformat">(%d%% OFF)</string>
+    <string name="credit_info">Bongo\'s hungry!</string>
+    <string name="credit_message">Hurry up and feed him bananas so he can answer more questions!</string>
+    <string name="credit_itemname">\u0020/ Banana</string>
     <string name="btn_buy">BUY</string>
 
     <!-- Compose -->
@@ -100,5 +104,12 @@
     <string name="key_compose_text">compose_text</string>
     <string name="key_camera_picture">camera_picture</string>
     <string name="key_composed_picture">composed_picture</string>
+
+    <!-- In app purchase -->
+    <string name="credits_prefix">qredits_</string>
+    <string-array name="credits_list">
+        <item>xbanana1</item>
+        <item>xbanana5</item>
+    </string-array>
 
 </resources>

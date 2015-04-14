@@ -15,8 +15,6 @@
 
 package com.crowdmobile.kes.billing;
 
-import com.crowdmobile.kes.billing.IabHelper;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,6 +29,8 @@ public class SkuDetails {
     String mTitle;
     String mDescription;
     String mJson;
+    long mPriceAmountMicros;
+    String mCurrencyCode;
 
     public SkuDetails(String jsonSkuDetails) throws JSONException {
         this(IabHelper.ITEM_TYPE_INAPP, jsonSkuDetails);
@@ -40,18 +40,22 @@ public class SkuDetails {
         mItemType = itemType;
         mJson = jsonSkuDetails;
         JSONObject o = new JSONObject(mJson);
-        mSku = o.optString("productId");
-        mType = o.optString("type");
-        mPrice = o.optString("price");
         mTitle = o.optString("title");
+        mPrice = o.optString("price");
+        mType = o.optString("type");
         mDescription = o.optString("description");
+        mPriceAmountMicros = o.optLong("price_amount_micros");
+        mCurrencyCode = o.optString("price_currency_code");
+        mSku = o.optString("productId");
     }
 
     public String getSku() { return mSku; }
     public String getType() { return mType; }
-    public String getPrice() { return mPrice; }
+    public String getPriceStr() { return mPrice; }
     public String getTitle() { return mTitle; }
     public String getDescription() { return mDescription; }
+    public long getPriceMicros() { return mPriceAmountMicros; }
+    public String getCurrency() {return mCurrencyCode;}
 
     @Override
     public String toString() {

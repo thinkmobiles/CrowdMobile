@@ -53,8 +53,9 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
             photo_data = Utils.fileToBase64(filePath);
 //        Thread.sleep(3000);
 //        throw new IOException("Test IO exception");
-        wrapper.response = com.kes.net.NetworkAPI.postQuestion(token,message,photo_data,tags,is_private);
+        //wrapper.response = com.kes.net.NetworkAPI.postQuestion(token,message,photo_data,tags,is_private);
         wrapper.internalid = internalID;
+        throw new DataFetcher.KESNetworkException("Cool");
         /*
         wrapper.response = new PhotoComment();
         wrapper.response.id = responseid++;
