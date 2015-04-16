@@ -146,7 +146,7 @@ public class GalleryFragment extends Fragment {
             if (position != 0)
                 Picasso.with(context).load("file://" + data.thumbnail).into(holder.imgPhoto);
             else
-                holder.imgPhoto.setImageResource(R.drawable.ic_tabbar_post);
+                holder.imgPhoto.setImageResource(R.drawable.ic_camera);
             return convertView;
         }
 

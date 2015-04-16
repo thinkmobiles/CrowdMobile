@@ -112,19 +112,22 @@ public class ComposeFragment extends Fragment {
             else if (v == imgCamera)
                 takePicture();
             else if (v == previewClose)
-            {
-                String filePath = PreferenceUtils.getComposedPicture(getActivity());
-                if (filePath != null) {
-                    PreferenceUtils.setComposedPicture(getActivity(), null);
-                    new File(filePath).delete();
-                    holderImage.setVisibility(View.GONE);
-                }
-                hasImage = false;
-                checkPostEnabled();
-            }
+                previewClose(true);
         }
     };
 
+    private void previewClose(boolean deleteFile)
+    {
+        String filePath = PreferenceUtils.getComposedPicture(getActivity());
+        if (filePath != null) {
+            PreferenceUtils.setComposedPicture(getActivity(), null);
+            if (deleteFile)
+                new File(filePath).delete();
+            holderImage.setVisibility(View.GONE);
+        }
+        hasImage = false;
+        checkPostEnabled();
+    }
 
     private void takePicture()
     {
@@ -270,8 +273,7 @@ public class ComposeFragment extends Fragment {
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if (resultCode != Activity.RESULT_OK)
             {
-                Toast.makeText(getActivity(),"Canceled",Toast.LENGTH_SHORT).show();
-                imgPreview.setImageBitmap(null);
+                previewClose(true);
                 return;
             }
             /*
@@ -294,6 +296,7 @@ public class ComposeFragment extends Fragment {
         imm.hideSoftInputFromWindow(edMessage.getWindowToken(), 0);
         Session.getInstance(getActivity()).getFeedManager().postQuestion(question, picturePath);
         edMessage.setText("");
+        previewClose(false);
         NavigationBar nb = ((NavigationBar.NavigationCallback)getActivity()).getNavigationBar();
         nb.invalidateMyFeed();
         nb.navigateTo(NavigationBar.Attached.MyFeed);

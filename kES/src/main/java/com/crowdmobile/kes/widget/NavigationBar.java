@@ -117,14 +117,15 @@ public class NavigationBar {
         if (src == Attached.Feed)
             return new NewsFeedFragment();
 
+        if (src == Attached.Checkout)
+            return new CheckoutFragment();
+
         if (!Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
             return new NotRegisteredFragment();
 
         if (src == Attached.MyFeed)
             return new MyFeedFragment();
 
-        if (src == Attached.Checkout)
-            return new CheckoutFragment();
 
         if (src == Attached.Compose)
             return new ComposeFragment();

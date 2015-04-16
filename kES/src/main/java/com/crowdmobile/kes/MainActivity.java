@@ -2,17 +2,18 @@ package com.crowdmobile.kes;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
+import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,12 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.crowdmobile.kes.billing.BillingManager;
-import com.crowdmobile.kes.billing.CreditItem;
-import com.crowdmobile.kes.billing.IabResult;
-import com.crowdmobile.kes.billing.Purchase;
-import com.crowdmobile.kes.billing.SkuDetails;
-import com.crowdmobile.kes.fragment.CheckoutFragment;
+import com.crowdmobile.kes.billing.BillingService;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
@@ -42,9 +38,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends ActionBarActivity implements NavigationBar.NavigationCallback {
+public class MainActivity extends ActionBarActivity implements NavigationBar.NavigationCallback,BillingService.BillingServiceListener {
 
     private Handler mHandler;
     private Toolbar toolbar;
@@ -57,9 +52,14 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     ListView lvLogcat;
     boolean networkVisible = false;
     ViewPager viewPager;
-    BillingManager billingManager;
-    boolean priceListReceived = false;
-    ArrayList<CreditItem> priceList;
+    private BillingService billingService;
+    private boolean isBond = false;
+
+    @Override
+    public BillingService getBillingService() {
+        return billingService;
+    }
+
 
 	public static void open(Context context)
 	{
@@ -129,8 +129,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         networkAdapter = new ArrayAdapter<String>(this,
                 R.layout.item_logcat, android.R.id.text1, networkComm);
         lvLogcat.setAdapter(networkAdapter);
-        priceList = null;
-        billingManager = new BillingManager(this,billingListener);
 
         /*
         Window window = getWindow();
@@ -140,57 +138,10 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		*/
 	}
 
-    BillingManager.BillingListener billingListener = new BillingManager.BillingListener() {
-        @Override
-        public void onPrepared(IabResult result) {
-            if (result.isSuccess())
-                billingManager.requestCreditsList(getResources().getStringArray(R.array.credits_list));
-            else {
-                priceListReceived = true;
-                LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(new Intent(CheckoutFragment.ACTION_CREDIT));
-            }
-        }
-
-        @Override
-        public void onRestored(boolean success, List<String> restoredItems) {
-
-        }
-
-        @Override
-        public void onInventoryReceived(SkuDetails details, boolean isPurchased) {
-
-        }
-
-        @Override
-        public void onCreditsReceived(ArrayList<CreditItem> items) {
-            priceListReceived = true;
-            priceList = items;
-            LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(new Intent(CheckoutFragment.ACTION_CREDIT));
-//            Log.d("TAG","X" + items.size());
-        }
-
-        @Override
-        public void onIabPurchaseFinished(IabResult result, Purchase info) {
-            Log.d("TAG","X");
-        }
-    };
-
-    public boolean updatePriceList(ArrayList<CreditItem> target)
-    {
-        if (!priceListReceived)
-            return false;
-        if (priceList != null)
-            for (int i = 0; i < priceList.size(); i++)
-                target.add(priceList.get(i));
-        return true;
-    }
-
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (billingManager != null)
-            billingManager.release();
         UpdateManager.unregister();
         mSession.getAccountManager().unRegisterListener(accountListener);
     }
@@ -204,6 +155,37 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         mCredit.setTitle(Integer.toString(mSession.getAccountManager().getUser().balance));
 		return true;
 	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BillingService.class);
+        isBond = bindService(intent, billingConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    public ServiceConnection billingConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            billingService = ((BillingService.BillingServiceBinder)service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBond = false;
+            billingService = null;
+        }
+    };
+
+    @Override
+    protected void onStop() {
+        if (isBond)
+        {
+            isBond = false;
+            billingService = null;
+            unbindService(billingConnection);
+        }
+        super.onStop();
+    }
 
     @Override
     protected void onResume() {
@@ -322,8 +304,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (billingManager != null &&
-            billingManager.handleActivityResult(requestCode, resultCode, data))
+        if (billingService != null &&
+            billingService.handleActivityResult(requestCode, resultCode, data))
             return;
         super.onActivityResult(requestCode,resultCode,data);
     }

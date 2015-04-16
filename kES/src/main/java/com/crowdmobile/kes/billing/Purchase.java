@@ -15,13 +15,16 @@
 
 package com.crowdmobile.kes.billing;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Represents an in-app billing purchase.
  */
-public class Purchase {
+public class Purchase implements Parcelable {
     String mItemType;  // ITEM_TYPE_INAPP or ITEM_TYPE_SUBS
     String mOrderId;
     String mPackageName;
@@ -32,6 +35,56 @@ public class Purchase {
     String mToken;
     String mOriginalJson;
     String mSignature;
+
+    public static final Parcelable.Creator<Purchase> CREATOR =
+            new Parcelable.Creator<Purchase>(){
+
+                @Override
+                public Purchase createFromParcel(Parcel source) {
+                    return new Purchase(source);
+                }
+
+                @Override
+                public Purchase[] newArray(int size) {
+                    return new Purchase[size];
+                }
+            };
+
+    public Purchase(Parcel source)
+    {
+        mItemType = source.readString();
+        mOrderId = source.readString();
+        mPackageName = source.readString();
+        mSku = source.readString();
+        mPurchaseTime = source.readLong();
+        mPurchaseState = source.readInt();
+        mDeveloperPayload = source.readString();
+        mToken = source.readString();
+        mOriginalJson = source.readString();
+        mSignature = source.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mItemType);
+        dest.writeString(mOrderId);
+        dest.writeString(mPackageName);
+        dest.writeString(mSku);
+        dest.writeLong(mPurchaseTime);
+        dest.writeInt(mPurchaseState);
+        dest.writeString(mDeveloperPayload);
+        dest.writeString(mToken);
+        dest.writeString(mOriginalJson);
+        dest.writeString(mSignature);
+    }
+
+    @Override
+    public String toString() { return "PurchaseInfo(type:" + mItemType + "):" + mOriginalJson; }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     public Purchase(String itemType, String jsonPurchaseInfo, String signature) throws JSONException {
         mItemType = itemType;
@@ -58,6 +111,4 @@ public class Purchase {
     public String getOriginalJson() { return mOriginalJson; }
     public String getSignature() { return mSignature; }
 
-    @Override
-    public String toString() { return "PurchaseInfo(type:" + mItemType + "):" + mOriginalJson; }
 }

@@ -11,11 +11,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.crowdmobile.kes.MainActivity;
 import com.crowdmobile.kes.R;
+import com.crowdmobile.kes.billing.BillingService;
 import com.crowdmobile.kes.billing.CreditItem;
 import com.crowdmobile.kes.list.PriceItem;
 import com.kes.Session;
@@ -28,17 +29,23 @@ import java.util.Collections;
  */
 public class CheckoutFragment extends Fragment {
 
-    public static String ACTION_CREDIT = "action_credit";
-
     ListView lvPriceList;
     ArrayList<CreditItem> list;
     private PriceAdapter priceAdapter;
     View holderProgress;
     String currencyFormat;
+    BillingService.BillingServiceListener billingServiceListener;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        billingServiceListener = (BillingService.BillingServiceListener)activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        billingServiceListener = null;
     }
 
     @Override
@@ -53,7 +60,12 @@ public class CheckoutFragment extends Fragment {
     private void updateCredits()
     {
         list.clear();
-        ((MainActivity)getActivity()).updatePriceList(list);
+        BillingService billingService = billingServiceListener.getBillingService();
+        if (billingService == null)
+            return;
+        if (!billingService.isCreditsReceived())
+            return;
+        billingService.getCreditItems(list);
         Collections.sort(list);
         priceAdapter.notifyDataSetChanged();
         holderProgress.setVisibility(View.GONE);
@@ -71,12 +83,20 @@ public class CheckoutFragment extends Fragment {
         View result = inflater.inflate(R.layout.fragment_credit,container,false);
         lvPriceList = (ListView)result.findViewById(R.id.lvPricelist);
         lvPriceList.setAdapter(priceAdapter);
+        lvPriceList.setOnItemClickListener(onItemClickListener);
         holderProgress = result.findViewById(R.id.holderProgress);
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, new IntentFilter(ACTION_CREDIT));
-        if (((MainActivity)getActivity()).updatePriceList(list))
-            updateCredits();
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, new IntentFilter(ACTION_CREDIT_UPDATE));
+        updateCredits();
         return result;
     }
+
+    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            CreditItem ci = list.get(position);
+            billingServiceListener.getBillingService().buyCredits(getActivity(),ci.productId);
+        }
+    };
 
     @Override
     public void onDestroyView() {

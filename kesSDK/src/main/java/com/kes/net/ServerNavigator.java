@@ -3,7 +3,7 @@ package com.kes.net;
 
 public class ServerNavigator {
 
-	private static final String BASE_URL = "http://kes-middletier-staging.elasticbeanstalk.com/api/wwjd/v1/";
+	private static final String BASE_URL = "http://kes-middletier-staging.elasticbeanstalk.com/api/bongothinks/v1/";
 
 	public static String getMe(String token) {
 		return BASE_URL + "account/" + token + "/";

@@ -54,11 +54,14 @@
                 android:layout_width="0px"
                 android:layout_height="wrap_content" />
         </LinearLayout>
+        <View
+            android:background="@color/credit_background"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/credit_item_space"/>
         <ListView
-            android:layout_marginTop="@dimen/credit_item_space"
             android:id="@+id/lvPricelist"
-            android:divider="@null"
-            android:dividerHeight="0px"
+            android:divider="@color/credit_background"
+            android:dividerHeight="@dimen/credit_item_space"
             android:layout_width="match_parent"
             android:layout_height="0px"
             android:layout_weight="1"/>

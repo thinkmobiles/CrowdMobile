@@ -4,10 +4,6 @@
     android:background="@color/appbackground"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <View
-        android:background="@color/credit_background"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/credit_item_space"/>
     <LinearLayout
         android:padding="@dimen/credit_item_padding"
         android:orientation="horizontal"

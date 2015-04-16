@@ -130,12 +130,15 @@ public class CropView extends ImageView {
             return;
         if (bmBlur == null && getDrawable() != null)
         {
-            int maxSize = w * h / 10;
+            int maxSize = (int)Math.sqrt(w * h / 4);
             Bitmap src = ((BitmapDrawable)getDrawable()).getBitmap();
             Bitmap tmp = null;
-            int srcSize = src.getWidth() * src.getHeight();
-            if (srcSize > maxSize)
-                tmp = Bitmap.createScaledBitmap(src, src.getWidth() * maxSize / srcSize, src.getHeight() * maxSize / srcSize,true);
+            int srcSize = (int)Math.sqrt(src.getWidth() * src.getHeight());
+            if (srcSize > maxSize) {
+                int nw = src.getWidth() * maxSize / srcSize;
+                int nh = src.getHeight() * maxSize / srcSize;
+                tmp = Bitmap.createScaledBitmap(src, nw, nh, true);
+            }
             else
                 tmp = src;
             bmBlur = Graphic.fastblur(tmp, blursize);
@@ -213,7 +216,7 @@ public class CropView extends ImageView {
     private void initCropView() {
         rectWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getContext().getResources().getDisplayMetrics());
         touchSize = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10.0f, getContext().getResources().getDisplayMetrics());
-        blursize = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, getContext().getResources().getDisplayMetrics());
+        blursize = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2.0f, getContext().getResources().getDisplayMetrics());
         paint.setColor(getResources().getColor(R.color.appTitleColor));
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
