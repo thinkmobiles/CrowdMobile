@@ -102,6 +102,16 @@ public class AccountManager {
         }
     }
 
+    public void updateBalance(int newBalance)
+    {
+        getCachedUser(mSession.getContext());
+        if (user.auth_token == null)
+            return;
+        user.balance = newBalance;
+        PreferenceUtil.setBalance(mSession.getContext(), user.balance);
+        postUserChanged();
+    }
+
     public void setUAChannelID(String channelID)
     {
         ua_token = channelID;

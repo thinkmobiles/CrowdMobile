@@ -8,6 +8,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
@@ -59,6 +61,23 @@ public class NavigationBar {
         flag_myfeedInvalidate = true;
     }
 
+    private void selectPage(int position)
+    {
+        Attached newPage = Attached.values()[position + 1];
+        updateIcons(newPage);
+        attached = newPage;
+        if (attached == Attached.MyFeed && flag_myfeedInvalidate) {
+            flag_myfeedInvalidate = false;
+            ((MyFeedFragment) adapter.getItem(position)).reload();
+        }
+
+        if (attached != Attached.Compose) {
+            final InputMethodManager imm = (InputMethodManager)mActivity.getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
+        }
+    }
+
     ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
         Attached attached = Attached.Empty;
 
@@ -69,19 +88,7 @@ public class NavigationBar {
 
         @Override
         public void onPageSelected(int position) {
-            attached = Attached.values()[position + 1];
-            updateIcons(attached);
-            if (attached == Attached.MyFeed && flag_myfeedInvalidate) {
-                flag_myfeedInvalidate = false;
-                ((MyFeedFragment) adapter.getItem(position)).reload();
-            }
-
-            if (attached != Attached.Compose) {
-                final InputMethodManager imm = (InputMethodManager)mActivity.getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(mViewPager.getWindowToken(), 0);
-            }
-
+            selectPage(position);
         }
 
         @Override
@@ -139,10 +146,12 @@ public class NavigationBar {
 			return;
 		attached = dest;
 		Fragment f = null;
+        View destIcon = null;
 
 		if (attached == Attached.Feed) {
             mActivity.getSupportActionBar().setTitle(R.string.newsfeed);
             btFeed.setImageResource(R.drawable.ic_tabbar_newsfeed_pressed);
+            destIcon = btFeed;
         }
         else
             btFeed.setImageResource(R.drawable.ic_tabbar_newsfeed);
@@ -150,6 +159,7 @@ public class NavigationBar {
         if (attached == Attached.MyFeed) {
             btMyFeed.setImageResource(R.drawable.ic_tabbar_myfeed_pressed);
             mActivity.getSupportActionBar().setTitle(R.string.myfeed);
+            destIcon = btMyFeed;
         }
         else
             btMyFeed.setImageResource(R.drawable.ic_tabbar_myfeed);
@@ -157,6 +167,7 @@ public class NavigationBar {
 		if (attached == Attached.Checkout) {
             btCheckout.setImageResource(R.drawable.ic_tabbar_shop_pressed);
             mActivity.getSupportActionBar().setTitle(R.string.fragment_credit_title);
+            destIcon = btCheckout;
         }
         else
             btCheckout.setImageResource(R.drawable.ic_tabbar_shop);
@@ -164,9 +175,13 @@ public class NavigationBar {
         if (attached == Attached.Compose) {
             btCompose.setImageResource(R.drawable.ic_tabbar_post_pressed);
             mActivity.getSupportActionBar().setTitle(R.string.compose_title);
+            destIcon = btCompose;
         }
         else
             btCompose.setImageResource(R.drawable.ic_tabbar_post);
+
+        Animation a = AnimationUtils.loadAnimation(mActivity,R.anim.bounce);
+        destIcon.startAnimation(a);
 	}
 	
 	OnClickListener onClickListener = new OnClickListener()
@@ -191,6 +206,7 @@ public class NavigationBar {
         if (attached == dest)
             return;
         mViewPager.setCurrentItem(dest.ordinal() - 1);
+        selectPage(dest.ordinal() - 1);
     }
 
     class NavbarAdapter extends FragmentStatePagerAdapter {

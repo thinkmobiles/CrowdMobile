@@ -31,8 +31,13 @@ public class FeedManager {
 
     SparseArray<PhotoComment> publicCache = new SparseArray<PhotoComment>();
     SparseArray<PhotoComment> myCache = new SparseArray<PhotoComment>();
+    boolean publicCacheLoaded = false;
+    boolean myCacheLoaded = false;
     int minIDPublicFeed = 0;
     int minIDMyFeed = 0;
+
+    int transactionIDPublicFeed = 0;
+    int transactionIDMyFeed = 0;
 
     ArrayList<PhotoComment> pending = new ArrayList<PhotoComment>();
 
@@ -45,6 +50,15 @@ public class FeedManager {
         else if (type == FeedType.My)
             return myCache;
         return null;
+    }
+
+    private boolean getLoaded(FeedType type)
+    {
+        if (type == FeedType.Public)
+            return publicCacheLoaded;
+        else if (type == FeedType.My)
+            return myCacheLoaded;
+        return false;
     }
 
     public static class PhotoCommentResponseHolder extends ResultWrapper {
@@ -60,6 +74,7 @@ public class FeedManager {
         public String tags;
         public PhotoComment comments[];
         public boolean flag_feedBottomReached = false;
+        protected int transactionid;
 
         public boolean isEqual(FeedWrapper other) {
             if (feedType != other.feedType)
@@ -96,11 +111,18 @@ public class FeedManager {
 
         public void clear() {
             if (feedWrapper.feedType == FeedType.My) {
+                manager.myCacheLoaded = false;
                 manager.pending.clear();
                 manager.myCache.clear();
+                manager.minIDMyFeed = 0;
+                manager.transactionIDMyFeed++;
             }
-            if (feedWrapper.feedType == FeedType.Public)
+            if (feedWrapper.feedType == FeedType.Public) {
+                manager.minIDPublicFeed = 0;
+                manager.publicCacheLoaded = false;
                 manager.publicCache.clear();
+                manager.transactionIDPublicFeed++;
+            }
         }
 
         public void load() {
@@ -125,10 +147,16 @@ public class FeedManager {
             if (feedWrapper.feedType != FeedType.Public) {
                 token = manager.mSession.getAccountManager().getToken();
             }
+
+            if (feedWrapper.feedType == FeedType.Public)
+                feedWrapper.transactionid = manager.transactionIDPublicFeed;
+            else if (feedWrapper.feedType == FeedType.My)
+                feedWrapper.transactionid = manager.transactionIDMyFeed;
+
             TaskLoadFeed.loadFeed(manager.mSession.getContext(), token, feedWrapper);
         }
 
-        public void getCache(ArrayList<PhotoComment> dest)
+        public boolean getCache(ArrayList<PhotoComment> dest)
         {
             SparseArray<PhotoComment> cache = manager.getCache(feedWrapper.feedType);
             int len = cache.size();
@@ -137,7 +165,7 @@ public class FeedManager {
                 len += manager.pending.size();
 
             if (len == 0)
-                return;
+                return manager.getLoaded(feedWrapper.feedType);
             int idx = 0;
 
             if (feedWrapper.feedType == FeedType.Public.My)
@@ -150,11 +178,17 @@ public class FeedManager {
                 if (item.flag_last)
                     break;
             }
+            return manager.getLoaded(feedWrapper.feedType);
         }
     }
 
 
     protected void updateData(FeedWrapper feedWrapper) {
+        if (feedWrapper.feedType == FeedType.My && feedWrapper.transactionid < transactionIDMyFeed)
+                return;
+        if (feedWrapper.feedType == FeedType.Public && feedWrapper.transactionid < transactionIDPublicFeed)
+            return;
+
         if (feedWrapper.exception == null && (feedWrapper.comments == null || feedWrapper.comments.length == 0))
         {
             int maxid = 0;
@@ -169,6 +203,10 @@ public class FeedManager {
         }
 
         SparseArray<PhotoComment> cache = getCache(feedWrapper.feedType);
+        if (feedWrapper.feedType == FeedType.Public)
+            publicCacheLoaded = feedWrapper.exception == null;
+        else if (feedWrapper.feedType == FeedType.My)
+            myCacheLoaded = feedWrapper.exception == null;
 
         if (feedWrapper.comments != null && feedWrapper.comments.length > 0 && feedWrapper.max_id != null)
         {

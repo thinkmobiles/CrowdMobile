@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.crowdmobile.kes.R;
-import com.crowdmobile.kes.billing.CreditItem;
+import com.kes.billing.CreditItem;
 
 /**
  * Created by gadza on 2015.03.06..

@@ -35,14 +35,6 @@
                     android:layout_centerInParent="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
-                    <ImageView
-                        android:id="@+id/ivTitle"
-                        android:layout_centerInParent="true"
-                        android:scaleType="fitXY"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/ic_feed_item_header_icon"
-                        android:layout_width="@dimen/item_header_icon_height"
-                        android:layout_height="wrap_content" />
                     <Button
                         android:id="@+id/btRetry"
                         android:visibility="gone"

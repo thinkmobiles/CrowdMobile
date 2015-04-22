@@ -29,6 +29,8 @@
 
 
     <!-- Feed item -->
+    <dimen name="item_corner_radius">5dp</dimen>
+    <dimen name="item_stripe_radius">3dp</dimen>
     <dimen name="item_padding">5dp</dimen>
     <dimen name="item_header_sidepadding">10dp</dimen>
     <dimen name="share_closed_height">5dp</dimen>

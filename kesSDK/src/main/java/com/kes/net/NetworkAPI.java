@@ -1,6 +1,7 @@
 package com.kes.net;
 
 
+import com.kes.model.CreditResponse;
 import com.kes.model.PhotoComment;
 import com.kes.model.User;
 import com.kes.net.DataFetcher.RequestType;
@@ -46,6 +47,7 @@ public class NetworkAPI {
         return ModelFactory.getAccount(result);
     }
 
+
 	public static User updatePushToken(String auth_token, String ua_token)
 			throws DataFetcher.KESNetworkException, InterruptedException {
 		String url = com.kes.net.ServerNavigator.push_token();
@@ -53,6 +55,17 @@ public class NetworkAPI {
 		String result = DataFetcher.requestAction(url, RequestType.PUT, null, null, json);
         return ModelFactory.getAccount(result);
 	}
+
+    public static CreditResponse addCredit(String auth_token, String ua_token)
+            throws DataFetcher.KESNetworkException, InterruptedException {
+        String url = com.kes.net.ServerNavigator.addCredit();
+        String json = ModelFactory.getAddCreditJson(auth_token, ua_token);
+//        json = "imacpcbldbhfkcmccgkdlkfd.AO-J1OzM9rRRxlxNEhst8KWd9t93qnWhtjK_GGLhk_oUt8FUraBaHfwC7Dhl7fJtrIuDPv72OklvHlvJ6aW_nDfvykll_62e6ftxAMu7I_ZEqwwMQz7T6zI\\";
+        String result = DataFetcher.requestAction(url, RequestType.POST, null, null, json);
+        return ModelFactory.getCreditResponse(result);
+    }
+
+//    static boolean toggle = false;
 
     public static ModelFactory.PhotoCommentWrapper getFeed(
             String auth_token,
@@ -77,7 +90,9 @@ public class NetworkAPI {
             getParams = NetUtils.buildParameters(getParams,"page_size", page_size.toString());
         if (tags != null)
             getParams = NetUtils.buildParameters(getParams,"tags" + tags);
-
+//        toggle = !toggle;
+//        if (!toggle)
+//            throw new DataFetcher.KESNetworkException();
         String result = DataFetcher.requestAction(url, RequestType.GET, getParams,null, null);
         return ModelFactory.getFeed(result);
     }

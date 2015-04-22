@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import com.kes.model.CreditResponse;
 import com.kes.model.PhotoComment;
 import com.kes.model.User;
 
@@ -69,6 +70,10 @@ public class ModelFactory {
 		return gson.fromJson(json, User.class);
 	}
 
+    public static CreditResponse getCreditResponse(String json) {
+        return gson.fromJson(json, CreditResponse.class);
+    }
+
     //--------------------------------------------------------------------------------------------------
     public static class PhotoCommentWrapper {
         public PhotoComment[] photo_comments;
@@ -101,7 +106,7 @@ public class ModelFactory {
 		result.access_token_secret = access_token_secret;
 		result.uid = uid;
 		result.device_push_token = device_push_token;
-		result.device = "Android";
+		result.device = "android";
 		result.auth_token = auth_token;
 		return gson.toJson(result);
 	}
@@ -114,6 +119,12 @@ public class ModelFactory {
         result.push_token = ua_token;
 		return gson.toJson(result);
 	}
+
+    //--------------------------------------------------------------------------------------------------
+    public static String getAddCreditJson(String auth_token, String receipt) {
+        PostData.AddCreditRequest result = new PostData.AddCreditRequest(auth_token,receipt);
+        return gson.toJson(result);
+    }
 
     //--------------------------------------------------------------------------------------------------
     static class PhotoCommentRequestWrapper {

@@ -188,8 +188,15 @@ public class GalleryFragment extends Fragment {
                         do {
                             int id = cursor.getInt(col_id);
                             ImageData data = slist.get(id);
-                            if (data != null)
-                                data.image = cursor.getString(col_data);
+                            if (data == null)
+                            {
+                                data = new ImageData();
+                                data.thumbnail = cursor.getString(col_data);
+                                retval.add(data);
+                                slist.put(id,data);
+
+                            }
+                            data.image = cursor.getString(col_data);
                         } while (cursor.moveToNext());
                     cursor.close();
                 }

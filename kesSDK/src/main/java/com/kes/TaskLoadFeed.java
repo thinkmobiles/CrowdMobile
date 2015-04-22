@@ -16,6 +16,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
     public static final String TAG_FEEDTYPE = "feedtype";
     public static final String TAG_MAXID = "maxid";
     public static final String TAG_SINCEID = "sinceid";
+    public static final String TAG_TRANSACTIONID = "transactionid";
     public static final String TAG_TAGS = "tags";
 
 	static void loadFeed(Context context, String token, FeedManager.FeedWrapper wrapper)
@@ -27,6 +28,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
             intent.putExtra(TAG_MAXID,wrapper.max_id);
         if (wrapper.since_id != null)
             intent.putExtra(TAG_SINCEID,wrapper.since_id);
+        intent.putExtra(TAG_TRANSACTIONID,wrapper.transactionid);
         intent.putExtra(TAG_TAGS,wrapper.tags);
 		NetworkService.execute(context, intent);
 	}
@@ -59,6 +61,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
             default:
                 break;
         }
+        wrapper.transactionid = Integer.valueOf(extras.getInt(TAG_TRANSACTIONID));
         if (extras.containsKey(TAG_MAXID))
             wrapper.max_id = Integer.valueOf(extras.getInt(TAG_MAXID));
         if (extras.containsKey(TAG_SINCEID))

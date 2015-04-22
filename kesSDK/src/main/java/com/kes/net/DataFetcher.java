@@ -293,14 +293,16 @@ public class DataFetcher {
                     switch (type) {
                         case GET:
                             DefaultHttpClient result = null;
+                            /*
                             HttpParams params = new BasicHttpParams();
                             int timeoutConnection = 1000;
                             HttpConnectionParams.setConnectionTimeout(params, timeoutConnection);
                             int timeoutSocket = 1000;
                             HttpConnectionParams.setSoTimeout(params, timeoutSocket);
                             HttpProtocolParams.setUserAgent(params, defaultUserAgent);
+                            */
                             HttpGet get = new HttpGet(url);
-                            get.setParams(params);
+                            //get.setParams(params);
                             request = get;
                             break;
                         case POST:

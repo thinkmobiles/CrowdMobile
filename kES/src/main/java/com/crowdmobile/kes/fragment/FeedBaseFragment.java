@@ -46,7 +46,7 @@ public abstract class FeedBaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
         session = Session.getInstance(getActivity());
         list = new ArrayList<PhotoComment>();
-        adapter = new FeedAdapter(getActivity(),list,feedAdapterListener);
+        adapter = new FeedAdapter(getActivity(),getFeedType(), list,feedAdapterListener);
     }
 
     FeedAdapter.FeedAdapterListener feedAdapterListener = new FeedAdapter.FeedAdapterListener() {
@@ -74,6 +74,18 @@ public abstract class FeedBaseFragment extends Fragment {
             p.status = PhotoComment.PostStatus.Pending;
             Session.getInstance(getActivity()).getFeedManager().postQuestion(p);
         }
+
+        @Override
+        public void report(PhotoComment p) {
+            p.reported = true;
+            Session.getInstance(getActivity()).getFeedManager().report(p.id);
+        }
+
+        @Override
+        public void markAsPrivate(PhotoComment p) {
+            p.is_private = !p.is_private;
+            Session.getInstance(getActivity()).getFeedManager().markAsPrivate(p.id);
+        }
     };
 
     public abstract FeedManager.FeedType getFeedType();
@@ -92,6 +104,7 @@ public abstract class FeedBaseFragment extends Fragment {
         });
         swipeContainer = (SwipeRefreshLayout)result.findViewById(R.id.swipe_container);
         swipeContainer.setOnRefreshListener(onRefreshListener);
+        swipeContainer.setEnabled(false);
 //        itemTitle = result.findViewById(R.id.itemTitle);
 //        itemShare = result.findViewById(R.id.itemShare);
 //        shareController = FeedItem.createHolder(itemTitle,itemShare).shareController;
@@ -130,20 +143,22 @@ public abstract class FeedBaseFragment extends Fragment {
         if (!isViewCreated)
             return;
         list.clear();
-        session.getFeedManager().feed(getFeedType()).getCache(list);
-        setEmptyLayoutVisibility(list.size() == 0);
+        boolean loaded = session.getFeedManager().feed(getFeedType()).getCache(list);
+        setEmptyLayoutVisibility(list.size() == 0 && loaded);
         if (list.size() == 0) {
             lastNetworkAction = session.getFeedManager().feed(getFeedType());
-            lastNetworkAction.setMaxID(400).load();
+            lastNetworkAction./*setMaxID(400).*/load();
         } else {
             lvFeed.scrollToPosition(0);
             adapter.notifyDataSetChanged();
         }
+        swipeContainer.setEnabled(list.size() > 0);
     }
 
     SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
+            swipeContainer.setEnabled(false);
             if (getFeedType() == FeedManager.FeedType.My)
             {
                 holderNoPost.setVisibility(View.GONE);
@@ -151,7 +166,8 @@ public abstract class FeedBaseFragment extends Fragment {
                 list.clear();
                 adapter.notifyDataSetChanged();
             }
-            session.getFeedManager().feed(getFeedType()).load();
+            lastNetworkAction = session.getFeedManager().feed(getFeedType());
+            lastNetworkAction.load();
         }
     };
 
@@ -169,17 +185,23 @@ public abstract class FeedBaseFragment extends Fragment {
 
             if (wrapper.exception != null)
             {
+                setEmptyLayoutVisibility(false);
                 adapter.setFooterLoading(false);
+                swipeContainer.setEnabled(false);
                 return;
             }
 
-            if (wrapper.flag_feedBottomReached)
-                adapter.setFooterVisible(false);
+            if (wrapper.flag_feedBottomReached) {
+                adapter.hideFooter();
+                swipeContainer.setEnabled(true);
+            }
 
             list.clear();
             session.getFeedManager().feed(getFeedType()).getCache(list);
 
             adapter.notifyDataSetChanged();
+            swipeContainer.setEnabled(list.size() > 0);
+
             setEmptyLayoutVisibility(list.size() == 0 && wrapper.exception == null);
 
             if (wrapper.max_id == null) {

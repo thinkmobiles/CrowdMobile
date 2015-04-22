@@ -48,5 +48,22 @@ public class PostData {
         protected String auth_token;
     }
 
+    private static class Credit {
+        protected String receipt_data;
+    }
+
+    protected static class AddCreditRequest {
+        protected Credit credit = new Credit();
+        protected String auth_token;
+        protected String device;
+
+        protected AddCreditRequest(String auth_token,String receipt)
+        {
+            this.credit.receipt_data = receipt;
+            this.auth_token = auth_token;
+            this.device = "android";
+        }
+    }
+
 
 }

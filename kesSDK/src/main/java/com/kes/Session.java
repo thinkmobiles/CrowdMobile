@@ -19,6 +19,7 @@ public class Session {
     private User user;
     private static Session sInstance;
     private AccountManager accountManager;
+    private BillingManager billingManager;
     private FeedManager feedManager;
     private KesDB kesDB;
 
@@ -66,6 +67,13 @@ public class Session {
         if (accountManager == null)
             accountManager = new AccountManager(this);
         return accountManager;
+    }
+
+    public BillingManager getBillingManager()
+    {
+        if (billingManager == null)
+            billingManager = new BillingManager(this);
+        return billingManager;
     }
 
     public FeedManager getFeedManager()

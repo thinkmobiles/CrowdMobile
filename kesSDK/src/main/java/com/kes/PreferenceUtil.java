@@ -21,6 +21,12 @@ class PreferenceUtil {
                 .getString(context.getString(R.string.key_user_email), "");
     }
 
+    public static void setBalance(Context context, int value) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putInt(context.getString(R.string.key_user_balance),value)
+                .commit();
+    }
+
     public static void setUser(Context context, User user) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
 

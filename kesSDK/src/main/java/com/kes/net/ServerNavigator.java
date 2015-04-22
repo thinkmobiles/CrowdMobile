@@ -49,4 +49,8 @@ public class ServerNavigator {
         return BASE_URL + "photo_comments/" + Integer.toString(id) + "/mark_as_private";
     }
 
+    public static String addCredit() {
+        return BASE_URL + "credit";
+    }
+
 }

@@ -175,7 +175,7 @@
             android:permission="com.crowdmobile.kes.permission.UA_DATA" />
 
         <service
-            android:name=".billing.BillingService"
+            android:name="com.kes.billing.BillingService"
             android:enabled="true"
             android:exported="false" >
         </service>

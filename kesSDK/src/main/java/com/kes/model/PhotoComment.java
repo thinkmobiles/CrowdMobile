@@ -22,6 +22,9 @@ public class PhotoComment {
     public boolean flag_first = false;
     public boolean flag_last = false;
 
+    //Temporary variables
+    public boolean reported = false;
+
     public void copyFrom(PhotoComment src)
     {
         this.id = src.id;

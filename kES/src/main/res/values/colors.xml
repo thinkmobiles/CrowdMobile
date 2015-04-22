@@ -8,7 +8,6 @@
     <item name="questionFont" type="color">#555</item>
     <item name="answerBackground" type="color">#0000</item>
     <item name="answerFont" type="color">#555</item>
-    <item name="item_fade_layer" type="color">#8fff</item>
 
     <item name="appbackground" type="color">#fff</item>
     <item name="apptextcolor" type="color">#444</item>
@@ -44,6 +43,7 @@
     <item name="item_stripe" type="color">#0880de</item>
     <item name="item_separator" type="color">#eee</item>
     <item name="item_background" type="color">#fff</item>
+    <item name="item_background_disabled" type="color">#aaa</item>
 
     <!-- Gallery -->
     <item name="gallery_title_font" type="color">#808080</item>

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crowdmobile.kes.R;
+import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
 import com.squareup.picasso.Picasso;
 
@@ -38,16 +39,19 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         public void onLastItemReached();
         public void retryLoadClick();
         public void retryPostClick(PhotoComment p);
+        public void report(PhotoComment p);
+        public void markAsPrivate(PhotoComment p);
     }
 
-    public void setFooterVisible(boolean visible)
+    public void hideFooter()
     {
-        footerVisible = visible;
+        footerVisible = false;
         notifyDataSetChanged();
     }
 
     public void setFooterLoading(boolean enabled)
     {
+        footerVisible = true;
         footerLoading = enabled;
         notifyDataSetChanged();
     }
@@ -57,19 +61,22 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         TextView tvQuestion;
         ImageView imgFeedPic;
         View imgOpenShare;
-        ImageView ivTitle;
 
         TextView tvAnswer;
-        TextView tvTimeAnswer;
+        View tvAnswerLabel;
+        ImageView ivAnswerLeft;
+        ImageView ivAnswerCenter;
+        ImageView ivAnswerRight;
         //Footer
         TextView tvFooterStatus;
         Button btRetry;
         View progress;
-        View layerBrightness;
+        View holderBackground;
 
-        public ItemHolder(View view, int viewType, View.OnClickListener retryClick,View.OnClickListener retryPostClick) {
+        public ItemHolder(View view, int viewType, View.OnClickListener report_privateClick, View.OnClickListener retryClick,View.OnClickListener retryPostClick) {
             super(view);
             if (viewType == TYPE_ITEM) {
+                holderBackground = view.findViewById(R.id.holderBackground);
                 tvTimeQuestion = (TextView) view.findViewById(R.id.tvTimeQuestion);
                 tvQuestion = (TextView) view.findViewById(R.id.tvMessage);
                 imgFeedPic = (ImageView) view.findViewById(R.id.imgFeedPic);
@@ -84,12 +91,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                     });
                 }
                 tvAnswer = (TextView) view.findViewById(R.id.tvAnswer);
-                tvTimeAnswer = (TextView) view.findViewById(R.id.tvTimeAnswer);
-                ivTitle = (ImageView) view.findViewById(R.id.ivTitle);
-                layerBrightness = view.findViewById(R.id.layerBrightness);
+                tvAnswerLabel = (TextView) view.findViewById(R.id.tvAnswerLabel);
+                ivAnswerLeft = (ImageView) view.findViewById(R.id.imgAnswerLeft);
+                ivAnswerCenter = (ImageView) view.findViewById(R.id.imgAnswerCenter);
+                ivAnswerRight = (ImageView) view.findViewById(R.id.imgAnswerRight);
 
                 btRetry = (Button) view.findViewById(R.id.btRetry);
                 btRetry.setOnClickListener(retryPostClick);
+                ivAnswerRight.setOnClickListener(report_privateClick);
             } else {
                 tvFooterStatus = (TextView) view.findViewById(R.id.tvFooterStatus);
                 progress = view.findViewById(R.id.progress);
@@ -103,10 +112,12 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     private LayoutInflater inflater;
     private Resources resources;
     private ArrayList<PhotoComment> list;
+    FeedManager.FeedType feedType;
 
-    public FeedAdapter(Activity activity,ArrayList<PhotoComment> list,FeedAdapterListener listener) {
+    public FeedAdapter(Activity activity, FeedManager.FeedType feedType, ArrayList<PhotoComment> list,FeedAdapterListener listener) {
         inflater = activity.getLayoutInflater();
         resources = activity.getResources();
+        this.feedType = feedType;
         this.activity = activity;
         this.list = list;
         this.listener = listener;
@@ -132,7 +143,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                     from(viewGroup.getContext()).
                     inflate(R.layout.footer_feed, viewGroup, false);
 
-        return new ItemHolder(result, viewType, retryClick, retryPostClick);
+        return new ItemHolder(result, viewType, report_privateClick, retryClick, retryPostClick);
     }
 
     @Override
@@ -158,43 +169,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
         PhotoComment item = list.get(i);
         holder.imgOpenShare.setTag(item.share_url);
-        holder.tvTimeQuestion.setText(Integer.toString(item.id));
-        holder.tvQuestion.setText(item.message);
 
-        holder.btRetry.setTag(item);
-
-        if (item.status == PhotoComment.PostStatus.Posted || item.status == PhotoComment.PostStatus.Pending) {
-            holder.ivTitle.setVisibility(View.VISIBLE);
-            if (item.status == PhotoComment.PostStatus.Pending) {
-                holder.ivTitle.setImageResource(R.drawable.ic_navbar_credit_icon);
-            } else
-                holder.ivTitle.setImageResource(R.drawable.ic_feed_item_header_icon);
-        } else
-            holder.ivTitle.setVisibility(View.INVISIBLE);
-
-        holder.btRetry.setVisibility(item.status == PhotoComment.PostStatus.Error ? View.VISIBLE : View.GONE);
-
-        if (item.photo_url != null && item.photo_url.length() > 0) {
-            holder.imgFeedPic.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgFeedPic.getContext()).load(item.photo_url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
-        } else
-            holder.imgFeedPic.setVisibility(View.GONE);
-
-        if (item.responses == null || item.responses.length == 0) {
-//            holder.fadeLayer.setVisibility(View.VISIBLE);
-            holder.tvAnswer.setText(R.string.item_noanswer);
-            holder.tvTimeAnswer.setVisibility(View.INVISIBLE);
-            holder.layerBrightness.setVisibility(View.VISIBLE);
-//            holder.layout.setMaskColor(resources.getColor(R.color.item_fade_layer));
-        } else {
-            holder.layerBrightness.setVisibility(View.GONE);
-//            holder.fadeLayer.setVisibility(View.INVISIBLE);
-//            holder.layout.setMaskColor(0);
-            holder.tvAnswer.setText(item.responses[0].comment);
-            holder.tvTimeAnswer.setVisibility(View.VISIBLE);
+        if (item.status == PhotoComment.PostStatus.Posted) {
             String elapsedStr = null;
-
-            long elapsed = (System.currentTimeMillis() - item.responses[0].created_at) / 1000;
+            long elapsed = (System.currentTimeMillis() - item.created_at) / 1000;
             int days = (int) (elapsed / 86400);
             if (days > 0)
                 elapsedStr = String.format(resources.getString(R.string.timeformat_day), days);
@@ -207,7 +185,63 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 else
                     elapsedStr = String.format(resources.getString(R.string.timeformat_min), min);
             }
-            holder.tvTimeAnswer.setText(elapsedStr);
+            holder.tvTimeQuestion.setText(elapsedStr);
+            holder.tvTimeQuestion.setVisibility(View.VISIBLE);
+        }
+        else if (item.status == PhotoComment.PostStatus.Pending) {
+            holder.tvTimeQuestion.setText(R.string.feed_posting);
+            holder.tvTimeQuestion.setVisibility(View.VISIBLE);
+        } else
+            holder.tvTimeQuestion.setVisibility(View.INVISIBLE);
+
+        //holder.tvTimeQuestion.setText(Integer.toString(item.id));
+
+        holder.tvQuestion.setText(item.message);
+
+        holder.ivAnswerRight.setTag(item);
+        holder.btRetry.setTag(item);
+        holder.btRetry.setVisibility(item.status == PhotoComment.PostStatus.Error ? View.VISIBLE : View.GONE);
+
+        if (item.photo_url != null && item.photo_url.length() > 0) {
+            holder.imgFeedPic.setVisibility(View.VISIBLE);
+            Picasso.with(holder.imgFeedPic.getContext()).load(item.photo_url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
+        } else
+            holder.imgFeedPic.setVisibility(View.GONE);
+
+        if (item.responses == null || item.responses.length == 0) {
+//            holder.fadeLayer.setVisibility(View.VISIBLE);
+            holder.tvAnswer.setText(R.string.item_noanswer);
+            holder.tvAnswerLabel.setVisibility(View.INVISIBLE);
+            holder.ivAnswerLeft.setVisibility(View.INVISIBLE);
+            holder.ivAnswerCenter.setVisibility(View.VISIBLE);
+            holder.ivAnswerRight.setVisibility(View.INVISIBLE);
+//            holder.holderBackground.setBackgroundColor(R.color.item_background_disabled);
+//            holder.layout.setMaskColor(resources.getColor(R.color.item_fade_layer));
+        } else {
+//            holder.holderBackground.setBackgroundColor(R.color.item_background);
+//            holder.fadeLayer.setVisibility(View.INVISIBLE);
+//            holder.layout.setMaskColor(0);
+            holder.tvAnswerLabel.setVisibility(View.VISIBLE);
+            holder.ivAnswerLeft.setVisibility(View.VISIBLE);
+            holder.ivAnswerCenter.setVisibility(View.INVISIBLE);
+            holder.ivAnswerRight.setVisibility(View.VISIBLE);
+            if (feedType == FeedManager.FeedType.My) {
+                if (item.is_private)
+                    holder.ivAnswerRight.setImageResource(R.drawable.ic_feed_item_header_private);
+                else
+                    holder.ivAnswerRight.setImageResource(R.drawable.ic_feed_item_header_public);
+            } else
+            {
+                if (item.reported) {
+                    holder.ivAnswerRight.setVisibility(View.INVISIBLE);
+                } else
+                {
+                    holder.ivAnswerRight.setVisibility(View.VISIBLE);
+                    holder.ivAnswerRight.setImageResource(R.drawable.ic_feed_item_header_flag);
+                }
+            }
+            holder.tvAnswer.setText(item.responses[0].comment);
+
         }
 //        holder.fadeLayer.setVisibility(View.VISIBLE);
 
@@ -237,6 +271,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         @Override
         public void onClick(View v) {
             listener.retryPostClick((PhotoComment) v.getTag());
+            notifyDataSetChanged();
+        }
+    };
+
+    View.OnClickListener report_privateClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (feedType == FeedManager.FeedType.My)
+                listener.markAsPrivate((PhotoComment) v.getTag());
+            else
+                listener.report((PhotoComment) v.getTag());
             notifyDataSetChanged();
         }
     };

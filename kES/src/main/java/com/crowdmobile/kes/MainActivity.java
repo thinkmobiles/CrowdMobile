@@ -2,15 +2,12 @@ package com.crowdmobile.kes;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,7 +20,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.crowdmobile.kes.billing.BillingService;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
@@ -39,7 +35,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity implements NavigationBar.NavigationCallback,BillingService.BillingServiceListener {
+public class MainActivity extends ActionBarActivity implements NavigationBar.NavigationCallback {
 
     private Handler mHandler;
     private Toolbar toolbar;
@@ -52,13 +48,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     ListView lvLogcat;
     boolean networkVisible = false;
     ViewPager viewPager;
-    private BillingService billingService;
-    private boolean isBond = false;
-
-    @Override
-    public BillingService getBillingService() {
-        return billingService;
-    }
 
 
 	public static void open(Context context)
@@ -100,6 +89,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         }
 		super.onCreate(savedInstanceState);
+        Session.getInstance(this).getBillingManager().init(getString(R.string.signature_public),getResources().getStringArray(R.array.credits_list));
+
         if (KesApplication.enableHockey) {
             CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
             UpdateManager.register(this, KesApplication.HOCKEYAPP_ID);
@@ -159,31 +150,11 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, BillingService.class);
-        isBond = bindService(intent, billingConnection, Context.BIND_AUTO_CREATE);
     }
 
-    public ServiceConnection billingConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            billingService = ((BillingService.BillingServiceBinder)service).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBond = false;
-            billingService = null;
-        }
-    };
 
     @Override
     protected void onStop() {
-        if (isBond)
-        {
-            isBond = false;
-            billingService = null;
-            unbindService(billingConnection);
-        }
         super.onStop();
     }
 
@@ -304,8 +275,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (billingService != null &&
-            billingService.handleActivityResult(requestCode, resultCode, data))
+        if (Session.getInstance(this).getBillingManager().handleActivityResult(requestCode,resultCode,data))
             return;
         super.onActivityResult(requestCode,resultCode,data);
     }
