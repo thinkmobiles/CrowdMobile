@@ -12,7 +12,6 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.RelativeLayout;
 
 import com.crowdmobile.kes.util.FacebookLogin;
 import com.crowdmobile.kes.util.PreferenceUtils;
@@ -36,7 +35,6 @@ public class AccountActivity extends Activity {
 
     private TwitterUtil.LoginManager twitterLogin;
     private FacebookLogin facebookLogin;
-    private RelativeLayout loginHolder;
 
     public static void logout(Context context)
     {
@@ -84,8 +82,7 @@ public class AccountActivity extends Activity {
         getHash();
 		this.setContentView(R.layout.activity_login);
         mSession = Session.getInstance(this);
-        loginHolder = (RelativeLayout)this.findViewById(R.id.loginHolder);
-        twitterLogin = TwitterUtil.getInstance(this).getLoginManager(loginHolder, twitterCallback);
+        twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
 		facebookLogin = new FacebookLogin(this, fbCallback);
         btFacebook = findViewById(R.id.btFacebook);
 		btFacebook.setOnClickListener(onClickListener);
@@ -147,7 +144,7 @@ public class AccountActivity extends Activity {
                     //startActivity(
                     //        new Intent(Intent.ACTION_VIEW, Uri.parse("oauth://twitterlogin")));
 
-                    twitterLogin.login();
+                    twitterLogin.login(AccountActivity.this);
                 }
             } else if (v == btSkip)
             {
@@ -210,7 +207,8 @@ public class AccountActivity extends Activity {
         }
 
         @Override
-        public void onCancelled() {
+        public void onCanceled() {
+            progressDialog.hide();
         }
     };
 
@@ -240,6 +238,9 @@ public class AccountActivity extends Activity {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (twitterLogin.onActivityResult(requestCode,resultCode,data))
+            return;
+
 		if (facebookLogin.onActivityResult(this,requestCode,resultCode,data))
             return;
         super.onActivityResult(requestCode, resultCode, data);

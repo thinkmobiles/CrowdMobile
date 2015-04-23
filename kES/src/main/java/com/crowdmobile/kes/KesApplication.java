@@ -10,7 +10,7 @@ import android.app.Application;
 public class KesApplication extends Application {
 
     public static final String HOCKEYAPP_ID = "7f03f42aa9fceb200d7f931d3d2f49f8";
-    public static final boolean enableHockey = false;
+    public static final boolean enableHockey = true;
     private static String channelID = null;
 
     /*

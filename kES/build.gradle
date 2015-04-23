@@ -42,5 +42,4 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile files ('libs/twitter4j-core-4.0.2.jar')
     compile files ('libs/HockeySDK-3.5.0.jar')
-
 }

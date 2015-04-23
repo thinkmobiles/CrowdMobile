@@ -348,10 +348,10 @@ public class DataFetcher {
                     throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException,null);
                 }
 
-                if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK)
-                    throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException,null);
 
-                HttpEntity entity = response.getEntity();
+
+
+            HttpEntity entity = response.getEntity();
 		        if (entity == null)
 		        	throw new KESNetworkException();
 		        StringBuilder builder = new StringBuilder();
@@ -362,6 +362,14 @@ public class DataFetcher {
                         String line;
                         while ((line = reader.readLine()) != null)
                             builder.append(line);
+                        String debug = builder.toString();
+
+
+                        if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
+                            Log.d(TAG,debug);
+                            throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, null);
+                        }
+
                         return checkForError(builder.toString());
                     } finally {
                         entity.consumeContent();

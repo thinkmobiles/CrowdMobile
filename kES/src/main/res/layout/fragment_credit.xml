@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
         android:layout_height="0px"
-        android:layout_above="@+id/ivBongoHungry">
+        android:layout_above="@+id/ivShopFooter">
         <LinearLayout
             android:padding="@dimen/credit_title_padding"
             android:orientation="horizontal"
@@ -118,9 +118,9 @@
         </LinearLayout>
     </android.support.v7.widget.CardView>
     <ImageView
-        android:id="@+id/ivBongoHungry"
+        android:id="@+id/ivShopFooter"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/ic_bongohungry"
+        android:src="@drawable/shop_footer"
         android:adjustViewBounds="true"
         android:layout_width="@dimen/credit_bottomicon_width"
         android:layout_height="wrap_content"

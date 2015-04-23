@@ -2,6 +2,7 @@ package com.crowdmobile.kes.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,7 +28,7 @@ import java.util.Collections;
 /**
  * Created by gadza on 2015.03.11..
  */
-public class CheckoutFragment extends Fragment {
+public class CreditFragment extends Fragment {
 
     ListView lvPriceList;
     ArrayList<CreditItem> priceList = new ArrayList<CreditItem>();
@@ -36,6 +38,7 @@ public class CheckoutFragment extends Fragment {
     TextView tvBillingStatus;
     View holderButtons, btCreditRetry,btCreditRefund;
     String currencyFormat;
+    ImageView ivShopFooter;
 
     @Override
     public void onAttach(Activity activity) {
@@ -122,6 +125,9 @@ public class CheckoutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_credit,container,false);
+        ivShopFooter = (ImageView)result.findViewById(R.id.ivShopFooter);
+        AnimationDrawable animation = (AnimationDrawable)ivShopFooter.getDrawable();
+        animation.start();
         lvPriceList = (ListView)result.findViewById(R.id.lvPricelist);
         lvPriceList.setAdapter(priceAdapter);
         lvPriceList.setOnItemClickListener(onItemClickListener);
@@ -184,6 +190,7 @@ public class CheckoutFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         lvPriceList = null;
+        ivShopFooter = null;
         holderButtons = null;
         holderProgress = null;
         tvBillingStatus = null;

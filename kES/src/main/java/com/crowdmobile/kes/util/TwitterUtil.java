@@ -1,16 +1,15 @@
 package com.crowdmobile.kes.util;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.RelativeLayout;
 
 import com.crowdmobile.kes.R;
+import com.crowdmobile.kes.TwitterActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +29,7 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class TwitterUtil {
     private static final String TAG = "TwitterManager";
+    private final int REQUESTCODE = 902673646;
 
     public interface TwitterLoginCallback {
         void onLogin();
@@ -38,7 +38,7 @@ public class TwitterUtil {
 
         void onFailed();
 
-        void onCancelled();
+        void onCanceled();
     }
 
     private static final String TOKEN_KEY = "TOKEN_KEY";
@@ -55,9 +55,7 @@ public class TwitterUtil {
 
     private AsyncTask oAuthTask;
     private AsyncTask tokenTask;
-    private RelativeLayout holder;
     private static TwitterUtil sInstance;
-    private String oAuthRequestUrl = null;
 
     public static TwitterUtil getInstance(Context context)
     {
@@ -66,9 +64,9 @@ public class TwitterUtil {
         return sInstance;
     }
 
-    public LoginManager getLoginManager(RelativeLayout holder, TwitterLoginCallback callback)
+    public LoginManager getLoginManager(TwitterLoginCallback callback)
     {
-        return new LoginManager(holder,callback);
+        return new LoginManager(callback);
     }
 
     public void logout()
@@ -78,121 +76,62 @@ public class TwitterUtil {
 
     public class LoginManager
     {
-        private WebView loginView;
-        private RelativeLayout holder;
         private TwitterLoginCallback callback;
         private RelativeLayout.LayoutParams params;
         private String token = null;
         private String secret = null;
 
-        public LoginManager(RelativeLayout holder, TwitterLoginCallback callback)
+        public LoginManager(TwitterLoginCallback callback)
         {
-            this.holder = holder;
             this.callback = callback;
             params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
         }
 
-        private void hideLogin()
-        {
-            loginView.destroy();
-            holder.removeView(loginView);
-            loginView = null;
-            holder.setVisibility(View.INVISIBLE);
-        }
+        public void handleLoginResponse(String url){
+            Uri uri = Uri.parse(url);
 
-        private void openLoginPage()
-        {
-            loginView = new WebView(holder.getContext());
-            loginView.setWebViewClient(wvc);
-            loginView.loadUrl(oAuthRequestUrl);
-            holder.addView(loginView,params);
-        }
-
-        WebViewClient wvc = new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                if (url != null && url.equals(oAuthRequestUrl))
-                    callback.onLogin();
-                holder.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                super.onReceivedError(view, errorCode, description, failingUrl);
-                hideLogin();
-                callback.onFailed();
-            }
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith(callbackUrl))
-                {
-                    hideLogin();
-                    handleLoginResponse(url);
+            if (uri != null && ((Object) uri).toString().startsWith(callbackUrl)) {
+                String denied = uri.getQueryParameter(TWITTER_OAUTH_DENIED);
+                String t = uri.getQueryParameter(TWITTER_OAUTH_TOKEN);
+                String verifier = uri.getQueryParameter(TWITTER_OAUTH_VERIFIER);
+                if(denied != null){
+                    callback.onCanceled();
+                    return;
                 }
-                return super.shouldOverrideUrlLoading(view, url);
-            }
-
-            public void handleLoginResponse(String url){
-                Uri uri = Uri.parse(url);
-
-                if (uri != null && ((Object) uri).toString().startsWith(callbackUrl)) {
-                    String denied = uri.getQueryParameter(TWITTER_OAUTH_DENIED);
-                    String t = uri.getQueryParameter(TWITTER_OAUTH_TOKEN);
-                    String verifier = uri.getQueryParameter(TWITTER_OAUTH_VERIFIER);
-                    if(denied != null){
-                        callback.onCancelled();
-                        return;
-                    }
-                    oAuthRequestUrl = null;
-                    if(verifier == null){
-                        return;
-                    }
-                    tokenTask = new AsyncTask<String, Void, AccessToken>() {
-                        @Override
-                        protected AccessToken doInBackground(String... params) {
-                            AccessToken accessToken = null;
-                            try {
-                                accessToken = twitter.getOAuthAccessToken(params[0]);
-                            } catch (TwitterException e) {
-                                e.printStackTrace();
-                            }
-                            return accessToken;
+                if(verifier == null){
+                    return;
+                }
+                tokenTask = new AsyncTask<String, Void, AccessToken>() {
+                    @Override
+                    protected AccessToken doInBackground(String... params) {
+                        AccessToken accessToken = null;
+                        try {
+                            accessToken = twitter.getOAuthAccessToken(params[0]);
+                        } catch (TwitterException e) {
+                            e.printStackTrace();
                         }
+                        return accessToken;
+                    }
 
-                        @Override
-                        protected void onPostExecute(AccessToken accessToken) {
-                            if(callback != null && !isCancelled()) {
-                                if (accessToken != null) {
-                                    twitter.setOAuthAccessToken(accessToken);
-                                    callback.onSuccess(accessToken.getToken(), accessToken.getTokenSecret(), accessToken.getUserId());
-                                } else {
-                                    callback.onFailed();
-                                }
+                    @Override
+                    protected void onPostExecute(AccessToken accessToken) {
+                        if(callback != null && !isCancelled()) {
+                            if (accessToken != null) {
+                                twitter.setOAuthAccessToken(accessToken);
+                                callback.onSuccess(accessToken.getToken(), accessToken.getTokenSecret(), accessToken.getUserId());
+                            } else {
+                                callback.onFailed();
                             }
                         }
-                    }.execute(verifier);
-                }
+                    }
+                }.execute(verifier);
             }
+        }
 
-        };
-
-
-
-        public void login() {
+        public void login(final Activity activity) {
             if (oAuthTask != null)
                 return;
-            if (oAuthRequestUrl != null)
-            {
-                openLoginPage();
-                return;
-            }
+            twitter.setOAuthAccessToken(null);
             oAuthTask = new AsyncTask<Void, Void, RequestToken>() {
                 @Override
                 protected RequestToken doInBackground(Void... params) {
@@ -207,24 +146,39 @@ public class TwitterUtil {
                 @Override
                 protected void onPostExecute(RequestToken requestToken) {
                     oAuthTask = null;
-                    if (requestToken == null)
-                        oAuthRequestUrl = null;
-                    else
-                        oAuthRequestUrl = requestToken.getAuthenticationURL();
                     if (isCancelled())
-                        callback.onCancelled();
+                        callback.onCanceled();
                     if (requestToken == null)
                         callback.onFailed();
                     else {
-                        openLoginPage();
+                        Intent intent = new Intent(activity, TwitterActivity.class);
+                        intent.putExtra(TwitterActivity.AUTH_URL, requestToken.getAuthenticationURL());
+                        intent.putExtra(TwitterActivity.CALLBACK_URL, callbackUrl);
+                        activity.startActivityForResult(intent,REQUESTCODE);
                     }
-                /*
-                    context.startActivity(
-                            new Intent(Intent.ACTION_VIEW, Uri.parse(requestToken.getAuthenticationURL())));
-                */
                 }
             }.execute();
         }
+
+        public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+            if (requestCode == REQUESTCODE)
+            {
+                if (resultCode == TwitterActivity.RESULT_ERROR) {
+                    callback.onFailed();
+                    return true;
+                }
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    callback.onCanceled();
+                    return true;
+                }
+                if (resultCode == Activity.RESULT_OK) {
+                    String url = data.getStringExtra(TwitterActivity.CALLBACK_URL);
+                    handleLoginResponse(url);
+                    return true;
+                }
+            }
+            return false;
+        };
 
     }
 
@@ -232,7 +186,7 @@ public class TwitterUtil {
     private TwitterUtil(Context context) {
         this.context = context;
         callbackUrl = context.getString(R.string.callback_url_scheme) + "://" +
-                context.getString(R.string.callback_url_host);
+                context.getString(R.string.callback_url_host) + "?force_login=true";
         Configuration configuration = new ConfigurationBuilder()
                 .setOAuthConsumerKey(context.getString(R.string.consumer_key))
                 .setOAuthConsumerSecret(context.getString(R.string.consumer_secret)).build();
@@ -243,7 +197,6 @@ public class TwitterUtil {
 
 
     public void release(){
-        oAuthRequestUrl = null;
         dropTasks();
         context = null;
     }

@@ -14,7 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
 import com.crowdmobile.kes.R;
-import com.crowdmobile.kes.fragment.CheckoutFragment;
+import com.crowdmobile.kes.fragment.CreditFragment;
 import com.crowdmobile.kes.fragment.ComposeFragment;
 import com.crowdmobile.kes.fragment.MyFeedFragment;
 import com.crowdmobile.kes.fragment.NewsFeedFragment;
@@ -125,7 +125,7 @@ public class NavigationBar {
             return new NewsFeedFragment();
 
         if (src == Attached.Checkout)
-            return new CheckoutFragment();
+            return new CreditFragment();
 
         if (!Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
             return new NotRegisteredFragment();
