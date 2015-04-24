@@ -4,22 +4,19 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
-import android.widget.ImageView;
+import android.view.View;
 
 import com.crowdmobile.kes.R;
 import com.crowdmobile.kes.util.Graphic;
 
-public class CropView extends ImageView {
+public class CropView extends View {
 
     public interface CropViewListener {
         public void onLayout(int l,int t,int r,int b);
@@ -30,6 +27,7 @@ public class CropView extends ImageView {
     private CropViewListener listener;
     Paint paint = new Paint();
     Paint paintRct = new Paint();
+    private float rectMinSize = 50;
     private float rectWidth = 5;
     private int touchSize = 10;
     private int blursize = 5;
@@ -37,7 +35,9 @@ public class CropView extends ImageView {
     private Point leftTop, rightBottom, center, previous;
 
 
+    private Bitmap bitmap;
     private int imageScaledWidth,imageScaledHeight;
+    private Rect imageScaledRect = new Rect();
     private Rect imgCoord = new Rect();
     private Bitmap bmBlur;
     private Bitmap bmDesk;
@@ -66,27 +66,42 @@ public class CropView extends ImageView {
         initCropView();
     }
 
+    public void setBitmap(Bitmap bitmap)
+    {
+        this.bitmap = bitmap;
+        invalidate();
+    }
+
     @Override
     public void layout(int l, int t, int r, int b) {
         super.layout(l, t, r, b);
-        float[] f = new float[9];
-        getImageMatrix().getValues(f);
 
+        int w = r - l;
+        int h = b - t;
         // Calculate the scaled dimensions
         bmDesk = null;
-        if (initial_size == 0)
-            initial_size = (r - l) / 2;
-        resetPoints();
 
-        Drawable d = getDrawable();
-        if (d != null) {
-            imageScaledWidth = Math.round(getDrawable().getIntrinsicWidth() * f[Matrix.MSCALE_X]);
-            imageScaledHeight = Math.round(getDrawable().getIntrinsicHeight() * f[Matrix.MSCALE_Y]);
+        if (bitmap != null) {
+            float f = Math.min((float)w / bitmap.getWidth(),(float)h / bitmap.getHeight());
+            imageScaledWidth = (int)(f * bitmap.getWidth());
+            imageScaledHeight = (int)(f * bitmap.getHeight());
+            //imageScaledWidth = Math.round(getDrawable().getIntrinsicWidth() * f[Matrix.MSCALE_X]);
+            //imageScaledHeight = Math.round(getDrawable().getIntrinsicHeight() * f[Matrix.MSCALE_Y]);
+
+            imageScaledRect.set(
+                    center.x-(imageScaledWidth/2),
+                    center.y-(imageScaledHeight/2),
+                    center.x+(imageScaledWidth/2),
+                    center.y+(imageScaledHeight/2));
+
             int cx = (r - l) / 2;
             int cy = (b - t) / 2;
             imgCoord.set(cx - imageScaledWidth / 2, cy - imageScaledHeight / 2, cx + imageScaledWidth / 2, cy + imageScaledHeight / 2);
             if (listener != null)
                 listener.onLayout(imgCoord.left,imgCoord.top,imgCoord.right,imgCoord.bottom);
+            if (initial_size == 0)
+                initial_size = Math.min(imgCoord.width(), imgCoord.height());
+            resetPoints();
         }
     }
 
@@ -126,21 +141,20 @@ public class CropView extends ImageView {
             canvas.drawBitmap(bmDesk,0,top,null);
             top += bmDesk.getHeight();
         }
-        if (getDrawable() == null)
+        if (bitmap == null)
             return;
-        if (bmBlur == null && getDrawable() != null)
+        if (bmBlur == null && bitmap != null)
         {
             int maxSize = (int)Math.sqrt(w * h / 4);
-            Bitmap src = ((BitmapDrawable)getDrawable()).getBitmap();
             Bitmap tmp = null;
-            int srcSize = (int)Math.sqrt(src.getWidth() * src.getHeight());
+            int srcSize = (int)Math.sqrt(bitmap.getWidth() * bitmap.getHeight());
             if (srcSize > maxSize) {
-                int nw = src.getWidth() * maxSize / srcSize;
-                int nh = src.getHeight() * maxSize / srcSize;
-                tmp = Bitmap.createScaledBitmap(src, nw, nh, true);
+                int nw = bitmap.getWidth() * maxSize / srcSize;
+                int nh = bitmap.getHeight() * maxSize / srcSize;
+                tmp = Bitmap.createScaledBitmap(bitmap, nw, nh, true);
             }
             else
-                tmp = src;
+                tmp = bitmap;
             bmBlur = Graphic.fastblur(tmp, blursize);
         }
 
@@ -155,11 +169,11 @@ public class CropView extends ImageView {
             paint.setStrokeWidth(rectWidth * 2);
 
         canvas.drawRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y, paint);
-        if (getDrawable() != null)
+        if (bitmap != null)
         {
             canvas.save();
             canvas.clipRect(leftTop.x, leftTop.y, rightBottom.x, rightBottom.y);
-            super.onDraw(canvas);
+            canvas.drawBitmap(bitmap,null,imageScaledRect,null);
             canvas.restore();
             /*
             Bitmap src = ((BitmapDrawable)getDrawable()).getBitmap();
@@ -214,6 +228,7 @@ public class CropView extends ImageView {
     }
 
     private void initCropView() {
+        rectMinSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getContext().getResources().getDisplayMetrics());
         rectWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getContext().getResources().getDisplayMetrics());
         touchSize = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10.0f, getContext().getResources().getDisplayMetrics());
         blursize = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2.0f, getContext().getResources().getDisplayMetrics());
@@ -238,39 +253,68 @@ public class CropView extends ImageView {
     private boolean isInImageRange(PointF point) {
         // Get image matrix values and place them in an array
 
-        return (point.x>=(center.x-(imageScaledWidth/2))&&point.x<=(center.x+(imageScaledWidth/2))&&point.y>=(center.y-(imageScaledHeight/2))&&point.y<=(center.y+(imageScaledHeight/2)))?true:false;
+        return (point.x>=(center.x-(imageScaledWidth/2))&&
+                point.x<=(center.x+(imageScaledWidth/2))&&
+                point.y>=(center.y-(imageScaledHeight/2))&&
+                point.y<=(center.y+(imageScaledHeight/2)))?true:false;
     }
 
     private void adjustRectangle(int x, int y) {
         int movement;
+        int minSize = Math.min(imageScaledWidth,imageScaledHeight);
+        minSize = Math.min((int)rectMinSize,minSize);
         switch(affectedSide) {
             case LEFT:
                 movement = x-leftTop.x;
                 if(isInImageRange(new PointF(leftTop.x+movement,leftTop.y+movement)))
                     leftTop.set(leftTop.x+movement,leftTop.y+movement);
+                    if (rightBottom.x - leftTop.x < minSize)
+                        leftTop.set(rightBottom.x - minSize,rightBottom.y - minSize);
                 break;
             case TOP:
                 movement = y-leftTop.y;
                 if(isInImageRange(new PointF(leftTop.x+movement,leftTop.y+movement)))
                     leftTop.set(leftTop.x+movement,leftTop.y+movement);
+                if (rightBottom.x - leftTop.x < minSize)
+                    leftTop.set(rightBottom.x - minSize,rightBottom.y - minSize);
                 break;
             case RIGHT:
                 movement = x-rightBottom.x;
                 if(isInImageRange(new PointF(rightBottom.x+movement,rightBottom.y+movement)))
                     rightBottom.set(rightBottom.x+movement,rightBottom.y+movement);
+                if (rightBottom.x - leftTop.x < minSize)
+                    rightBottom.set(leftTop.x + minSize,leftTop.y + minSize);
                 break;
             case BOTTOM:
                 movement = y-rightBottom.y;
                 if(isInImageRange(new PointF(rightBottom.x+movement,rightBottom.y+movement)))
                     rightBottom.set(rightBottom.x+movement,rightBottom.y+movement);
+                if (rightBottom.x - leftTop.x < minSize)
+                    rightBottom.set(leftTop.x + minSize,leftTop.y + minSize);
                 break;
             case DRAG:
                 movement = x-previous.x;
                 int movementY = y-previous.y;
-                if(isInImageRange(new PointF(leftTop.x+movement,leftTop.y+movementY)) && isInImageRange(new PointF(rightBottom.x+movement,rightBottom.y+movementY))) {
+                if (leftTop.x + movement < imageScaledRect.left)
+                    movement = imageScaledRect.left - leftTop.x;
+                if (rightBottom.x + movement > imageScaledRect.right)
+                    movement = imageScaledRect.right - rightBottom.x;
+
+                if (leftTop.y + movementY < imageScaledRect.top)
+                    movementY = imageScaledRect.top - leftTop.y;
+
+                if (rightBottom.y + movementY > imageScaledRect.bottom)
+                    movementY = imageScaledRect.bottom - rightBottom.y;
+
+
+                leftTop.set(leftTop.x+movement,leftTop.y+movementY);
+                rightBottom.set(rightBottom.x+movement,rightBottom.y+movementY);
+                /*
+                if(isInImageRange(new PointF(leftTop.x+movement,leftTop.y+movementY)))
                     leftTop.set(leftTop.x+movement,leftTop.y+movementY);
+                if (isInImageRange(new PointF(rightBottom.x+movement,rightBottom.y+movementY)))
                     rightBottom.set(rightBottom.x+movement,rightBottom.y+movementY);
-                }
+                    */
                 break;
         }
     }
@@ -291,14 +335,13 @@ public class CropView extends ImageView {
     }
 
     public Bitmap getCroppedImage() {
-        Bitmap src = ((BitmapDrawable)getDrawable()).getBitmap();
-        int h = src.getHeight() * (rightBottom.y - leftTop.y) / imageScaledHeight;
-        int w = src.getWidth() * (rightBottom.x - leftTop.x) / imageScaledWidth;
+        int h = bitmap.getHeight() * (rightBottom.y - leftTop.y) / imageScaledHeight;
+        int w = bitmap.getWidth() * (rightBottom.x - leftTop.x) / imageScaledWidth;
         Rect tmp = new Rect();
-        tmp.left = src.getWidth() * (leftTop.x - imgCoord.left) / imageScaledWidth;
-        tmp.top = src.getHeight() * (leftTop.y - imgCoord.top) / imageScaledHeight;
+        tmp.left = bitmap.getWidth() * (leftTop.x - imgCoord.left) / imageScaledWidth;
+        tmp.top = bitmap.getHeight() * (leftTop.y - imgCoord.top) / imageScaledHeight;
         tmp.right = tmp.left + w;
         tmp.bottom = tmp.top + h;
-        return Bitmap.createBitmap(src,tmp.left,tmp.top,tmp.width(),tmp.height());
+        return Bitmap.createBitmap(bitmap,tmp.left,tmp.top,tmp.width(),tmp.height());
     }
 }

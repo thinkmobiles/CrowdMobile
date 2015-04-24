@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="credit_titlefontsize">17sp</dimen>
-    <dimen name="credit_messagefontsize">13sp</dimen>
-    <dimen name="credit_bottomicon_width">180dp</dimen>
-</resources>

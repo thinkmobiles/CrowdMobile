@@ -83,14 +83,14 @@ public class CropFragment extends Fragment {
     class LoadImage extends AsyncTask<String, Void, Bitmap> {
         @Override
         protected Bitmap doInBackground(String[] params) {
-            return Graphic.decodeBitmap(params[0],displaySize.x,displaySize.y);
+            return Graphic.decodeBitmap(params[0],displaySize.x,displaySize.y, true);
         }
 
         @Override
         protected void onPostExecute(Bitmap result) {
             holder.removeView(progress);
             progress = null;
-            cropView.setImageBitmap(result);
+            cropView.setBitmap(result);
         }
     };
 

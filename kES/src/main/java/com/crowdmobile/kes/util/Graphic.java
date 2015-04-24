@@ -217,12 +217,12 @@ public class Graphic {
     }
 
     public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+            BitmapFactory.Options options, int reqWidth, int reqHeight, boolean sizeLimit) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
-
+        int maxSize = reqHeight * reqWidth;
         if (height > reqHeight || width > reqWidth) {
 
             final int halfHeight = height / 2;
@@ -230,22 +230,23 @@ public class Graphic {
 
             // Calculate the largest inSampleSize value that is a power of 2 and keeps both
             // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
+            while ((sizeLimit && ((halfHeight /inSampleSize) * (halfWidth / inSampleSize) > maxSize)) ||
+                    ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth)) {
                 inSampleSize *= 2;
             }
         }
-
         return inSampleSize;
     }
-    public static Bitmap decodeBitmap(String filePath,int width,int height)
+
+    public static Bitmap decodeBitmap(String filePath,int width,int height,boolean forceSize)
     {
         Bitmap result = null;
         try {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
-        options.inSampleSize = calculateInSampleSize(options,width,height);
+        options.inSampleSize = calculateInSampleSize(options,width,height,forceSize);
         options.inJustDecodeBounds = false;
         result =  BitmapFactory.decodeFile(filePath,options);
 

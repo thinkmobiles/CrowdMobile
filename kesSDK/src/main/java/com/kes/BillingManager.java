@@ -62,6 +62,8 @@ public class BillingManager {
 
     public void onStart(Context context,BillingListener listener)
     {
+        if (!mSession.getAccountManager().getUser().isRegistered())
+            throw new IllegalStateException("User is not registered");
         LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDIT_STATUS));
         LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDITLIST));
         if (mProductList == null)

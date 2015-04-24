@@ -61,18 +61,19 @@ public class CreditFragment extends Fragment {
     BillingManager.BillingListener billingListener = new BillingManager.BillingListener() {
         @Override
         public void onStatus(BillingManager.BillingStatus status) {
-            if (status == BillingManager.BillingStatus.PaymentFail)
-            {
-                holderProgress.setVisibility(View.VISIBLE);
-                tvBillingStatus.setText(R.string.credit_status_processing_fail);
-                holderButtons.setVisibility(View.VISIBLE);
+            if (status == BillingManager.BillingStatus.PaymentFail ||
+                status == BillingManager.BillingStatus.InventoryFail ||
+                status == BillingManager.BillingStatus.InitFailed ||
+                status == BillingManager.BillingStatus.Idle)
                 billingProgress.setVisibility(View.GONE);
-                return;
-            } else
-            {
-                holderButtons.setVisibility(View.GONE);
+            else
                 billingProgress.setVisibility(View.VISIBLE);
-            }
+
+
+            if (status == BillingManager.BillingStatus.PaymentFail)
+                holderButtons.setVisibility(View.VISIBLE);
+            else
+                holderButtons.setVisibility(View.GONE);
 
             if (status == BillingManager.BillingStatus.Idle)
                 holderProgress.setVisibility(View.GONE);
@@ -82,6 +83,8 @@ public class CreditFragment extends Fragment {
                 tvBillingStatus.setText(R.string.credit_status_init);
                 else if (status == BillingManager.BillingStatus.InitFailed)
                     tvBillingStatus.setText(R.string.credit_status_initfail);
+                else if (status == BillingManager.BillingStatus.InventoryFail)
+                    tvBillingStatus.setText(R.string.credit_status_inventoryfail);
                 else if (status == BillingManager.BillingStatus.PaymentProcess)
                     tvBillingStatus.setText(R.string.credit_status_processing);
                 else if (status == BillingManager.BillingStatus.PaymentFail)

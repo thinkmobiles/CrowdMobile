@@ -88,7 +88,8 @@
     <string name="purchase_retry">Retry</string>
     <string name="purchase_refund">Refund</string>
     <string name="credit_status_init">Initializing google play</string>
-    <string name="credit_status_initfail">Failed to connect to google play</string>
+    <string name="credit_status_initfail">Failed initializ google play</string>
+    <string name="credit_status_inventoryfail">Failed to connect to google play</string>
     <string name="credit_status_request_products">Loading</string>
     <string name="credit_status_processing">Processing payment</string>
     <string name="credit_status_processing_fail">Bongo could not get the bananas you have purchased.</string>
@@ -123,6 +124,7 @@
     <string-array name="credits_list">
         <item>xbanana1</item>
         <item>xbanana5</item>
+        <item>xbanana10</item>
     </string-array>
 
 </resources>

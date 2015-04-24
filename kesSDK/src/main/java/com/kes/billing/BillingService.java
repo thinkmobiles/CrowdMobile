@@ -151,6 +151,7 @@ public class BillingService extends Service {
                     Purchase p = params[i];
                     try {
                         CreditResponse cr = NetworkAPI.addCredit(auth_token, p.getOriginalJson());
+                        if (false)
                         iabHelper.consume(p);
                         totalCount++;
                         publishProgress(cr.credit_points);
