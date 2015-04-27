@@ -174,6 +174,11 @@ public abstract class FeedBaseFragment extends Fragment {
     FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener()
     {
         @Override
+        public void onUnread(FeedManager.FeedWrapper wrapper) {
+
+        }
+
+        @Override
         public void onPageLoaded(FeedManager.FeedWrapper wrapper) {
 
             if (wrapper.feedType != getFeedType())

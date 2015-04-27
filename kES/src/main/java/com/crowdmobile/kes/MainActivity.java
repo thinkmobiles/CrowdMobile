@@ -20,9 +20,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crowdmobile.kes.util.NotificationUtil;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
+import com.kes.FeedManager;
 import com.kes.Session;
 import com.kes.model.User;
 import com.kes.net.DataFetcher;
@@ -37,6 +39,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity implements NavigationBar.NavigationCallback {
 
+    public static String TAG = ActionBarActivity.class.getSimpleName();
+    public static String TAG_MYPOSTS = "myposts";
     private Handler mHandler;
     private Toolbar toolbar;
     private Session mSession;
@@ -115,8 +119,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         }
         navigationBar = new NavigationBar(this,findViewById(R.id.navigationBar),viewPager);
 
-        navigationBar.navigateTo(NavigationBar.Attached.values()[PreferenceUtils.getActiveFragment(this,NavigationBar.Attached.Feed.ordinal())]);
-
         networkAdapter = new ArrayAdapter<String>(this,
                 R.layout.item_logcat, android.R.id.text1, networkComm);
         lvLogcat.setAdapter(networkAdapter);
@@ -129,6 +131,21 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		*/
 	}
 
+    private void navigate(Intent intent)
+    {
+        NavigationBar.Attached a[] = NavigationBar.Attached.values();
+        int saved = PreferenceUtils.getActiveFragment(this, NavigationBar.Attached.Feed.ordinal());
+        if (saved < 0 || saved > a.length -1)
+            saved = 0;
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                if (extras.getBoolean(TAG_MYPOSTS, false))
+                    saved = NavigationBar.Attached.MyFeed.ordinal();
+            }
+        }
+        navigationBar.navigateTo(a[saved]);
+    }
 
     @Override
     protected void onDestroy() {
@@ -150,19 +167,81 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onStart() {
         super.onStart();
+        Session.getInstance(this).getFeedManager().registerOnChangeListener(onFeedChange);
+        //mHandler.post(refreshTread);
+        logCatThread = new LogCatThread();
+        logCatThread.start();
+        navigate(getIntent());
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        navigate(intent);
+    }
 
     @Override
     protected void onStop() {
         super.onStop();
+        Session.getInstance(this).getFeedManager().unRegisterOnChangeListener(onFeedChange);
+        logCatThread.interrupt();
+        logCatThread = null;
+
     }
+
+    Runnable refreshTread = new Runnable() {
+        @Override
+        public void run() {
+           Session.getInstance(MainActivity.this).getFeedManager().checkUnread();
+           mHandler.postDelayed(this,60000);
+        }
+    };
+
+    FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener() {
+        @Override
+        public void onUnread(FeedManager.FeedWrapper wrapper) {
+            NotificationUtil.createNotification(MainActivity.this);
+        }
+
+        @Override
+        public void onPageLoaded(FeedManager.FeedWrapper wrapper) {
+
+        }
+
+        @Override
+        public void onMarkAsReadResult(int questionID, int commentID, Exception error) {
+
+        }
+
+        @Override
+        public void onLikeResult(int questionID, int commentID, Exception error) {
+
+        }
+
+        @Override
+        public void onReportResult(int questionID, Exception error) {
+
+        }
+
+        @Override
+        public void onDeleteResult(int questionID, int commentID, Exception error) {
+
+        }
+
+        @Override
+        public void onMarkAsPrivateResult(int questionID, Exception error) {
+
+        }
+
+        @Override
+        public void onPostResult(int questionID, Exception error) {
+
+        }
+    };
 
     @Override
     protected void onResume() {
         super.onResume();
-        logCatThread = new LogCatThread();
-        logCatThread.start();
         if (KesApplication.enableHockey)
             CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
     }
@@ -170,8 +249,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onPause() {
         super.onPause();
-        logCatThread.interrupt();
-        logCatThread = null;
         if (navigationBar != null)
             navigationBar.saveState();
     }

@@ -14,6 +14,7 @@ import java.util.WeakHashMap;
 public class FeedManager {
 
     public interface OnChangeListener {
+        public void onUnread(FeedWrapper wrapper);
         public void onPageLoaded(FeedWrapper wrapper);
         public void onMarkAsReadResult(int questionID, int commentID, Exception error);
         public void onLikeResult(int questionID, int commentID, Exception error);
@@ -104,6 +105,11 @@ public class FeedManager {
             return this;
         }
 
+        public QueryParams setPageSize(int pageSize) {
+            feedWrapper.page_size = Integer.valueOf(pageSize);
+            return this;
+        }
+
         public QueryParams tags(String tags) {
             feedWrapper.tags = tags;
             return this;
@@ -156,6 +162,7 @@ public class FeedManager {
             TaskLoadFeed.loadFeed(manager.mSession.getContext(), token, feedWrapper);
         }
 
+
         public boolean getCache(ArrayList<PhotoComment> dest)
         {
             SparseArray<PhotoComment> cache = manager.getCache(feedWrapper.feedType);
@@ -182,6 +189,21 @@ public class FeedManager {
         }
     }
 
+    public void checkUnread()
+    {
+        TaskCheckUnread.loadFeed(mSession.getContext(), mSession.getAccountManager().getToken());
+    }
+
+    protected void updateUnread(FeedWrapper feedWrapper)
+    {
+        Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
+        while (iterator.hasNext()) {
+            tmp = iterator.next();
+            tmp.onUnread(feedWrapper);
+        }
+        tmp = null; //don't change, GC bug
+
+    }
 
     protected void updateData(FeedWrapper feedWrapper) {
         if (feedWrapper.feedType == FeedType.My && feedWrapper.transactionid < transactionIDMyFeed)

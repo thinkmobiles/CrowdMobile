@@ -17,6 +17,10 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!-- Notification bar -->
+    <string name="notification_title">Bongo</string>
+    <string name="notification_text">You have new answered questions</string>
+
     <!-- Login -->
     <string name="login_facebook">Log in with Facebook</string>
     <string name="login_twitter">Log in with Twitter</string>

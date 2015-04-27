@@ -42,6 +42,7 @@ public class NavigationBar {
 	{
 		mActivity = activity;
         mViewPager = viewPager;
+        mViewPager.setOffscreenPageLimit(3);
         adapter = new NavbarAdapter(activity.getSupportFragmentManager());
         mViewPager.setAdapter(adapter);
         mViewPager.setOnPageChangeListener(pageChangeListener);

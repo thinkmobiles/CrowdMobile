@@ -206,18 +206,41 @@ public class CreditFragment extends Fragment {
 
         private LayoutInflater inflater;
         private Session session;
+        private int bestOffer = -1;
 
         public PriceAdapter() {
             super(getActivity(), 0, priceList);
             inflater = getActivity().getLayoutInflater();
+            calcMinPrice();
         }
 
 
-    @Override
+        private void calcMinPrice()
+        {
+            double minPrice = Double.MAX_VALUE;
+            for (int i = 0; i < priceList.size(); i++)
+            {
+                CreditItem ci = priceList.get(i);
+                double priceOne = ci.price / ci.quantity;
+                if (priceOne < minPrice)
+                {
+                    minPrice = priceOne;
+                    bestOffer = i;
+                }
+            }
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            calcMinPrice();
+            super.notifyDataSetChanged();
+        }
+
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null)
                 convertView = PriceItem.createView(inflater, parent);
-            PriceItem.updateView(convertView,getItem(position),currencyFormat);
+            PriceItem.updateView(convertView,getItem(position),currencyFormat, position == bestOffer);
             return convertView;
         }
 
