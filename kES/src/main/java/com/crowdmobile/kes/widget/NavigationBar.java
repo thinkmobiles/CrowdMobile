@@ -12,10 +12,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.crowdmobile.kes.R;
-import com.crowdmobile.kes.fragment.CreditFragment;
 import com.crowdmobile.kes.fragment.ComposeFragment;
+import com.crowdmobile.kes.fragment.CreditFragment;
 import com.crowdmobile.kes.fragment.MyFeedFragment;
 import com.crowdmobile.kes.fragment.NewsFeedFragment;
 import com.crowdmobile.kes.fragment.NotRegisteredFragment;
@@ -37,6 +38,7 @@ public class NavigationBar {
 	private ViewPager mViewPager;
     private NavbarAdapter adapter;
     private boolean flag_myfeedInvalidate = false;
+    private TextView tvUnreadCount;
 
 	public NavigationBar(ActionBarActivity activity, View v,ViewPager viewPager)
 	{
@@ -55,7 +57,19 @@ public class NavigationBar {
 		btMyFeed.setOnClickListener(onClickListener);
 		btCompose.setOnClickListener(onClickListener);
 		btCheckout.setOnClickListener(onClickListener);
+        tvUnreadCount = (TextView)v.findViewById(R.id.tvUnreadCount);
+        setUnreadCount(0);
 	}
+
+    public void setUnreadCount(int count)
+    {
+        if (count < 1)
+            tvUnreadCount.setVisibility(View.INVISIBLE);
+        else {
+            tvUnreadCount.setVisibility(View.VISIBLE);
+            tvUnreadCount.setText(Integer.toString(count));
+        }
+    }
 
     public void invalidateMyFeed()
     {
@@ -125,11 +139,12 @@ public class NavigationBar {
         if (src == Attached.Feed)
             return new NewsFeedFragment();
 
-        if (src == Attached.Checkout)
-            return new CreditFragment();
 
         if (!Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
             return new NotRegisteredFragment();
+
+        if (src == Attached.Checkout)
+            return new CreditFragment();
 
         if (src == Attached.MyFeed)
             return new MyFeedFragment();

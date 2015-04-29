@@ -73,6 +73,11 @@ class PreferenceUtil {
     }
     */
 
+    public static String getAuthToken(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.key_user_authtoken), null);
+    }
+
     public static User getUser(Context context) {
         User result = new User();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -100,5 +105,15 @@ class PreferenceUtil {
                 .commit();
     }
 
+    public static void setHighestUnreadID(Context context, int value) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putInt(context.getString(R.string.key_highest_unread_id),value)
+                .commit();
+    }
+
+    public static int getHighestUnreadID(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getInt(context.getString(R.string.key_highest_unread_id), -1);
+    }
 
 }

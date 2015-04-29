@@ -34,6 +34,7 @@ public class BillingManager {
     private Session mSession;
     private BillingListener mBillingListener;
     private BillingStatus mBillingStatus = BillingStatus.Idle;
+    private boolean started = false;
 
     public ServiceConnection billingConnection = new ServiceConnection() {
         @Override
@@ -60,14 +61,18 @@ public class BillingManager {
         mProductList = productList;
     }
 
+
     public void onStart(Context context,BillingListener listener)
     {
+        if (started)
+            return;
+        started = true;
         if (!mSession.getAccountManager().getUser().isRegistered())
             throw new IllegalStateException("User is not registered");
-        LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDIT_STATUS));
-        LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDITLIST));
         if (mProductList == null)
             throw new IllegalStateException("Product list is not initialised.Please call init() first.");
+        LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDIT_STATUS));
+        LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDITLIST));
         mBillingListener = listener;
         listener.onStatus(BillingStatus.Init);
         Intent intent = new Intent(context, BillingService.class);
@@ -94,6 +99,9 @@ public class BillingManager {
 
     public void onStop(Context context)
     {
+        if (!started)
+            return;
+        started = false;
         LocalBroadcastManager.getInstance(mSession.getContext()).unregisterReceiver(receiver);
         mBillingListener = null;
         if (isBond)

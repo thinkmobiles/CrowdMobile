@@ -20,6 +20,9 @@
     <item name="bubblecolor" type="color">#000</item>
     <item name="bubbletextcolor" type="color">#fff</item>
 
+    <item name="unreadcountbackground" type="color">#fff</item>
+    <item name="unreadcounttext" type="color">#000</item>
+
     <!-- Compose -->
     <item name="compose_background" type="color">#e3f1f5</item>
 

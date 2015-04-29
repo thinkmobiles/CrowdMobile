@@ -174,8 +174,8 @@ public abstract class FeedBaseFragment extends Fragment {
     FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener()
     {
         @Override
-        public void onUnread(FeedManager.FeedWrapper wrapper) {
-
+        public boolean onUnread(FeedManager.FeedWrapper wrapper) {
+            return false;
         }
 
         @Override

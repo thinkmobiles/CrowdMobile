@@ -14,5 +14,6 @@
     <string name="key_user_balance">key_user_balance</string>
     <string name="key_user_unread_count">key_user_unread_count</string>
     <string name="key_user_login_type">key_user_login_type</string>
+    <string name="key_highest_unread_id">key_highest_unread_id</string>
 
 </resources>

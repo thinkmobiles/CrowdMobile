@@ -36,6 +36,7 @@ public class ComposeFragment extends Fragment {
 
     boolean hasImage = false;
     EditText edMessage;
+    ImageView imgPrivate;
     View imgCamera;
     ImageView imgPreview;
     ImageView imgPost;
@@ -45,6 +46,7 @@ public class ComposeFragment extends Fragment {
     TransitionDrawable transitionPost;
     int postEnabled = -1;
     boolean afterResume = false;
+    boolean isPrivate;
 
     @Override
     public void onResume() {
@@ -77,13 +79,24 @@ public class ComposeFragment extends Fragment {
         edMessage = (EditText)result.findViewById(R.id.edMessage);
         edMessage.addTextChangedListener(tv);
         edMessage.setOnKeyListener(kl);
+        imgPrivate = (ImageView)result.findViewById(R.id.imgPrivate);
         imgPreview = (ImageView)result.findViewById(R.id.imgPreview);
         previewClose = result.findViewById(R.id.ivPreviewClose);
         previewClose.setOnClickListener(onClickListener);
+        imgPrivate.setOnClickListener(onClickListener);
         edMessage.setText(PreferenceUtils.getComposeText(getActivity()));
-
+        isPrivate = PreferenceUtils.getComposePrivate(getActivity());
+        updatePrivate();
         loadPic();
         return result;
+    }
+
+    private void updatePrivate()
+    {
+        if (isPrivate)
+            imgPrivate.setImageResource(R.drawable.ic_private);
+        else
+            imgPrivate.setImageResource(R.drawable.ic_public);
     }
 
     /*
@@ -99,13 +112,19 @@ public class ComposeFragment extends Fragment {
     public void onPause() {
         super.onPause();
         PreferenceUtils.setComposeText(getActivity(), edMessage.getText().toString());
+        PreferenceUtils.setComposePrivate(getActivity(), isPrivate);
         //PreferenceUtils.setComposePicture(getActivity(), mCurrentPhoto != null ? mCurrentPhoto.getAbsolutePath() : null);
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (v == imgPost)
+            if (v == imgPrivate)
+            {
+                isPrivate = !isPrivate;
+                updatePrivate();
+            }
+            else if (v == imgPost)
             {
                 postQuestion();
             }
@@ -194,6 +213,7 @@ public class ComposeFragment extends Fragment {
         edMessage = null;
         imgCamera = null;
         imgPost = null;
+        imgPrivate = null;
         imgPreview = null;
         previewClose = null;
         tvHint = null;
@@ -294,7 +314,7 @@ public class ComposeFragment extends Fragment {
 
         InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edMessage.getWindowToken(), 0);
-        Session.getInstance(getActivity()).getFeedManager().postQuestion(question, picturePath);
+        Session.getInstance(getActivity()).getFeedManager().postQuestion(isPrivate, question, picturePath);
         edMessage.setText("");
         previewClose(false);
         NavigationBar nb = ((NavigationBar.NavigationCallback)getActivity()).getNavigationBar();

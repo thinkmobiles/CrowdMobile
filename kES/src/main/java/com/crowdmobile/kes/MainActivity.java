@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +22,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.crowdmobile.kes.util.NotificationUtil;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
+import com.kes.BaseNotificationCreator;
 import com.kes.FeedManager;
+import com.kes.PushHandler;
 import com.kes.Session;
 import com.kes.model.User;
 import com.kes.net.DataFetcher;
@@ -88,6 +91,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        Configuration configuration = getResources().getConfiguration();
+        Log.d("HEIGHT",Float.toString(configuration.screenHeightDp));
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
@@ -102,11 +107,13 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
        // if (true)
        //     throw new IllegalStateException("HockeyAPP Crash test onCreate2()");
         mHandler = new Handler();
+        mHandler.post(refreshTread);
 
         mSession = Session.getInstance(this);
 		if (!mSession.getAccountManager().getUser().isRegistered() && !PreferenceUtils.getSkipLogin(this))
 		{
 			AccountActivity.open(this);
+            finish();
 			return;
 		}
         mSession.getAccountManager().registerListener(accountListener);
@@ -150,6 +157,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
         UpdateManager.unregister();
         mSession.getAccountManager().unRegisterListener(accountListener);
     }
@@ -168,7 +176,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     protected void onStart() {
         super.onStart();
         Session.getInstance(this).getFeedManager().registerOnChangeListener(onFeedChange);
-        //mHandler.post(refreshTread);
         logCatThread = new LogCatThread();
         logCatThread.start();
         navigate(getIntent());
@@ -189,18 +196,31 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
     }
 
+    public static class NotificationCreator extends BaseNotificationCreator {
+
+        @Override
+        public void createNotification(Context context, Bundle extras) {
+
+        }
+    };
+
     Runnable refreshTread = new Runnable() {
         @Override
         public void run() {
-           Session.getInstance(MainActivity.this).getFeedManager().checkUnread();
-           mHandler.postDelayed(this,60000);
+            Bundle bundle = new Bundle();
+            PushHandler.handlePush(getApplicationContext(),NotificationCreator.class, bundle);
+            //mHandler.postDelayed(this,10000);
         }
     };
 
     FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener() {
         @Override
-        public void onUnread(FeedManager.FeedWrapper wrapper) {
-            NotificationUtil.createNotification(MainActivity.this);
+        public boolean onUnread(FeedManager.FeedWrapper wrapper) {
+            int count = 0;
+            if (wrapper.comments != null)
+                count = wrapper.comments.length;
+            navigationBar.setUnreadCount(count);
+            return true;
         }
 
         @Override

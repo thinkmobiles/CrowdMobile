@@ -41,6 +41,17 @@ public class PreferenceUtils {
                 .getString(context.getString(R.string.key_compose_text), "");
     }
 
+    public static void setComposePrivate(Context context, boolean value) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putBoolean(context.getString(R.string.key_compose_private),value)
+                .commit();
+    }
+
+    public static boolean getComposePrivate(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(context.getString(R.string.key_compose_private), false);
+    }
+
     public static void setCameraPicture(Context context, String value) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         if (value == null)

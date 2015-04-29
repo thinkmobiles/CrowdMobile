@@ -111,7 +111,8 @@ public class CreditFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Session.getInstance(getActivity()).getBillingManager().onStart(getActivity(), billingListener);
+        if (Session.getInstance(getActivity()).getAccountManager().getUser().isRegistered())
+            Session.getInstance(getActivity()).getBillingManager().onStart(getActivity(), billingListener);
     }
 
     @Override
@@ -143,6 +144,7 @@ public class CreditFragment extends Fragment {
         btCreditRefund = holderProgress.findViewById(R.id.btCreditRefund);
         btCreditRetry.setOnClickListener(onClickListener);
         btCreditRefund.setOnClickListener(onClickListener);
+        billingListener.onStatus(BillingManager.BillingStatus.Idle);
 //        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver, new IntentFilter(ACTION_CREDIT_UPDATE));
 //        updateCredits();
         return result;

@@ -77,7 +77,7 @@ public class NetworkService extends Service {
         for (Map.Entry<Intent,WorkerThread> entry : pending.entrySet()) {
             if (areEqual(entry.getKey(),intent))
             {
-                Log.d(TAG, "Rejecting duplicate task");
+                Log.d(TAG, "Rejecting duplicate task" + intent.getAction());
                 return START_NOT_STICKY;
             }
         }
@@ -162,7 +162,8 @@ public class NetworkService extends Service {
                 ne.serviceExecuteOnThread(NetworkService.this, intent);
                 mHandler.post(new RunnableWrapper(ne, intent));
             } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                throw new IllegalStateException("Class not found:" + intent.getAction());
+                e.printStackTrace();
+                throw new IllegalStateException("can't instantiate class:" + intent.getAction());
             } catch (InterruptedException ignored) {
             }
         }
@@ -178,7 +179,8 @@ public class NetworkService extends Service {
                 Set<String> bKeySet = bExtras.keySet();
 
 	            // check if the keysets are the same size
-	            if (aKeySet.size() != bKeySet.size()) return false;
+	            if (aKeySet.size() != bKeySet.size())
+                    return false;
                 if (aKeySet.size() == 0)
                     return true;    //there was a nullpointerexception
 	            // compare all of a's extras to b
@@ -189,10 +191,9 @@ public class NetworkService extends Service {
 	                {
 	                	Object o1 = aExtras.get(key);
 	                	Object o2 = bExtras.get(key);
-	                	if (o1 == null)
-                            return o2 == null;
-
-	                	if (!o1.equals(o2))
+	                	if ((o1 == null && o2 != null) || (o2 == null && o1 != null))
+                            return false;
+                        if (o1 != null && o2 != null && !o1.equals(o2))
                             return false;
 	                }
 	            }
@@ -204,16 +205,16 @@ public class NetworkService extends Service {
                     {
                         Object o1 = aExtras.get(key);
                         Object o2 = bExtras.get(key);
-                        if (o1 == null)
-                            return o2 == null;
-
-                        if (!o1.equals(o2))
+                        if ((o1 == null && o2 != null) || (o2 == null && o1 != null))
+                            return false;
+                        if (o1 != null && o2 != null && !o1.equals(o2))
                             return false;
                     }
 	            }
                 return true;
 	        }
-	        if (aExtras == null && bExtras == null) return true;
+	        if (aExtras == null && bExtras == null)
+                return true;
 	        // either a has extras and b doesn't or b has extras and a doesn't
 	        return false;
 	    } else

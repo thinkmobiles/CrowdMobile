@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.kes.BillingManager;
 import com.kes.Session;
@@ -77,7 +76,7 @@ public class BillingService extends Service {
             products = extras.getStringArray(TAG_PRODUCTLIST);
             setStatus(BillingManager.BillingStatus.Init);
             iabHelper = new com.kes.billing.IabHelper(BillingService.this, signature);
-            iabHelper.enableDebugLogging(true);
+            iabHelper.enableDebugLogging(false);
             iabHelper.startSetup(iabSetupFinishedListener);
         }
         return mBinder;
@@ -225,9 +224,9 @@ public class BillingService extends Service {
                 newStatus = BillingManager.BillingStatus.Idle;
                 creditItems = new ArrayList<CreditItem>();
                 if (inventory != null && inventory.mSkuMap != null && inventory.mSkuMap.size() > 0) {
-                    Log.d(TAG, "--- requestCreditsList: " + inventory.mSkuMap.keySet().size());
+                    //Log.d(TAG, "--- requestCreditsList: " + inventory.mSkuMap.keySet().size());
                     for (String productId : inventory.mSkuMap.keySet()) {
-                        Log.d(TAG, "productId: " + productId);
+                        //Log.d(TAG, "productId: " + productId);
                         SkuDetails skuDetails = inventory.mSkuMap.get(productId);
                         if (skuDetails.mType != null)
                             creditItems.add(new CreditItem(skuDetails));
@@ -237,7 +236,7 @@ public class BillingService extends Service {
                 if (inventory != null && inventory.mPurchaseMap != null && inventory.mPurchaseMap.size() > 0) {
                     newStatus = BillingManager.BillingStatus.PaymentProcess;
                     purchaseItems = new Purchase[inventory.mPurchaseMap.size()];
-                    Log.d(TAG, "--- requestCreditsList: " + inventory.mPurchaseMap.keySet().size());
+                    //Log.d(TAG, "--- requestCreditsList: " + inventory.mPurchaseMap.keySet().size());
                     int idx = 0;
                     for (String productId : inventory.mPurchaseMap.keySet())
                         purchaseItems[idx++] = inventory.mPurchaseMap.get(productId);
@@ -301,7 +300,7 @@ public class BillingService extends Service {
         public void onIabPurchaseFinished(IabResult result, Purchase info) {
             if(result.isSuccess()) {
                 setStatus(BillingManager.BillingStatus.PaymentProcess);
-                Log.d("PURCHASE JSON",info.getOriginalJson());
+                //Log.d("PURCHASE JSON",info.getOriginalJson());
                 Intent intent = new Intent(BillingService.this,BillingService.class);
                 intent.setAction(ACTION_PURCHASE);
                 intent.putExtra(TAG_PURCHASE,new Purchase[] {info});

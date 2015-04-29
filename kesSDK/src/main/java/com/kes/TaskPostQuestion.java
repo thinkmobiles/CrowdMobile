@@ -22,6 +22,7 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
 		Intent intent = new Intent(ACTION);
         intent.putExtra(TAG_TOKEN,token);
         intent.putExtra(TAG_INTERNALID,internalID);
+        intent.putExtra(TAG_PRIVATE,is_private);
         intent.putExtra(TAG_MESSAGE,message);
         intent.putExtra(TAG_FILEPATH,filepath);
         intent.putExtra(TAG_TAGS,tag_list);

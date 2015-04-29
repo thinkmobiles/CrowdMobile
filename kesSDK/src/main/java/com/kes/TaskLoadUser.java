@@ -13,10 +13,10 @@ class TaskLoadUser extends  NetworkExecutable<AccountManager.UserWrapper> {
 
     static void loadUser(Context context, String token) {
         Intent intent = new Intent(ACTION);
-        intent.putExtra(TAG_TOKEN, token);
+        if (token != null)
+            intent.putExtra(TAG_TOKEN, token);
         NetworkService.execute(context, intent);
     }
-
 
     @Override
     public AccountManager.UserWrapper getResultWrapper() {

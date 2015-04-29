@@ -1,5 +1,7 @@
 package com.kes;
 
+import android.content.Context;
+import android.os.Bundle;
 import android.util.SparseArray;
 
 import com.kes.model.PhotoComment;
@@ -14,7 +16,7 @@ import java.util.WeakHashMap;
 public class FeedManager {
 
     public interface OnChangeListener {
-        public void onUnread(FeedWrapper wrapper);
+        public boolean onUnread(FeedWrapper wrapper);
         public void onPageLoaded(FeedWrapper wrapper);
         public void onMarkAsReadResult(int questionID, int commentID, Exception error);
         public void onLikeResult(int questionID, int commentID, Exception error);
@@ -68,6 +70,7 @@ public class FeedManager {
     }
 
     public static class FeedWrapper extends ResultWrapper {
+        protected Bundle extras;
         public FeedType feedType = FeedType.Public;
         public Integer since_id;
         public Integer max_id;
@@ -189,20 +192,43 @@ public class FeedManager {
         }
     }
 
-    public void checkUnread()
+    /*
+    protected void checkUnread()
     {
         TaskCheckUnread.loadFeed(mSession.getContext(), mSession.getAccountManager().getToken());
     }
+    */
 
-    protected void updateUnread(FeedWrapper feedWrapper)
+    protected void updateUnread(Context context, FeedWrapper feedWrapper)
     {
+        boolean handled = false;
         Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
         while (iterator.hasNext()) {
             tmp = iterator.next();
-            tmp.onUnread(feedWrapper);
+            handled |= tmp.onUnread(feedWrapper);
         }
         tmp = null; //don't change, GC bug
+        if (feedWrapper.comments == null || feedWrapper.comments.length == 0)
+            return;
 
+        //compare highest unread
+        if (feedWrapper.max_id <= PreferenceUtil.getHighestUnreadID(context))
+            return;
+        PreferenceUtil.setHighestUnreadID(context,feedWrapper.max_id);
+
+        if (handled)
+            return;
+
+        String notificationCreator = feedWrapper.extras.getString(BaseNotificationCreator.TAG_NOTIFICATION_CREATOR);
+        if (notificationCreator == null)
+            return;
+        try {
+            BaseNotificationCreator nc = (BaseNotificationCreator) Class.forName(notificationCreator).newInstance();
+            nc.createNotification(context, feedWrapper.extras);
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new IllegalStateException("can't instantiate class:" + notificationCreator);
+        }
     }
 
     protected void updateData(FeedWrapper feedWrapper) {
@@ -305,17 +331,18 @@ public class FeedManager {
     }
 
 
-    public void postQuestion(String question, String picturePath) {
+    public void postQuestion(boolean isPrivate, String question, String picturePath) {
         if (!Utils.strHasValue(question) && !Utils.strHasValue(picturePath))
             throw new IllegalStateException("nothing to post");
         PhotoComment p = new PhotoComment();
         p.status = PhotoComment.PostStatus.Pending;
         p.id = internalID ++;
         p.message = question;
+        p.is_private = isPrivate;
         if (picturePath != null)
             p.photo_url = "file://" + picturePath;
         pending.add(p);
-        TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.id, question, picturePath, null, false);
+        TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.id, question, picturePath, null, p.is_private);
     }
 
 

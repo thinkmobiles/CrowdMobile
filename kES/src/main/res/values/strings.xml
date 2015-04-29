@@ -120,6 +120,7 @@
     <string name="key_skip_login">skip_login</string>
     <string name="key_active_fragment">active_fragment</string>
     <string name="key_compose_text">compose_text</string>
+    <string name="key_compose_private">compose_private</string>
     <string name="key_camera_picture">camera_picture</string>
     <string name="key_composed_picture">composed_picture</string>
 

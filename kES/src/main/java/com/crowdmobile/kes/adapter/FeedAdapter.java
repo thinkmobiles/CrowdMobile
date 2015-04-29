@@ -227,9 +227,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             holder.ivAnswerRight.setVisibility(View.VISIBLE);
             if (feedType == FeedManager.FeedType.My) {
                 if (item.is_private)
-                    holder.ivAnswerRight.setImageResource(R.drawable.ic_feed_item_header_private);
+                    holder.ivAnswerRight.setImageResource(R.drawable.ic_private);
                 else
-                    holder.ivAnswerRight.setImageResource(R.drawable.ic_feed_item_header_public);
+                    holder.ivAnswerRight.setImageResource(R.drawable.ic_public);
             } else
             {
                 if (item.reported) {

@@ -71,6 +71,7 @@
     <dimen name="credit_item_space">1dp</dimen>
 
     <!-- Compose -->
+    <dimen name="compose_editor_height">150dp</dimen>
     <dimen name="compose_shader">25dp</dimen>
     <dimen name="compose_buttonheight">40dp</dimen>
     <dimen name="compose_buttonpadding">10dp</dimen>

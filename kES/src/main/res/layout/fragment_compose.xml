@@ -2,17 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:background="@color/compose_background"
-    android:weightSum="4"
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <com.crowdmobile.kes.widget.EditorCard
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         xmlns:custom="http://schemas.android.com/apk/res/com.crowdmobile.kes"
-        custom:maxHeight="200dp"
+        custom:maxHeight="@dimen/compose_editor_height"
         card_view:cardElevation="4dp"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="@dimen/compose_editor_height">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -56,27 +55,40 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </LinearLayout>
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:id="@+id/buttonHolder"
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageView
-                android:layout_alignParentLeft="true"
-                android:id="@+id/imgCamera"
-                android:src="@drawable/ic_post_add_image_active"
-                android:padding="@dimen/compose_buttonpadding"
-                android:layout_width="@dimen/compose_buttonheight"
-                android:layout_height="@dimen/compose_buttonheight" />
-            <ImageView
-                android:layout_alignParentRight="true"
-                android:id="@+id/imgPost"
-                android:src="@drawable/transition_post"
+                android:id="@+id/imgPrivate"
+                android:layout_gravity="right"
+                android:src="@drawable/ic_private"
                 android:padding="@dimen/compose_buttonpadding"
                 android:layout_width="@dimen/compose_buttonheight"
                 android:layout_height="@dimen/compose_buttonheight" />
 
-        </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/imgCamera"
+                    android:src="@drawable/ic_post_add_image_active"
+                    android:padding="@dimen/compose_buttonpadding"
+                    android:layout_width="@dimen/compose_buttonheight"
+                    android:layout_height="@dimen/compose_buttonheight" />
+                <ImageView
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/imgPost"
+                    android:src="@drawable/transition_post"
+                    android:padding="@dimen/compose_buttonpadding"
+                    android:layout_width="@dimen/compose_buttonheight"
+                    android:layout_height="@dimen/compose_buttonheight" />
+            </RelativeLayout>
+        </LinearLayout>
         <TextView
             android:id="@+id/tvHint"
             android:layout_alignParentTop="true"
