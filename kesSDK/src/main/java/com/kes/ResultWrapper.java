@@ -1,5 +1,7 @@
 package com.kes;
 
+import com.kes.model.PhotoComment;
+
 /**
  * Created by gadza on 2015.03.13..
  */
@@ -12,4 +14,5 @@ public class ResultWrapper {
     protected boolean suppressError = false;
     protected int questionID;
     protected int commentID;
+    protected PhotoComment photoComment;
 }

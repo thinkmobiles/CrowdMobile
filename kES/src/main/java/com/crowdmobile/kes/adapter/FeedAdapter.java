@@ -41,6 +41,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         public void retryPostClick(PhotoComment p);
         public void report(PhotoComment p);
         public void markAsPrivate(PhotoComment p);
+        public void onItemViewed(PhotoComment p);
     }
 
     public void hideFooter()
@@ -168,6 +169,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         }
 
         PhotoComment item = list.get(i);
+        if (feedType == FeedManager.FeedType.My)
+            listener.onItemViewed(item);
+
         holder.imgOpenShare.setTag(item.share_url);
 
         if (item.status == PhotoComment.PostStatus.Posted) {

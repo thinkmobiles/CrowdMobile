@@ -2,6 +2,7 @@ package com.kes;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.kes.model.PhotoComment;
@@ -18,11 +19,11 @@ public class FeedManager {
     public interface OnChangeListener {
         public boolean onUnread(FeedWrapper wrapper);
         public void onPageLoaded(FeedWrapper wrapper);
-        public void onMarkAsReadResult(int questionID, int commentID, Exception error);
+        public void onMarkAsReadResult(PhotoComment photoComment, Exception error);
         public void onLikeResult(int questionID, int commentID, Exception error);
         public void onReportResult(int questionID, Exception error);
         public void onDeleteResult(int questionID, int commentID, Exception error);
-        public void onMarkAsPrivateResult(int questionID, Exception error);
+        public void onMarkAsPrivateResult(PhotoComment photoComment, Exception error);
         public void onPostResult(int questionID, Exception error);
     }
 
@@ -201,6 +202,16 @@ public class FeedManager {
 
     protected void updateUnread(Context context, FeedWrapper feedWrapper)
     {
+        if (feedWrapper.comments == null || feedWrapper.comments.length == 0)
+            return;
+
+        for (int i = 0; i < feedWrapper.comments.length; i++) {
+            PhotoComment pc = myCache.get(feedWrapper.comments[i].id);
+            if (pc == null)
+                continue;
+            pc.responses = feedWrapper.comments[i].responses;
+        }
+
         boolean handled = false;
         Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
         while (iterator.hasNext()) {
@@ -208,12 +219,10 @@ public class FeedManager {
             handled |= tmp.onUnread(feedWrapper);
         }
         tmp = null; //don't change, GC bug
-        if (feedWrapper.comments == null || feedWrapper.comments.length == 0)
-            return;
 
         //compare highest unread
-        if (feedWrapper.max_id <= PreferenceUtil.getHighestUnreadID(context))
-            return;
+        //if (feedWrapper.max_id <= PreferenceUtil.getHighestUnreadID(context))
+        //    return;
         PreferenceUtil.setHighestUnreadID(context,feedWrapper.max_id);
 
         if (handled)
@@ -345,6 +354,15 @@ public class FeedManager {
         TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.id, question, picturePath, null, p.is_private);
     }
 
+    private void updateItemInCache(PhotoComment photoComment)
+    {
+        if (photoComment == null)
+            return;
+        if (publicCache.indexOfKey(photoComment.id) >= 0)
+            publicCache.put(photoComment.id,photoComment);
+        if (myCache.indexOfKey(photoComment.id) >= 0)
+            myCache.put(photoComment.id,photoComment);
+    }
 
     protected void updateAction(ResultWrapper wrapper)
     {
@@ -356,10 +374,14 @@ public class FeedManager {
                     tmp.onLikeResult(wrapper.questionID,wrapper.commentID,wrapper.exception);
                     break;
                 case MarkAsPrivate:
-                    tmp.onMarkAsPrivateResult(wrapper.questionID, wrapper.exception);
+                    updateItemInCache(wrapper.photoComment);
+                    tmp.onMarkAsPrivateResult(wrapper.photoComment, wrapper.exception);
                     break;
                 case MarkAsRead:
-                    tmp.onMarkAsReadResult(wrapper.questionID, wrapper.commentID, wrapper.exception);
+                    updateItemInCache(wrapper.photoComment);
+                    //Todo:unread cound should come from server
+                    mSession.getAccountManager().decreaseUnread();
+                    tmp.onMarkAsReadResult(wrapper.photoComment, wrapper.exception);
                     break;
                 case Report:
                     tmp.onReportResult(wrapper.questionID, wrapper.exception);
@@ -396,7 +418,8 @@ public class FeedManager {
 
     public void markAsRead(int questionID, int commentID)
     {
-        TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.MarkAsRead, questionID, commentID);
+        Log.d("FeedManager", "Marking as read" + questionID + "/" + commentID);
+        //TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.MarkAsRead, questionID, commentID);
     }
 
     protected void updatePostedQuestion(PhotoCommentResponseHolder holder) {

@@ -46,7 +46,7 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
         wrapper.max_id = -1;
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
-                com.kes.net.NetworkAPI.getFeed(token,wrapper.max_id,wrapper.since_id, null, filter, wrapper.tags);
+                com.kes.net.NetworkAPI.getFeed(token,null,null, null, filter, wrapper.tags);
         if (photoCommentWrapper.photo_comments != null && photoCommentWrapper.photo_comments.length > 0) {
             PhotoComment pcs[] = photoCommentWrapper.photo_comments;
             photoCommentWrapper.photo_comments = null;

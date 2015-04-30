@@ -2,12 +2,7 @@
 <resources>
     <dimen name="credit_titlefontsize">20sp</dimen>
     <dimen name="credit_messagefontsize">15sp</dimen>
-    <dimen name="credit_bottomicon_width">220dp</dimen>
-
-    <dimen name="credit_item_height">45dp</dimen>
-    <dimen name="credit_item_title_width">45dp</dimen>
-    <dimen name="credit_item_price_width">80dp</dimen>
-    <dimen name="credit_item_padding">7dp</dimen>
+    <dimen name="credit_bottomicon_width">170dp</dimen>
 
     <!-- Compose -->
     <dimen name="compose_editor_height">200dp</dimen>

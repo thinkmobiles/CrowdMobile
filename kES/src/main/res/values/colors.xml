@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Compose -->
+    <item name="splash_background" type="color">#fff</item>
+
     <item name="white" type="color">#fff</item>
     <item name="appTitleColor" type="color">#0a93ff</item>
     <item name="colorPrimary" type="color">#096fc2</item>

@@ -120,11 +120,12 @@ public class NetworkAPI {
         DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
     }
 
-    public static void markAsRead(String token, int photocommentid, int responseid) throws DataFetcher.KESNetworkException, InterruptedException
+    public static PhotoComment markAsRead(String token, int photocommentid, int responseid) throws DataFetcher.KESNetworkException, InterruptedException
     {
         String url = com.kes.net.ServerNavigator.markAsRead(photocommentid, responseid);
         String postData = ModelFactory.getTokenJson(token);
-        DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
+        String result = DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
+        return ModelFactory.getPhotoComment(result);
     }
 
     public static void like(String token, int photocommentid, int responseid) throws DataFetcher.KESNetworkException, InterruptedException
@@ -141,11 +142,12 @@ public class NetworkAPI {
         DataFetcher.requestAction(url, RequestType.DELETE, null,null, postData);
     }
 
-    public static void markAsPrivate(String token, int id) throws DataFetcher.KESNetworkException, InterruptedException
+    public static PhotoComment markAsPrivate(String token, int id) throws DataFetcher.KESNetworkException, InterruptedException
     {
         String url = com.kes.net.ServerNavigator.markAsPrivate(id);
         String postData = ModelFactory.getTokenJson(token);
-        DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
+        String result = DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
+        return ModelFactory.getPhotoComment(result);
     }
 
 }

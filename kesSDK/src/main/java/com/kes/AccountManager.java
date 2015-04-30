@@ -119,6 +119,15 @@ public class AccountManager {
             TaskPostToken.updatePushToken(mSession.getContext(), user.auth_token,ua_token);
     }
 
+    protected void decreaseUnread()
+    {
+        User u = getCachedUser(mSession.getContext());
+        u.unread_count --;
+        if (u.unread_count < 0)
+            u.unread_count = 0;
+        postUserChanged();
+    }
+
     public User getUser()
     {
         getCachedUser(mSession.getContext());

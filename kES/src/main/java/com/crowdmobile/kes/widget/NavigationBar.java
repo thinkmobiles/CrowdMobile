@@ -1,9 +1,11 @@
 package com.crowdmobile.kes.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 
 public class NavigationBar {
 
+    public static String ACTION_CHANGE = NavigationBar.class.getSimpleName() + "change";
 	public static interface NavigationCallback {
 		public NavigationBar getNavigationBar();
 	}
@@ -80,6 +83,7 @@ public class NavigationBar {
     {
         Attached newPage = Attached.values()[position + 1];
         updateIcons(newPage);
+        LocalBroadcastManager.getInstance(mActivity).sendBroadcast(new Intent(ACTION_CHANGE));
         attached = newPage;
         if (attached == Attached.MyFeed && flag_myfeedInvalidate) {
             flag_myfeedInvalidate = false;
@@ -219,9 +223,14 @@ public class NavigationBar {
 
     public void navigateTo(Attached dest)
     {
+        navigateTo(dest,true);
+    }
+
+    public void navigateTo(Attached dest,boolean smooth)
+    {
         if (attached == dest)
             return;
-        mViewPager.setCurrentItem(dest.ordinal() - 1);
+        mViewPager.setCurrentItem(dest.ordinal() - 1,smooth);
         selectPage(dest.ordinal() - 1);
     }
 

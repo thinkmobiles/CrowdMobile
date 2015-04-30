@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crowdmobile.kes.util.NotificationUtil;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
@@ -29,6 +28,7 @@ import com.kes.BaseNotificationCreator;
 import com.kes.FeedManager;
 import com.kes.PushHandler;
 import com.kes.Session;
+import com.kes.model.PhotoComment;
 import com.kes.model.User;
 import com.kes.net.DataFetcher;
 
@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     ListView lvLogcat;
     boolean networkVisible = false;
     ViewPager viewPager;
-
+    ReaderViewPagerTransformer pagerTransformer;
 
 	public static void open(Context context)
 	{
@@ -76,6 +76,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         public void onUserChanged(User user) {
             if (mCredit != null)
                 mCredit.setTitle(Integer.toString(mSession.getAccountManager().getUser().balance));
+            navigationBar.setUnreadCount(user.unread_count);
         }
 
         @Override
@@ -91,8 +92,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        Configuration configuration = getResources().getConfiguration();
-        Log.d("HEIGHT",Float.toString(configuration.screenHeightDp));
+//        Configuration configuration = getResources().getConfiguration();
+//        Log.d("HEIGHT",Float.toString(configuration.screenHeightDp));
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
@@ -107,7 +108,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
        // if (true)
        //     throw new IllegalStateException("HockeyAPP Crash test onCreate2()");
         mHandler = new Handler();
-        mHandler.post(refreshTread);
 
         mSession = Session.getInstance(this);
 		if (!mSession.getAccountManager().getUser().isRegistered() && !PreferenceUtils.getSkipLogin(this))
@@ -119,6 +119,9 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         mSession.getAccountManager().registerListener(accountListener);
         setContentView(R.layout.activity_main);
         viewPager = (ViewPager)findViewById(R.id.viewPager);
+//        viewPager.setPageTransformer(false,new RotationPageTransformer(90,0.5f));
+        pagerTransformer = new ReaderViewPagerTransformer(TransformType.ZOOM);
+        viewPager.setPageTransformer(false,pagerTransformer);
         lvLogcat = (ListView)findViewById(R.id.lvLogcat);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -136,6 +139,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 		setContentView(R.layout.activity_main);
 		*/
+        mHandler.postDelayed(refreshTread, 10000);
 	}
 
     private void navigate(Intent intent)
@@ -149,9 +153,10 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             if (extras != null) {
                 if (extras.getBoolean(TAG_MYPOSTS, false))
                     saved = NavigationBar.Attached.MyFeed.ordinal();
+                    PreferenceUtils.setActiveFragment(this,saved);
             }
         }
-        navigationBar.navigateTo(a[saved]);
+        navigationBar.navigateTo(a[saved],false);
     }
 
     @Override
@@ -200,7 +205,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
         @Override
         public void createNotification(Context context, Bundle extras) {
-
+            NotificationUtil.createNotification(context);
         }
     };
 
@@ -229,7 +234,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         }
 
         @Override
-        public void onMarkAsReadResult(int questionID, int commentID, Exception error) {
+        public void onMarkAsReadResult(PhotoComment photoComment, Exception error) {
 
         }
 
@@ -249,7 +254,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         }
 
         @Override
-        public void onMarkAsPrivateResult(int questionID, Exception error) {
+        public void onMarkAsPrivateResult(PhotoComment photoComment, Exception error) {
 
         }
 
@@ -367,6 +372,171 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
                 if (process != null)
                     process.destroy();
             }
+        }
+    }
+
+    public class RotationPageTransformer implements ViewPager.PageTransformer{
+        private float minAlpha;
+        private int degrees;
+        private float distanceToCentreFactor;
+
+        /**
+         * Creates a RotationPageTransformer
+         * @param degrees the inner angle between two edges in the "polygon" that the pages are on.
+         * Note, this will only work with an obtuse angle
+         */
+        public RotationPageTransformer(int degrees){
+            this(degrees, 0.7f);
+        }
+
+        /**
+         * Creates a RotationPageTransformer
+         * @param degrees the inner angle between two edges in the "polygon" that the pages are on.
+         * Note, this will only work with an obtuse angle
+         * @param minAlpha the least faded out that the side
+         */
+        public RotationPageTransformer(int degrees, float minAlpha){
+            this.degrees = degrees;
+            distanceToCentreFactor = (float) Math.tan(Math.toRadians(degrees / 2))/2;
+            this.minAlpha = minAlpha;
+        }
+
+        public void transformPage(View view, float position){
+            int pageWidth = view.getWidth();
+            int pageHeight = view.getHeight();
+            view.setPivotX((float) pageWidth / 2);
+            view.setPivotY((float) (pageHeight + pageWidth * distanceToCentreFactor));
+
+            if(position < -1){ //[-infinity,1)
+                //off to the left by a lot
+                view.setRotation(0);
+                view.setAlpha(0);
+            }else if(position <= 1){ //[-1,1]
+                view.setTranslationX((-position) * pageWidth); //shift the view over
+                view.setRotation(position * (180 - degrees)); //rotate it
+                // Fade the page relative to its distance from the center
+                view.setAlpha(Math.max(minAlpha, 1 - Math.abs(position)/3));
+            }else{ //(1, +infinity]
+                //off to the right by a lot
+                view.setRotation(0);
+                view.setAlpha(0);
+            }
+        }
+    }
+
+    public class PageTransformer implements ViewPager.PageTransformer {
+
+        public void transformPage(View view, float position) {
+
+            int pageWidth = view.getWidth();
+            if (position > 1)
+            if (position < -1) { // [-Infinity,-1)
+                // This page is way off-screen to the left.
+                view.setAlpha(0);
+
+            } else if (position <= 1) { // [-1,1]
+
+                view.setAlpha(Math.max(0.5f,1 - Math.abs(position)/3));
+                view.setTranslationX(-position * (pageWidth / 2)); //Half the normal speed
+
+            } else { // (1,+Infinity]
+                // This page is way off-screen to the right.
+                view.setAlpha(0);
+            }
+
+        }
+    }
+
+    static enum TransformType {
+        FLOW,
+        DEPTH,
+        ZOOM,
+        SLIDE_OVER
+    }
+
+    class ReaderViewPagerTransformer implements ViewPager.PageTransformer {
+        private final TransformType mTransformType;
+
+        ReaderViewPagerTransformer(TransformType transformType) {
+            mTransformType = transformType;
+        }
+
+        private static final float MIN_SCALE_DEPTH = 0.75f;
+        private static final float MIN_SCALE_ZOOM = 0.85f;
+        private static final float MIN_ALPHA_ZOOM = 0.5f;
+        private static final float SCALE_FACTOR_SLIDE = 0.85f;
+        private static final float MIN_ALPHA_SLIDE = 0.35f;
+
+        public void transformPage(View page, float position) {
+            final float alpha;
+            float scale;
+            final float translationX;
+
+            switch (mTransformType) {
+                case FLOW:
+                    page.setRotationY(position * -30f);
+                    return;
+
+                case SLIDE_OVER:
+                    if (position < 0 && position > -1) {
+                        // this is the page to the left
+                        scale = Math.abs(Math.abs(position) - 1) * (1.0f - SCALE_FACTOR_SLIDE) + SCALE_FACTOR_SLIDE;
+                        alpha = Math.max(MIN_ALPHA_SLIDE, 1 - Math.abs(position));
+                        int pageWidth = page.getWidth();
+                        float translateValue = position * -pageWidth;
+                        if (translateValue > -pageWidth) {
+                            translationX = translateValue;
+                        } else {
+                            translationX = 0;
+                        }
+                    } else {
+                        alpha = 1;
+                        scale = 1;
+                        translationX = 0;
+                    }
+                    break;
+
+                case DEPTH:
+                    if (position > 0 && position < 1) {
+                        // moving to the right
+                        alpha = (1 - position);
+                        scale = MIN_SCALE_DEPTH + (1 - MIN_SCALE_DEPTH) * (1 - Math.abs(position));
+                        translationX = (page.getWidth() * -position);
+                    } else {
+                        // use default for all other cases
+                        alpha = 1;
+                        scale = 1;
+                        translationX = 0;
+                    }
+                    break;
+
+                case ZOOM:
+                    if (position >= -1 && position <= 1) {
+                        scale = Math.max(MIN_SCALE_ZOOM, 1 - Math.abs(position));
+                        alpha = MIN_ALPHA_ZOOM +
+                                (scale - MIN_SCALE_ZOOM) / (1 - MIN_SCALE_ZOOM) * (1 - MIN_ALPHA_ZOOM);
+                        float vMargin = page.getHeight() * (1 - scale) / 2;
+                        float hMargin = page.getWidth() * (1 - scale) / 2;
+                        if (position < 0) {
+                            translationX = (hMargin - vMargin / 2);
+                        } else {
+                            translationX = (-hMargin + vMargin / 2);
+                        }
+                    } else {
+                        alpha = 1;
+                        scale = 1;
+                        translationX = 0;
+                    }
+                    break;
+
+                default:
+                    return;
+            }
+
+            page.setAlpha(alpha);
+            page.setTranslationX(translationX);
+            page.setScaleX(scale);
+            page.setScaleY(scale);
         }
     }
 

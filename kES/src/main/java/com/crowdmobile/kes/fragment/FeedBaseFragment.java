@@ -24,22 +24,23 @@ public abstract class FeedBaseFragment extends Fragment {
 
 
     private static final String TAG = FeedBaseFragment.class.getSimpleName();
-    Session session;
-    RecyclerView lvFeed;
-    LinearLayoutManager mLayoutManager;
-    FeedAdapter adapter;
-    ArrayList<PhotoComment> list;
+    private Session session;
+    protected RecyclerView lvFeed;
+    private LinearLayoutManager mLayoutManager;
+    private FeedAdapter adapter;
+    private ArrayList<PhotoComment> list;
 //    View itemTitle;
 //    View itemShare;
-    boolean scrollInitialized;
-    boolean titleVisible = false;
+    private boolean scrollInitialized;
+    private boolean titleVisible = false;
 //    FeedItem.ShareController shareController;
-    FeedManager.QueryParams lastNetworkAction = null;
-    SwipeRefreshLayout swipeContainer;
-    View holderNoPost;
-    int minID = 0;
-    boolean hasFooterView = false;
-    boolean isViewCreated = false;
+    private FeedManager.QueryParams lastNetworkAction = null;
+    private SwipeRefreshLayout swipeContainer;
+    private View holderNoPost;
+    private int minID = 0;
+    private boolean hasFooterView = false;
+    private boolean isViewCreated = false;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,9 +87,15 @@ public abstract class FeedBaseFragment extends Fragment {
             p.is_private = !p.is_private;
             Session.getInstance(getActivity()).getFeedManager().markAsPrivate(p.id);
         }
+
+        @Override
+        public void onItemViewed(PhotoComment p) {
+            FeedBaseFragment.this.onItemViewed(p);
+        }
     };
 
     public abstract FeedManager.FeedType getFeedType();
+    public abstract void onItemViewed(PhotoComment p);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -113,7 +120,6 @@ public abstract class FeedBaseFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         lvFeed.setLayoutManager(mLayoutManager);
         lvFeed.setAdapter(adapter);
-//        lvFeed.setOnScrollListener(listScroll);
         session.getFeedManager().registerOnChangeListener(onFeedChange);
         scrollInitialized = false;
         titleVisible = false;
@@ -175,6 +181,8 @@ public abstract class FeedBaseFragment extends Fragment {
     {
         @Override
         public boolean onUnread(FeedManager.FeedWrapper wrapper) {
+            if (getFeedType() == FeedManager.FeedType.My)
+                adapter.notifyDataSetChanged();
             return false;
         }
 
@@ -219,7 +227,7 @@ public abstract class FeedBaseFragment extends Fragment {
 
 
         @Override
-        public void onMarkAsReadResult(int questionID, int commentID, Exception error) {
+        public void onMarkAsReadResult(PhotoComment photoComment, Exception error) {
 
         }
 
@@ -239,7 +247,7 @@ public abstract class FeedBaseFragment extends Fragment {
         }
 
         @Override
-        public void onMarkAsPrivateResult(int questionID, Exception error) {
+        public void onMarkAsPrivateResult(PhotoComment photoComment, Exception error) {
 
         }
 
@@ -249,6 +257,7 @@ public abstract class FeedBaseFragment extends Fragment {
         }
 
     };
+
 
     /*
     ListView.OnScrollListener listScroll = new ListView.OnScrollListener() {

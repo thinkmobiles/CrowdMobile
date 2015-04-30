@@ -37,17 +37,20 @@ public class EditorCard extends CardView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        /*
         if (maxHeight != 0)
         {
+            int height = MeasureSpec.getSize(heightMeasureSpec);
+            if (height > maxHeight)
+                heightMeasureSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.AT_MOST);
+            /*
             widthMeasureSpec = MeasureSpec.getSize(widthMeasureSpec);
             heightMeasureSpec = MeasureSpec.getSize(heightMeasureSpec);
             if (heightMeasureSpec > maxHeight)
                 heightMeasureSpec = maxHeight;
             setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
-            return;
+            //return;
+            */
         }
-        */
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }

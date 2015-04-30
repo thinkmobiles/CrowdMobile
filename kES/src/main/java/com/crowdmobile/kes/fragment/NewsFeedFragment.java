@@ -2,13 +2,12 @@ package com.crowdmobile.kes.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.crowdmobile.kes.R;
 import com.kes.FeedManager;
+import com.kes.model.PhotoComment;
 
 /**
  * Created by gadza on 2015.03.16..
@@ -17,6 +16,11 @@ public class NewsFeedFragment extends FeedBaseFragment {
     @Override
     public FeedManager.FeedType getFeedType() {
         return FeedManager.FeedType.Public;
+    }
+
+    @Override
+    public void onItemViewed(PhotoComment p) {
+        //ignore
     }
 
     @Override

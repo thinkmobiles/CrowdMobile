@@ -70,6 +70,20 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
                 com.kes.net.NetworkAPI.getFeed(token,wrapper.max_id,wrapper.since_id, null, filter, wrapper.tags);
+
+        //TODO:remove,debug stuff, removes answers
+        /*
+        if (wrapper.feedType == FeedManager.FeedType.My)
+        {
+            if (photoCommentWrapper.photo_comments != null && photoCommentWrapper.photo_comments.length > 0)
+            {
+                for (int i = 0; i < photoCommentWrapper.photo_comments.length; i++)
+                    photoCommentWrapper.photo_comments[i].responses = null;
+            }
+        }
+        */
+        //TODO:---------------------
+
         //Thread.sleep(2000);
         if (wrapper.max_id == null || wrapper.since_id == null && photoCommentWrapper.photo_comments != null)
         {

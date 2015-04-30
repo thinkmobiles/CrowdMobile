@@ -1,5 +1,7 @@
 package com.kes.model;
 
+import com.kes.FeedManager;
+
 /**
  * Created by gadza on 2015.03.05..
  */
@@ -24,6 +26,17 @@ public class PhotoComment {
 
     //Temporary variables
     public boolean reported = false;
+
+    public void markAsRead(FeedManager feedManager)
+    {
+        if (responses == null || responses.length == 0)
+            return;
+        for (int i = 0; i < responses.length; i++)
+            if (!responses[i].read) {
+                responses[i].read = true;
+                feedManager.markAsRead(id, responses[i].id);
+            }
+    }
 
     public void copyFrom(PhotoComment src)
     {
