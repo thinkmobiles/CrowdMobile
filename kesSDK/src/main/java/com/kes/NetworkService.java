@@ -172,7 +172,10 @@ public class NetworkService extends Service {
 	private boolean areEqual(Intent a, Intent b) {
         if (a.filterEquals(b)) {
             Bundle aExtras = a.getExtras();
+            if (aExtras != null)
+                Log.d("Tag","aExtras OK");
             Bundle bExtras = b.getExtras();
+            Log.d("Tag","bExtras OK");
 
 	        if (aExtras != null && bExtras != null) {
                 Set<String> aKeySet = aExtras.keySet();

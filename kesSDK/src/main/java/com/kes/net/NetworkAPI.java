@@ -69,6 +69,7 @@ public class NetworkAPI {
 
     public static ModelFactory.PhotoCommentWrapper getFeed(
             String auth_token,
+            boolean newOnly,
             Integer max_id,
             Integer since_id,
             Integer page_size,
@@ -82,6 +83,8 @@ public class NetworkAPI {
             getParams = NetUtils.buildParameters(getParams,"auth_token", auth_token);
 
         getParams = NetUtils.buildParameters(getParams,"filter", filter);
+        if (newOnly)
+            getParams = NetUtils.buildParameters(getParams,"new_only", "true");
         if (max_id != null)
             getParams = NetUtils.buildParameters(getParams,"max_id", max_id.toString());
         if (since_id != null)

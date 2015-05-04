@@ -3,11 +3,14 @@ package com.crowdmobile.kes.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -39,6 +42,9 @@ public class CreditFragment extends Fragment {
     View holderButtons, btCreditRetry,btCreditRefund;
     String currencyFormat;
     ImageView ivShopFooter;
+    View holderPurchased;
+    TextView tvPurchased;
+    Animation purchasedAnimation;
 
     @Override
     public void onAttach(Activity activity) {
@@ -59,6 +65,13 @@ public class CreditFragment extends Fragment {
     }
 
     BillingManager.BillingListener billingListener = new BillingManager.BillingListener() {
+        @Override
+        public void onPurchased(int quantity) {
+            tvPurchased.setText(Integer.toString(quantity));
+            holderPurchased.setVisibility(View.VISIBLE);
+            holderPurchased.startAnimation(purchasedAnimation);
+        }
+
         @Override
         public void onStatus(BillingManager.BillingStatus status) {
             if (status == BillingManager.BillingStatus.PaymentFail ||
@@ -129,6 +142,11 @@ public class CreditFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_credit,container,false);
+        holderPurchased = result.findViewById(R.id.holderPurchased);
+        tvPurchased = (TextView)holderPurchased.findViewById(R.id.tvPurchased);
+        purchasedAnimation = AnimationUtils.loadAnimation(getActivity(), R.anim.purchased);
+        holderPurchased.startAnimation(purchasedAnimation);
+
         ivShopFooter = (ImageView)result.findViewById(R.id.ivShopFooter);
         AnimationDrawable animation = (AnimationDrawable)ivShopFooter.getDrawable();
         animation.start();
@@ -162,7 +180,7 @@ public class CreditFragment extends Fragment {
                 ArrayList<String> pending = Session.getInstance(getActivity()).getBillingManager().getPendingOrders();
                 if (pending == null || pending.size() == 0)
                     return;
-                Intent i = new Intent(Intent.ACTION_SEND);
+                Intent i = new Intent(Intent.ACTION_SEND, Uri.parse("mailto:"));
                 i.setType("message/rfc822");
                 i.putExtra(Intent.EXTRA_EMAIL  , new String[]{getResources().getString(R.string.refund_email)});
                 i.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.refund_email_title));
@@ -194,6 +212,10 @@ public class CreditFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        purchasedAnimation.cancel();
+        holderPurchased = null;
+        purchasedAnimation = null;
+        tvPurchased = null;
         lvPriceList = null;
         ivShopFooter = null;
         holderButtons = null;

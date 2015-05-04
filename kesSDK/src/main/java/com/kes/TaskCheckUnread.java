@@ -10,7 +10,6 @@ import com.kes.net.DataFetcher;
 import com.kes.net.ModelFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
 	public static final String ACTION = TaskCheckUnread.class.getName();
@@ -43,39 +42,26 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
         wrapper.feedType = FeedManager.FeedType.My;
         String filter = "my";
 
-        wrapper.max_id = -1;
-
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
-                com.kes.net.NetworkAPI.getFeed(token,null,null, null, filter, wrapper.tags);
-        if (photoCommentWrapper.photo_comments != null && photoCommentWrapper.photo_comments.length > 0) {
-            PhotoComment pcs[] = photoCommentWrapper.photo_comments;
-            photoCommentWrapper.photo_comments = null;
-            ArrayList<PhotoComment> photoComments = new ArrayList<PhotoComment>();
-            boolean found = false;
-            for (int i = 0; i < pcs.length; i++)
-            {
-                PhotoComment pc = pcs[i];
-                found = false;
-                if (pc.responses != null && pc.responses.length > 0) {
-                    for (int j = 0; j < pc.responses.length; j++) {
-                        CommentResponse cr = pc.responses[j];
-                        if (!cr.read) {
-                            found = true;
-                            if (cr.id >= wrapper.max_id)
-                                wrapper.max_id = cr.id;
-                        }
-                    }
-                    if (found)
-                        photoComments.add(pc);
+                com.kes.net.NetworkAPI.getFeed(token,true, null,null, null, filter, wrapper.tags);
+
+        wrapper.comments = photoCommentWrapper.photo_comments;
+
+        if (wrapper.comments == null && wrapper.comments.length == 0)
+            return;
+        int maxID = Integer.MIN_VALUE;
+        for (int i = 0; i < wrapper.comments.length; i++)
+        {
+            PhotoComment pc = wrapper.comments[i];
+            if (pc.responses != null && pc.responses.length > 0) {
+                for (int j = 0; j < pc.responses.length; j++) {
+                    CommentResponse cr = pc.responses[j];
+                        if (cr.id >= maxID)
+                            maxID = cr.id;
                 }
             }
-            if (photoComments.size() > 0)
-            {
-                photoCommentWrapper.photo_comments = new PhotoComment[photoComments.size()];
-                photoComments.toArray(photoCommentWrapper.photo_comments);
-            }
         }
-        wrapper.comments = photoCommentWrapper.photo_comments;
+        wrapper.max_id = maxID;
 	}
 	
 }

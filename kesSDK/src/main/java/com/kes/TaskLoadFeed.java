@@ -69,7 +69,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
         wrapper.tags = extras.getString(TAG_TAGS);
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
-                com.kes.net.NetworkAPI.getFeed(token,wrapper.max_id,wrapper.since_id, null, filter, wrapper.tags);
+                com.kes.net.NetworkAPI.getFeed(token, false, wrapper.max_id,wrapper.since_id, null, filter, wrapper.tags);
 
         //TODO:remove,debug stuff, removes answers
         /*

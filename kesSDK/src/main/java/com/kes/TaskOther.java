@@ -40,8 +40,10 @@ class TaskOther extends NetworkExecutable<ResultWrapper> {
         wrapper.commentID = extras.getInt(TAG_COMMENT_ID);
         if (wrapper.actionType == ResultWrapper.ActionType.Report)
             com.kes.net.NetworkAPI.report(token, wrapper.questionID);
-        else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsRead)
+        else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsRead) {
             wrapper.photoComment = com.kes.net.NetworkAPI.markAsRead(token, wrapper.questionID, wrapper.commentID);
+            wrapper.user = com.kes.net.NetworkAPI.getAccount(token);
+        }
         else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsPrivate)
             wrapper.photoComment = com.kes.net.NetworkAPI.markAsPrivate(token, wrapper.questionID);
 	}

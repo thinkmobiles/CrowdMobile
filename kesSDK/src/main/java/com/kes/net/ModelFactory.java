@@ -58,7 +58,7 @@ public class ModelFactory {
     }
 
     static class ServerErrorWrapper {
-        ServerError errors;
+        ServerError error;
     }
 
     public static ServerErrorWrapper getServerError(String json) {

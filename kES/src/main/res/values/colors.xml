@@ -63,5 +63,6 @@
     <item name="credittextcolor" type="color">#555</item>
     <item name="creditdiscounttextcolor" type="color">#43c58a</item>
     <item name="credit_buy_textcolor" type="color">#000</item>
+    <item name="purchased_font" type="color">#0f0</item>
 
 </resources>

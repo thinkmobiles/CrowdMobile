@@ -378,9 +378,10 @@ public class FeedManager {
                     tmp.onMarkAsPrivateResult(wrapper.photoComment, wrapper.exception);
                     break;
                 case MarkAsRead:
-                    updateItemInCache(wrapper.photoComment);
-                    //Todo:unread cound should come from server
-                    mSession.getAccountManager().decreaseUnread();
+                    if (wrapper.user != null)
+                        mSession.getAccountManager().updateBalance(wrapper.user.balance);
+                    if (wrapper.photoComment != null)
+                        updateItemInCache(wrapper.photoComment);
                     tmp.onMarkAsReadResult(wrapper.photoComment, wrapper.exception);
                     break;
                 case Report:

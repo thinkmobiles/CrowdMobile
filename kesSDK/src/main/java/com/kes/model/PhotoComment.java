@@ -31,11 +31,23 @@ public class PhotoComment {
     {
         if (responses == null || responses.length == 0)
             return;
+        if (!isUnread())
+            return;
         for (int i = 0; i < responses.length; i++)
             if (!responses[i].read) {
                 responses[i].read = true;
                 feedManager.markAsRead(id, responses[i].id);
             }
+    }
+
+    public boolean isUnread()
+    {
+        if (responses == null || responses.length == 0)
+            return false;
+        for (int j = 0; j < responses.length; j++)
+            if (responses[j].read)
+                return true;
+        return false;
     }
 
     public void copyFrom(PhotoComment src)

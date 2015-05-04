@@ -27,6 +27,8 @@ public class BillingService extends Service {
 
     public static final String ACTION_CREDITLIST = BillingService.class.getSimpleName() + "creditlist";
     public static final String ACTION_CREDIT_STATUS = BillingService.class.getSimpleName() + "credit_status";
+    public static final String ACTION_PURCHASED = BillingService.class.getSimpleName() + "credit_purchased";
+    public static final String TAG_QUANTITY = "quantity";
 
     private static final String TAG_PURCHASE = "purchase";
     public static final String TAG_SIGNATURE = "signature";
@@ -144,21 +146,31 @@ public class BillingService extends Service {
         }
 
         protected Integer doInBackground(Purchase... params) {
+            boolean processed = false;
             int totalCount = 0;
+            CreditResponse cr = null;
+
             try {
                 for (int i = 0; i < params.length; i++) {
                     Purchase p = params[i];
+                    processed = false;
+                    cr = null;
                     try {
-                        CreditResponse cr = NetworkAPI.addCredit(auth_token, p.getOriginalJson());
-                        if (false)
-                        iabHelper.consume(p);
-                        totalCount++;
-                        publishProgress(cr.credit_points);
-                        continue;
+                        cr = NetworkAPI.addCredit(auth_token, p.getOriginalJson());
+                        processed = true;
                     } catch (DataFetcher.KESNetworkException e) {
-                        e.printStackTrace();
-                    } catch (IabException e) {
-                        e.printStackTrace();
+                        if (e.error.code == 10)
+                            processed = true;   //already processed item
+                    }
+                    if (processed) {
+                        try {
+                            //if (false)
+                            iabHelper.consume(p);
+                            totalCount++;
+                            if (cr != null)
+                                publishProgress(cr.credit_points);
+                            continue;
+                        } catch (IabException ignored) {}
                     }
                     localFailed.add(p.getOrderId());
                 }
@@ -171,6 +183,9 @@ public class BillingService extends Service {
         @Override
         protected void onProgressUpdate(Integer... values) {
             Session.getInstance(BillingService.this).getAccountManager().updateBalance(values[0]);
+            Intent intent = new Intent(ACTION_PURCHASED);
+            intent.putExtra(TAG_QUANTITY, values[0]);
+            LocalBroadcastManager.getInstance(BillingService.this).sendBroadcast(new Intent(intent));
         }
 
         @Override

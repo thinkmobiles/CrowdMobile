@@ -23,6 +23,7 @@ public class BillingManager {
     public enum BillingStatus {Idle, Init, InitFailed, InventoryRequest, InventoryFail, PaymentProcess,PaymentFail, Disconnected};
 
     public interface BillingListener {
+        public void onPurchased(int quantity);
         public void onStatus(BillingStatus status);
         public void onCreditList(ArrayList<CreditItem> list);
     }
@@ -71,6 +72,7 @@ public class BillingManager {
             throw new IllegalStateException("User is not registered");
         if (mProductList == null)
             throw new IllegalStateException("Product list is not initialised.Please call init() first.");
+        LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_PURCHASED));
         LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDIT_STATUS));
         LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDITLIST));
         mBillingListener = listener;
@@ -130,6 +132,8 @@ public class BillingManager {
                 mBillingListener.onCreditList(billingService.getCreditItems());
             if (BillingService.ACTION_CREDIT_STATUS.equals(action))
                 mBillingListener.onStatus(BillingStatus.values()[intent.getIntExtra(BillingService.TAG_STATUS, 0)]);
+            if (BillingService.ACTION_PURCHASED.equals(action))
+                mBillingListener.onPurchased(intent.getIntExtra(BillingService.TAG_QUANTITY, 0));
         }
     };
 }

@@ -139,7 +139,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 		setContentView(R.layout.activity_main);
 		*/
-        mHandler.postDelayed(refreshTread, 10000);
+//        mHandler.postDelayed(refreshTread, 10000);
 	}
 
     private void navigate(Intent intent)
@@ -214,7 +214,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         public void run() {
             Bundle bundle = new Bundle();
             PushHandler.handlePush(getApplicationContext(),NotificationCreator.class, bundle);
-            //mHandler.postDelayed(this,10000);
+            mHandler.postDelayed(this,10000);
+            Toast.makeText(MainActivity.this,"Refreshing tread",Toast.LENGTH_SHORT).show();
         }
     };
 

@@ -98,35 +98,40 @@ public class DataFetcher {
         public static final int CODE_Unable_to_process_receipt_data_from_Apple_or_Google = 10;
 
         public ModelFactory.ServerError error;
+        public int httpStatus;
 
         public KESNetworkException()
         {
-            createSimple(CODE_Invalid_Response,null);
+            createSimple(CODE_Invalid_Response, 0);
         }
-
+/*
         public KESNetworkException(int code, String message)
         {
             createSimple(code, message);
         }
+*/
+        public KESNetworkException(int code, int httpStatus)
+        {
+            createSimple(code, httpStatus);
+        }
 
-        private void createSimple(int code, String message)
+        private void createSimple(int code, int httpStatus)
         {
             error = new ModelFactory.ServerError();
             error.code = code;
-            if (message != null)
-                error.message = new String(message);
         }
 
-        public KESNetworkException(String response)
+        public KESNetworkException(int httpStatus, String response)
         {
+            this.httpStatus = httpStatus;
             com.kes.net.ModelFactory.ServerErrorWrapper data = null;
             try {
                 data = com.kes.net.ModelFactory.getServerError(response);
             } catch (JsonSyntaxException e) {}
-            if (data == null || data.errors == null)
-                createSimple(CODE_Invalid_Response,null);
+            if (data == null || data.error == null)
+                createSimple(CODE_Invalid_Response, httpStatus);
             else
-                error = data.errors;
+                error = data.error;
         }
 
     }
@@ -281,79 +286,80 @@ public class DataFetcher {
 		*/
 
 		public static String requestAction(String url, RequestType type, Map<String, String> getParams,
-				Map<String, String> postParams, Map<String, String> headers, String postData)
-				throws KESNetworkException,InterruptedException {
+            Map<String, String> postParams, Map<String, String> headers, String postData)
+            throws KESNetworkException,InterruptedException {
 
-				url = buildGetUrl(url, getParams);
-                addNetworkLog(url.toString());
-				HttpResponse response = null;
-				HttpUriRequest request = null;
+            url = buildGetUrl(url, getParams);
+            addNetworkLog(url.toString());
+            HttpResponse response = null;
+            HttpUriRequest request = null;
 
-                try {
-                    switch (type) {
-                        case GET:
-                            DefaultHttpClient result = null;
-                            /*
-                            HttpParams params = new BasicHttpParams();
-                            int timeoutConnection = 1000;
-                            HttpConnectionParams.setConnectionTimeout(params, timeoutConnection);
-                            int timeoutSocket = 1000;
-                            HttpConnectionParams.setSoTimeout(params, timeoutSocket);
-                            HttpProtocolParams.setUserAgent(params, defaultUserAgent);
-                            */
-                            HttpGet get = new HttpGet(url);
-                            //get.setParams(params);
-                            request = get;
-                            break;
-                        case POST:
-                            HttpPost post = new HttpPost(url);
-                            StringEntity entity = getPostEntity(postParams);
-                            if (entity == null && postData != null) {
-                                entity = new StringEntity(postData);
-                                Log.v(TAG, "Entity data: " + postData);
-                            }
-                            if (entity != null) {
-                                post.setEntity(entity);
-                            }
-                            request = post;
-                            break;
-                        case DELETE:
-                            HttpDelete del = new HttpDelete(url);
-                            request = del;
-                            break;
-                        case PUT:
-                            HttpPut put = new HttpPut(url);
-                            StringEntity putEntity = getPostEntity(postParams);
-                            if (putEntity == null && postData != null) {
-                                putEntity = new StringEntity(postData);
-                                Log.v(TAG, "Entity data: " + postData);
-                            }
-                            if (putEntity != null) {
-                                put.setEntity(putEntity);
-                            }
-                            request = put;
-                            break;
-                    }
-                } catch (UnsupportedEncodingException e)
-                {
-                    throw new KESNetworkException(KESNetworkException.CODE_Unsupported_Encoding,null);
+            try {
+                switch (type) {
+                    case GET:
+                        DefaultHttpClient result = null;
+                        /*
+                        HttpParams params = new BasicHttpParams();
+                        int timeoutConnection = 1000;
+                        HttpConnectionParams.setConnectionTimeout(params, timeoutConnection);
+                        int timeoutSocket = 1000;
+                        HttpConnectionParams.setSoTimeout(params, timeoutSocket);
+                        HttpProtocolParams.setUserAgent(params, defaultUserAgent);
+                        */
+                        HttpGet get = new HttpGet(url);
+                        //get.setParams(params);
+                        request = get;
+                        break;
+                    case POST:
+                        HttpPost post = new HttpPost(url);
+                        StringEntity entity = getPostEntity(postParams);
+                        if (entity == null && postData != null) {
+                            entity = new StringEntity(postData);
+                            Log.v(TAG, "Entity data: " + postData);
+                        }
+                        if (entity != null) {
+                            post.setEntity(entity);
+                        }
+                        request = post;
+                        break;
+                    case DELETE:
+                        HttpDelete del = new HttpDelete(url);
+                        request = del;
+                        break;
+                    case PUT:
+                        HttpPut put = new HttpPut(url);
+                        StringEntity putEntity = getPostEntity(postParams);
+                        if (putEntity == null && postData != null) {
+                            putEntity = new StringEntity(postData);
+                            Log.v(TAG, "Entity data: " + postData);
+                        }
+                        if (putEntity != null) {
+                            put.setEntity(putEntity);
+                        }
+                        request = put;
+                        break;
                 }
-				setHeaders(request, headers);
-                DefaultHttpClient client = getHttpClient();
-                try {
-                    response = client.execute(request);
-                } catch (IOException e) {
-//                    Log.d(TAG,"WHAT the");
-                    e.printStackTrace();
-                    throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException,null);
-                }
+            } catch (UnsupportedEncodingException e)
+            {
+                throw new KESNetworkException(KESNetworkException.CODE_Unsupported_Encoding, 0);
+            }
+            setHeaders(request, headers);
+            DefaultHttpClient client = getHttpClient();
+            try {
+                response = client.execute(request);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, 0);
+            }
 
 
-
+            int statusCode = response.getStatusLine().getStatusCode();
+            String result = null;
 
             HttpEntity entity = response.getEntity();
-		        if (entity == null)
-		        	throw new KESNetworkException();
+		    if (entity == null)
+		        throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, statusCode);
+
 		        StringBuilder builder = new StringBuilder();
                 try {
                     try {
@@ -362,15 +368,7 @@ public class DataFetcher {
                         String line;
                         while ((line = reader.readLine()) != null)
                             builder.append(line);
-                        String debug = builder.toString();
-
-
-                        if (response.getStatusLine().getStatusCode() != HttpURLConnection.HTTP_OK) {
-                            Log.d(TAG,debug);
-                            throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, null);
-                        }
-
-                        return checkForError(builder.toString());
+                        result = checkForError(statusCode, builder.toString());
                     } finally {
                         entity.consumeContent();
                     }
@@ -378,14 +376,22 @@ public class DataFetcher {
                 {
                     throw new KESNetworkException();
                 }
+
+            //Debug information
+            if (statusCode != HttpURLConnection.HTTP_OK) {
+                Log.d(TAG,"HTTP " + Integer.toString(statusCode) + ", URL:" + url);
+                Log.d(TAG,result);
+                throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, statusCode);
+            }
+            return result;
 		}
 
-        public static String checkForError(String data) throws KESNetworkException
+        public static String checkForError(int statusCode, String data) throws KESNetworkException
         {
-            if (data == null)
-                throw new KESNetworkException();
-            if (data.startsWith("{\"errors"))
-                throw new KESNetworkException(data);
+            if (data == null || data.length() == 0)
+                return data;
+            if (data.startsWith("{\"error"))
+                throw new KESNetworkException(statusCode, data);
             return data;
         }
 
