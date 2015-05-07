@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -47,6 +48,7 @@ public class ComposeFragment extends Fragment {
     int postEnabled = -1;
     boolean afterResume = false;
     boolean isPrivate;
+    Handler mHandler;
 
     @Override
     public void onResume() {
@@ -62,6 +64,13 @@ public class ComposeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mHandler = null;
     }
 
     @Override
@@ -307,19 +316,23 @@ public class ComposeFragment extends Fragment {
 
     private void postQuestion()
     {
-        String question = edMessage.getText().toString();
-        String picturePath = PreferenceUtils.getComposedPicture(getActivity());
+        final String question = edMessage.getText().toString();
+        final String picturePath = PreferenceUtils.getComposedPicture(getActivity());
         if (question == null || question.length() == 0 && picturePath == null)
             return;
 
         InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edMessage.getWindowToken(), 0);
-        Session.getInstance(getActivity()).getFeedManager().postQuestion(isPrivate, question, picturePath);
-        edMessage.setText("");
-        previewClose(false);
-        NavigationBar nb = ((NavigationBar.NavigationCallback)getActivity()).getNavigationBar();
-        nb.invalidateMyFeed();
-        nb.navigateTo(NavigationBar.Attached.MyFeed);
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                edMessage.setText("");
+                previewClose(false);
+                NavigationBar nb = ((NavigationBar.NavigationCallback) getActivity()).getNavigationBar();
+                nb.navigateTo(NavigationBar.Attached.MyFeed);
+                Session.getInstance(getActivity()).getFeedManager().postQuestion(isPrivate, question, picturePath);
+            }
+        },250);
     }
 
 }

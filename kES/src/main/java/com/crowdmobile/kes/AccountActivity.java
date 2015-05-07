@@ -39,6 +39,7 @@ public class AccountActivity extends Activity {
     public static void logout(Context context)
     {
         Session.getInstance(context).getAccountManager().logout();
+        PreferenceUtils.setSkipLogin(context,false);
         TwitterUtil.getInstance(context).logout();
         //FacebookRegHelper.logout(mSession.getContext());
 

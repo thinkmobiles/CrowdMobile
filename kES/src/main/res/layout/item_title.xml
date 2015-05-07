@@ -61,7 +61,6 @@
         android:maxLines="4"
         android:ellipsize="end"
         android:textSize="@dimen/item_text_size"
-        android:text="@string/loremipsum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

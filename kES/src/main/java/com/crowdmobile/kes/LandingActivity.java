@@ -21,7 +21,7 @@ public class LandingActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        mHandler.postDelayed(startSystem,2000);
+        mHandler.postDelayed(startSystem,500);
     }
 
     @Override

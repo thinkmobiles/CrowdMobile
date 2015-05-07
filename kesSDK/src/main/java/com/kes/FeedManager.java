@@ -24,7 +24,8 @@ public class FeedManager {
         public void onReportResult(int questionID, Exception error);
         public void onDeleteResult(int questionID, int commentID, Exception error);
         public void onMarkAsPrivateResult(PhotoComment photoComment, Exception error);
-        public void onPostResult(int questionID, Exception error);
+        public void onPosting(PhotoComment photoComment);
+        public void onPostResult(PhotoComment photoComment, Exception error);
     }
 
 
@@ -234,9 +235,15 @@ public class FeedManager {
         try {
             BaseNotificationCreator nc = (BaseNotificationCreator) Class.forName(notificationCreator).newInstance();
             nc.createNotification(context, feedWrapper.extras);
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new IllegalStateException("can't instantiate class:" + notificationCreator);
+        } catch (InstantiationException e)
+        {
+            throw new RuntimeException((e));
+        }
+        catch (IllegalAccessException e) {
+            throw new RuntimeException((e));
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException((e));
         }
     }
 
@@ -258,6 +265,12 @@ public class FeedManager {
                 minIDMyFeed = maxid;
             feedWrapper.flag_feedBottomReached = true;
         }
+
+        int pagesize = 10;
+        if (feedWrapper.page_size != null)
+            pagesize = feedWrapper.page_size.intValue();
+        if (feedWrapper.comments != null && feedWrapper.comments.length < pagesize)
+            feedWrapper.flag_feedBottomReached = true;
 
         SparseArray<PhotoComment> cache = getCache(feedWrapper.feedType);
         if (feedWrapper.feedType == FeedType.Public)
@@ -352,6 +365,12 @@ public class FeedManager {
             p.photo_url = "file://" + picturePath;
         pending.add(p);
         TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.id, question, picturePath, null, p.is_private);
+        Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
+        while (iterator.hasNext()) {
+            tmp = iterator.next();
+            tmp.onPosting(p);
+        }
+        tmp = null; //don't change, GC bug
     }
 
     private void updateItemInCache(PhotoComment photoComment)
@@ -379,7 +398,7 @@ public class FeedManager {
                     break;
                 case MarkAsRead:
                     if (wrapper.user != null)
-                        mSession.getAccountManager().updateBalance(wrapper.user.balance);
+                        mSession.getAccountManager().updateUnread(wrapper.user.unread_count);
                     if (wrapper.photoComment != null)
                         updateItemInCache(wrapper.photoComment);
                     tmp.onMarkAsReadResult(wrapper.photoComment, wrapper.exception);
@@ -420,7 +439,7 @@ public class FeedManager {
     public void markAsRead(int questionID, int commentID)
     {
         Log.d("FeedManager", "Marking as read" + questionID + "/" + commentID);
-        //TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.MarkAsRead, questionID, commentID);
+        TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.MarkAsRead, questionID, commentID);
     }
 
     protected void updatePostedQuestion(PhotoCommentResponseHolder holder) {
@@ -436,16 +455,17 @@ public class FeedManager {
                 }
                 else
                     p.status = PhotoComment.PostStatus.Error;
+
+                Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
+                while (iterator.hasNext()) {
+                    tmp = iterator.next();
+                    tmp.onPostResult(p,holder.exception);
+                }
+                tmp = null; //don't change, GC bug
+                return;
             }
-            break;
         }
 
-        Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
-        while (iterator.hasNext()) {
-            tmp = iterator.next();
-            tmp.onPostResult(holder.questionID,holder.exception);
-        }
-        tmp = null; //don't change, GC bug
 
         /*
         mSession.getDB().addPending(question, picturePath);

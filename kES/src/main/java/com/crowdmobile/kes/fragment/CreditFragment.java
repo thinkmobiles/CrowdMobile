@@ -1,11 +1,16 @@
 package com.crowdmobile.kes.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +24,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crowdmobile.kes.MainActivity;
 import com.crowdmobile.kes.R;
 import com.crowdmobile.kes.list.PriceItem;
+import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.BillingManager;
 import com.kes.Session;
 import com.kes.billing.CreditItem;
@@ -45,6 +52,7 @@ public class CreditFragment extends Fragment {
     View holderPurchased;
     TextView tvPurchased;
     Animation purchasedAnimation;
+    AnimationDrawable footerAnimation;
 
     @Override
     public void onAttach(Activity activity) {
@@ -126,13 +134,30 @@ public class CreditFragment extends Fragment {
         super.onStart();
         if (Session.getInstance(getActivity()).getAccountManager().getUser().isRegistered())
             Session.getInstance(getActivity()).getBillingManager().onStart(getActivity(), billingListener);
+        if (footerAnimation != null) {
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(navigationChange, new IntentFilter(NavigationBar.ACTION_CHANGE));
+            navigationChange.onReceive(null, null);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
         Session.getInstance(getActivity()).getBillingManager().onStop(getActivity());
+        if (footerAnimation != null)
+            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(navigationChange);
     }
+
+    BroadcastReceiver navigationChange = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Don't load UI thread at all when scrolling
+            if (((MainActivity) getActivity()).getNavigationBar().getAttached() == NavigationBar.Attached.Checkout)
+                footerAnimation.start();
+            else
+                footerAnimation.stop();
+        }
+    };
 
     /*
             private void updateCredits()
@@ -148,8 +173,11 @@ public class CreditFragment extends Fragment {
         holderPurchased.startAnimation(purchasedAnimation);
 
         ivShopFooter = (ImageView)result.findViewById(R.id.ivShopFooter);
-        AnimationDrawable animation = (AnimationDrawable)ivShopFooter.getDrawable();
-        animation.start();
+        Drawable d = ivShopFooter.getDrawable();
+        if (d != null && d instanceof  AnimationDrawable) {
+            footerAnimation = (AnimationDrawable) d;
+            footerAnimation.stop();
+        }
         lvPriceList = (ListView)result.findViewById(R.id.lvPricelist);
         lvPriceList.setAdapter(priceAdapter);
         lvPriceList.setOnItemClickListener(onItemClickListener);

@@ -1,11 +1,14 @@
 package com.crowdmobile.kes.adapter;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +32,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     private static final int TYPE_ITEM = 100;
     private static final int TYPE_FOOTER = 101;
 
-    private boolean footerVisible = true;
     private boolean footerLoading = true;
     private FeedAdapterListener listener = null;
     private Activity activity;
@@ -46,18 +48,31 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
     public void hideFooter()
     {
-        footerVisible = false;
-        notifyDataSetChanged();
+        int s = list.size();
+        if (s == 0)
+            return;
+        s--;
+        if (list.get(s) != null)
+            return;
+        list.remove(s);
+        notifyItemRemoved(s);
     }
 
     public void setFooterLoading(boolean enabled)
     {
-        footerVisible = true;
+        int s = list.size();
+        if (s > 0 && list.get(s - 1) == null)
+            return;
+        list.add(null);
+        notifyItemInserted(s);
         footerLoading = enabled;
         notifyDataSetChanged();
     }
 
-    static class ItemHolder extends RecyclerView.ViewHolder {
+    public static class ItemHolder extends RecyclerView.ViewHolder {
+        int itemPosition = -1;
+        int viewType;
+        View itemCard;
         TextView tvTimeQuestion;
         TextView tvQuestion;
         ImageView imgFeedPic;
@@ -73,11 +88,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         Button btRetry;
         View progress;
         View holderBackground;
+        public View answerBackground;
+        public ValueAnimator backgroundAnimator;
 
-        public ItemHolder(View view, int viewType, View.OnClickListener report_privateClick, View.OnClickListener retryClick,View.OnClickListener retryPostClick) {
+        public ItemHolder(View view, int viewType, View.OnClickListener itemClick, View.OnClickListener report_privateClick, View.OnClickListener retryClick,View.OnClickListener retryPostClick) {
             super(view);
+            this.viewType = viewType;
             if (viewType == TYPE_ITEM) {
+                itemCard = view.findViewById(R.id.itemCard);
+                itemCard.setOnClickListener(itemClick);
                 holderBackground = view.findViewById(R.id.holderBackground);
+                answerBackground = view.findViewById(R.id.answerBackground);
                 tvTimeQuestion = (TextView) view.findViewById(R.id.tvTimeQuestion);
                 tvQuestion = (TextView) view.findViewById(R.id.tvMessage);
                 imgFeedPic = (ImageView) view.findViewById(R.id.imgFeedPic);
@@ -100,6 +121,37 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 btRetry = (Button) view.findViewById(R.id.btRetry);
                 btRetry.setOnClickListener(retryPostClick);
                 ivAnswerRight.setOnClickListener(report_privateClick);
+                backgroundAnimator = new ValueAnimator();
+                backgroundAnimator.setDuration(500);
+                backgroundAnimator.setFloatValues(1, 0);
+                backgroundAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        answerBackground.setAlpha((float) valueAnimator.getAnimatedValue());
+                    }
+                });
+                backgroundAnimator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        answerBackground.setVisibility(View.INVISIBLE);
+                        answerBackground.setAlpha(1);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
             } else {
                 tvFooterStatus = (TextView) view.findViewById(R.id.tvFooterStatus);
                 progress = view.findViewById(R.id.progress);
@@ -124,9 +176,21 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         this.listener = listener;
     }
 
+    View.OnClickListener itemClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ItemHolder holder = (ItemHolder)v.getTag();
+            PhotoComment p = list.get(holder.itemPosition);
+            if (!p.isUnread())
+                return;
+            listener.onItemViewed(p);
+            holder.backgroundAnimator.start();
+        }
+    };
+
     @Override
     public int getItemViewType(int position) {
-        if (footerVisible && position == getItemCount() - 1)
+        if (list.get(position) == null)
             return TYPE_FOOTER;
         return TYPE_ITEM;
     }
@@ -143,8 +207,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             result = LayoutInflater.
                     from(viewGroup.getContext()).
                     inflate(R.layout.footer_feed, viewGroup, false);
-
-        return new ItemHolder(result, viewType, report_privateClick, retryClick, retryPostClick);
+        Log.d("TAG","OnCreateViewHolder");
+        return new ItemHolder(result, viewType, itemClick, report_privateClick, retryClick, retryPostClick);
     }
 
     @Override
@@ -154,12 +218,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 holder.progress.setVisibility(View.VISIBLE);
                 holder.btRetry.setVisibility(View.GONE);
                 holder.tvFooterStatus.setText(R.string.item_loading);
+                /*
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         listener.onLastItemReached();
                     }
                 });
+                */
             } else {
                 holder.progress.setVisibility(View.GONE);
                 holder.btRetry.setVisibility(View.VISIBLE);
@@ -168,10 +234,23 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             return;
         }
 
+        holder.itemPosition = i;
         PhotoComment item = list.get(i);
+        holder.itemCard.setTag(holder);
+
+        /*
         if (feedType == FeedManager.FeedType.My)
             listener.onItemViewed(item);
+        */
+        holder.backgroundAnimator.cancel();
+        if (item.isUnread()) {
+            holder.answerBackground.setVisibility(View.VISIBLE);
+            holder.answerBackground.setAlpha(1);
+        }
+        else
+            holder.answerBackground.setVisibility(View.INVISIBLE);
 
+        //holder.backgroundAnimator.start();
         holder.imgOpenShare.setTag(item.share_url);
 
         if (item.status == PhotoComment.PostStatus.Posted) {
@@ -251,12 +330,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
 
     }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     @Override
     public int getItemCount() {
-        int result = list.size();
-        if (footerVisible)
-            result++;
-        return result;
+        return list.size();
     }
 
     View.OnClickListener retryClick = new View.OnClickListener() {

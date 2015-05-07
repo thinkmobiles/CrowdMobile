@@ -62,6 +62,11 @@
 
     <string name="myfeed_noposts_title">Uh oh, You have no posts</string>
     <string name="myfeed_noposts_message">You don\'t have any questions for bongo yet.Ask him a question now!</string>
+    <string name="myfeed_noposts_btn">Ask question</string>
+
+    <string name="feed_error_title">Uh oh, network error</string>
+    <string name="feed_error_message">Could not load feed!</string>
+    <string name="feed_error_btn">Retry</string>
 
     <!-- Feed -->
     <string name="feed_answer">Answer:</string>

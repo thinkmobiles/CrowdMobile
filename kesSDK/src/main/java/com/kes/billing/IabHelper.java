@@ -35,6 +35,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -78,7 +79,7 @@ public class IabHelper {
     boolean mSetupDone = false;
 
     // Has this object been disposed of? (If so, we should ignore callbacks, etc)
-    boolean mDisposed = false;
+    AtomicBoolean mDisposed = new AtomicBoolean(false);
 
     // Are subscriptions supported?
     boolean mSubscriptionsSupported = false;
@@ -160,6 +161,9 @@ public class IabHelper {
      *     public key in your application's page on Google Play Developer Console. Note that this
      *     is NOT your "developer public key".
      */
+
+    private Thread workerThread = null;
+
     public IabHelper(Context ctx, String base64PublicKey) {
         mContext = ctx.getApplicationContext();
         mSignatureBase64 = base64PublicKey;
@@ -216,7 +220,7 @@ public class IabHelper {
 
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                if (mDisposed) return;
+                if (mDisposed.get()) return;
                 logDebug("Billing service connected.");
                 mService = IInAppBillingService.Stub.asInterface(service);
                 String packageName = mContext.getPackageName();
@@ -286,12 +290,17 @@ public class IabHelper {
      */
     public void dispose() {
         logDebug("Disposing.");
+        synchronized (IabHelper.class) {
+            if (workerThread != null) {
+                workerThread.interrupt();
+            }
+        }
         mSetupDone = false;
         if (mServiceConn != null) {
             logDebug("Unbinding from service.");
             if (mContext != null) mContext.unbindService(mServiceConn);
         }
-        mDisposed = true;
+        mDisposed.set(true);
         mContext = null;
         mServiceConn = null;
         mService = null;
@@ -299,7 +308,7 @@ public class IabHelper {
     }
 
     private void checkNotDisposed() {
-        if (mDisposed) throw new IllegalStateException("IabHelper was disposed of, so it cannot be used.");
+        if (mDisposed.get()) throw new IllegalStateException("IabHelper was disposed of, so it cannot be used.");
     }
 
     /** Returns whether subscriptions are supported. */
@@ -370,7 +379,7 @@ public class IabHelper {
                         OnIabPurchaseFinishedListener listener, String extraData) {
         checkNotDisposed();
         checkSetupDone("launchPurchaseFlow");
-        flagStartAsync("launchPurchaseFlow");
+        flagStartAsync("launchPurchaseFlow", null);
         IabResult result;
 
         if (itemType.equals(ITEM_TYPE_SUBS) && !mSubscriptionsSupported) {
@@ -608,8 +617,7 @@ public class IabHelper {
         final Handler handler = new Handler();
         checkNotDisposed();
         checkSetupDone("queryInventory");
-        flagStartAsync("refresh inventory");
-        (new Thread(new Runnable() {
+        flagStartAsync("refresh inventory",new Thread(new Runnable() {
             public void run() {
                 IabResult result = new IabResult(BILLING_RESPONSE_RESULT_OK, "Inventory refresh successful.");
                 Inventory inv = null;
@@ -624,7 +632,7 @@ public class IabHelper {
 
                 final IabResult result_f = result;
                 final Inventory inv_f = inv;
-                if (!mDisposed && listener != null) {
+                if (!mDisposed.get() && listener != null) {
                     handler.post(new Runnable() {
                         public void run() {
                             listener.onQueryInventoryFinished(result_f, inv_f);
@@ -632,7 +640,7 @@ public class IabHelper {
                     });
                 }
             }
-        })).start();
+        }));
     }
 
     public void queryInventoryAsync(QueryInventoryFinishedListener listener) {
@@ -815,18 +823,27 @@ public class IabHelper {
         }
     }
 
-    void flagStartAsync(String operation) {
-        if (mAsyncInProgress) throw new IllegalStateException("Can't start async operation (" +
-                operation + ") because another async operation(" + mAsyncOperation + ") is in progress.");
-        mAsyncOperation = operation;
-        mAsyncInProgress = true;
+    void flagStartAsync(String operation, Thread t) {
+        synchronized (IabHelper.class) {
+            if (mAsyncInProgress) throw new IllegalStateException("Can't start async operation (" +
+                    operation + ") because another async operation(" + mAsyncOperation + ") is in progress.");
+            mAsyncOperation = operation;
+            mAsyncInProgress = true;
+            if (t != null) {
+                workerThread = t;
+                workerThread.start();
+            }
+        }
         logDebug("Starting async operation: " + operation);
     }
 
     void flagEndAsync() {
+        synchronized (IabHelper.class) {
+            workerThread = null;
+            mAsyncOperation = "";
+            mAsyncInProgress = false;
+        }
         logDebug("Ending async operation: " + mAsyncOperation);
-        mAsyncOperation = "";
-        mAsyncInProgress = false;
     }
 
 
@@ -944,8 +961,7 @@ public class IabHelper {
                               final OnConsumeFinishedListener singleListener,
                               final OnConsumeMultiFinishedListener multiListener) {
         final Handler handler = new Handler();
-        flagStartAsync("consume");
-        (new Thread(new Runnable() {
+        flagStartAsync("consume",new Thread(new Runnable() {
             public void run() {
                 final List<IabResult> results = new ArrayList<IabResult>();
                 for (Purchase purchase : purchases) {
@@ -959,14 +975,14 @@ public class IabHelper {
                 }
 
                 flagEndAsync();
-                if (!mDisposed && singleListener != null) {
+                if (!mDisposed.get() && singleListener != null) {
                     handler.post(new Runnable() {
                         public void run() {
                             singleListener.onConsumeFinished(purchases.get(0), results.get(0));
                         }
                     });
                 }
-                if (!mDisposed && multiListener != null) {
+                if (!mDisposed.get() && multiListener != null) {
                     handler.post(new Runnable() {
                         public void run() {
                             multiListener.onConsumeMultiFinished(purchases, results);
@@ -974,7 +990,7 @@ public class IabHelper {
                     });
                 }
             }
-        })).start();
+        }));
     }
 
     void logDebug(String msg) {

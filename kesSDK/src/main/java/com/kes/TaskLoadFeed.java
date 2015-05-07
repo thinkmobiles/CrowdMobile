@@ -1,14 +1,17 @@
-package com.kes;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.kes.FeedManager;
+import com.kes.NetworkService;
 import com.kes.model.PhotoComment;
 import com.kes.net.DataFetcher;
 import com.kes.net.ModelFactory;
 
 import java.io.IOException;
+
+Server kilepes es visszatoltes utan adja a teljes feedet mark as read hivas utan
+        package com.kes;
 
 class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
 	public static final String ACTION = TaskLoadFeed.class.getName();
@@ -84,7 +87,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
         */
         //TODO:---------------------
 
-        //Thread.sleep(2000);
+        Thread.sleep(2000);
         if (wrapper.max_id == null || wrapper.since_id == null && photoCommentWrapper.photo_comments != null)
         {
             int max = Integer.MIN_VALUE;

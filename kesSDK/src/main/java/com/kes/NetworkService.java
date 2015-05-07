@@ -161,9 +161,15 @@ public class NetworkService extends Service {
                 NetworkExecutable ne = (NetworkExecutable) Class.forName(intent.getAction()).newInstance();
                 ne.serviceExecuteOnThread(NetworkService.this, intent);
                 mHandler.post(new RunnableWrapper(ne, intent));
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                e.printStackTrace();
-                throw new IllegalStateException("can't instantiate class:" + intent.getAction());
+            } catch (InstantiationException e)
+            {
+                throw new RuntimeException((e));
+            }
+            catch (IllegalAccessException e) {
+                throw new RuntimeException((e));
+            }
+            catch (ClassNotFoundException e) {
+                throw new RuntimeException((e));
             } catch (InterruptedException ignored) {
             }
         }

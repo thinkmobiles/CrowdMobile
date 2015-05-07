@@ -2,7 +2,6 @@ package com.kes;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.google.gson.JsonSyntaxException;
 import com.kes.net.DataFetcher;
@@ -40,7 +39,7 @@ abstract class NetworkExecutable<T extends ResultWrapper> {
                 mWrapper.exception instanceof DataFetcher.KESNetworkException &&
                 !mWrapper.suppressError)
             session.networkError((DataFetcher.KESNetworkException)mWrapper.exception);
-        Log.d("CLASS", this.getClass().getSimpleName());
+        //Log.d("CLASS", this.getClass().getSimpleName());
         run(context, session, mWrapper);
     }
 

@@ -116,10 +116,13 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             finish();
 			return;
 		}
-        mSession.getAccountManager().registerListener(accountListener);
         setContentView(R.layout.activity_main);
+        View shadow = findViewById(R.id.navbarShadow);
+        if (android.os.Build.VERSION.SDK_INT >= 21)
+            shadow.setVisibility(View.GONE);
+
         viewPager = (ViewPager)findViewById(R.id.viewPager);
-//        viewPager.setPageTransformer(false,new RotationPageTransformer(90,0.5f));
+        //viewPager.setPageTransformer(false,new RotationPageTransformer(90,0.5f));
         pagerTransformer = new ReaderViewPagerTransformer(TransformType.ZOOM);
         viewPager.setPageTransformer(false,pagerTransformer);
         lvLogcat = (ListView)findViewById(R.id.lvLogcat);
@@ -132,6 +135,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         networkAdapter = new ArrayAdapter<String>(this,
                 R.layout.item_logcat, android.R.id.text1, networkComm);
         lvLogcat.setAdapter(networkAdapter);
+        mSession.getAccountManager().registerListener(accountListener);
 
         /*
         Window window = getWindow();
@@ -260,9 +264,15 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         }
 
         @Override
-        public void onPostResult(int questionID, Exception error) {
+        public void onPosting(PhotoComment photoComment) {
 
         }
+
+        @Override
+        public void onPostResult(PhotoComment photoComment, Exception error) {
+
+        }
+
     };
 
     @Override
@@ -294,7 +304,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             return true;
 		} else if (id == R.id.action_logout) {
             AccountActivity.logout(MainActivity.this);
-            navigationBar = null;
 			return true;
 		} else if (id == R.id.action_support) {
             openURL("http://www.askbongo.com");

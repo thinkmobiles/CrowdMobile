@@ -1,14 +1,25 @@
 package com.crowdmobile.kes.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
 
 import com.crowdmobile.kes.MainActivity;
 import com.crowdmobile.kes.R;
@@ -22,33 +33,56 @@ import java.util.ArrayList;
 
 public abstract class FeedBaseFragment extends Fragment {
 
+    private static final int CHECK_UNREAD_INTERVAL = 1000;  //msec
+    private static final int READ_DELAY = 5000;  //msec
 
     private static final String TAG = FeedBaseFragment.class.getSimpleName();
     private Session session;
-    protected RecyclerView lvFeed;
+    protected RecyclerView rvFeed;
     private LinearLayoutManager mLayoutManager;
     private FeedAdapter adapter;
     private ArrayList<PhotoComment> list;
-//    View itemTitle;
+    //    View itemTitle;
 //    View itemShare;
     private boolean scrollInitialized;
     private boolean titleVisible = false;
-//    FeedItem.ShareController shareController;
+    //    FeedItem.ShareController shareController;
     private FeedManager.QueryParams lastNetworkAction = null;
     private SwipeRefreshLayout swipeContainer;
-    private View holderNoPost;
     private int minID = 0;
     private boolean hasFooterView = false;
-    private boolean isViewCreated = false;
+    private boolean bottomReached = false;
+    private AccessFragment.AccessViewHolder accessViewHolder;
+    private ProgressBar progressBar;
+    private ReadHandler mHandler;
+    private boolean isStarted = false;
+    private boolean isVisibleToUser = false;
+    private Rect scrollBounds;
 
+    class ReadTag {
+        public long oldShownAt;
+        public long shownAt;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         session = Session.getInstance(getActivity());
+        scrollBounds = new Rect();
         list = new ArrayList<PhotoComment>();
-        adapter = new FeedAdapter(getActivity(),getFeedType(), list,feedAdapterListener);
+        adapter = new FeedAdapter(getActivity(), getFeedType(), list, feedAdapterListener);
+        mHandler = new ReadHandler();
     }
+
+    class ReadHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            Log.d("Readmessage", "Message read" + msg.what);
+        }
+    }
+
+    ;
 
     FeedAdapter.FeedAdapterListener feedAdapterListener = new FeedAdapter.FeedAdapterListener() {
         @Override
@@ -63,8 +97,7 @@ public abstract class FeedBaseFragment extends Fragment {
 
         @Override
         public void retryLoadClick() {
-            if (lastNetworkAction != null)
-            {
+            if (lastNetworkAction != null) {
                 adapter.setFooterLoading(true);
                 lastNetworkAction.load();
             }
@@ -95,71 +128,240 @@ public abstract class FeedBaseFragment extends Fragment {
     };
 
     public abstract FeedManager.FeedType getFeedType();
+
     public abstract void onItemViewed(PhotoComment p);
+
+    public void showNoPost() {
+        accessViewHolder.tvTitle.setText(R.string.myfeed_noposts_title);
+        accessViewHolder.tvMessage.setText(R.string.myfeed_noposts_message);
+        accessViewHolder.btAccess.setText(R.string.myfeed_noposts_btn);
+        accessViewHolder.btAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.Compose);
+            }
+        });
+        accessViewHolder.setVisibility(View.VISIBLE);
+    }
+
+    public void showLoadError() {
+        accessViewHolder.tvTitle.setText(R.string.feed_error_title);
+        accessViewHolder.tvMessage.setText(R.string.feed_error_message);
+        accessViewHolder.btAccess.setText(R.string.feed_error_btn);
+        accessViewHolder.btAccess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLoading(true);
+                lastNetworkAction.load();
+            }
+        });
+        accessViewHolder.setVisibility(View.VISIBLE);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View result = inflater.inflate(R.layout.fragment_feed, container,false);
-        holderNoPost = result.findViewById(R.id.holderNoPost);
-        ((TextView)holderNoPost.findViewById(R.id.tvAccessTitle)).setText(R.string.myfeed_noposts_title);
-        ((TextView)holderNoPost.findViewById(R.id.tvAccessMessage)).setText(R.string.myfeed_noposts_message);
-        holderNoPost.findViewById(R.id.btGetStarted).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity)getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.Compose);
-            }
-        });
-        swipeContainer = (SwipeRefreshLayout)result.findViewById(R.id.swipe_container);
+
+        View result = inflater.inflate(R.layout.fragment_feed, container, false);
+        accessViewHolder = AccessFragment.getViews(result.findViewById(R.id.holderNoPost));
+        progressBar = (ProgressBar) result.findViewById(R.id.progressLoading);
+        swipeContainer = (SwipeRefreshLayout) result.findViewById(R.id.swipe_container);
         swipeContainer.setOnRefreshListener(onRefreshListener);
         swipeContainer.setEnabled(false);
 //        itemTitle = result.findViewById(R.id.itemTitle);
 //        itemShare = result.findViewById(R.id.itemShare);
 //        shareController = FeedItem.createHolder(itemTitle,itemShare).shareController;
-        lvFeed = (RecyclerView)result.findViewById(R.id.lvFeed);
-        lvFeed.setHasFixedSize(false);
+        rvFeed = (RecyclerView) result.findViewById(R.id.rvFeed);
+        rvFeed.setItemViewCacheSize(10);
+        rvFeed.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        lvFeed.setLayoutManager(mLayoutManager);
-        lvFeed.setAdapter(adapter);
+        rvFeed.setLayoutManager(mLayoutManager);
+        rvFeed.setAdapter(adapter);
+        rvFeed.setOnScrollListener(endlessRecyclerOnScrollListener);
         session.getFeedManager().registerOnChangeListener(onFeedChange);
         scrollInitialized = false;
         titleVisible = false;
-        isViewCreated = true;
-        reload();
+        showLoading(false);
+        initFeed();
         return result;
     }
+
+    private void initFeed() {
+        list.clear();
+        boolean loaded = session.getFeedManager().feed(getFeedType()).getCache(list);
+        if (list.size() == 0) {
+            if (loaded)
+                showNoPost();
+            else {
+                lastNetworkAction = session.getFeedManager().feed(getFeedType());
+                lastNetworkAction./*setMaxID(400).*/load();
+                showLoading(true);
+            }
+        } else {
+            adapter.notifyDataSetChanged();
+        }
+        swipeContainer.setEnabled(list.size() > 0);
+    }
+
+    private void showLoading(boolean enabled) {
+        progressBar.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
+        progressBar.setIndeterminate(enabled);
+    }
+
+    protected ReadTag getPhotoCommentTag(PhotoComment p) {
+        ReadTag tag = (ReadTag) p.getTag();
+        if (tag == null) {
+            tag = new ReadTag();
+            p.setTag(tag);
+        }
+        return tag;
+    }
+
+    //Test visible answers
+    long lastTested = 0;
+    private boolean hasUnread = false;
+
+    private void testVisibleAnswers(boolean force) {
+        if (force)
+            lastTested = 0;
+        if (!isVisibleToUser || !isStarted)
+            return;
+        long now = System.currentTimeMillis();
+        long elapsed = now - lastTested;
+        if (elapsed < CHECK_UNREAD_INTERVAL)
+            return;
+        findUncoveredItems();
+        if (firstUncoveredItem < 0 && !force)
+            return;
+        Log.d("TAG", "Testing visible answers");
+        hasUnread = false;
+        lastTested = now;
+
+        ReadTag tag = null;
+        PhotoComment p = null;
+        for (int i = 0; i < list.size(); i++) {
+            p = list.get(i);
+            if (p == null)
+                continue;
+            tag = getPhotoCommentTag(p);
+            tag.oldShownAt = tag.shownAt;
+            tag.shownAt = 0;
+        }
+
+        if (firstUncoveredItem < 0)
+            return;
+
+        for (int i = firstUncoveredItem; i < lastUncoveredItem + 1; i++)
+        {
+                p = list.get(i);
+                tag = getPhotoCommentTag(p);
+                tag.shownAt = tag.oldShownAt;
+                if (tag.shownAt == 0)
+                    tag.shownAt = now;
+                else if (now - tag.shownAt > READ_DELAY) {
+                    FeedAdapter.ItemHolder itemHolder = (FeedAdapter.ItemHolder)rvFeed.getChildViewHolder(mLayoutManager.findViewByPosition(i));
+                    if (itemHolder.backgroundAnimator != null) {
+                        itemHolder.backgroundAnimator.start();
+                    }
+                    onItemViewed(p);
+                    Log.d("TAG", "Mark as read" + i);
+                }
+                hasUnread |= p.isUnread();
+        }
+        if (hasUnread && isVisibleToUser && isStarted)
+            mHandler.postDelayed(rTestViewed, CHECK_UNREAD_INTERVAL);
+        else
+            mHandler.removeCallbacks(rTestViewed);
+    }
+
+
+    int firstVisibleItem = -1;
+    int firstUncoveredItem = -1;
+    int lastUncoveredItem = -1;
+
+    private void findUncoveredItems()
+    {
+        firstUncoveredItem = -1;
+        lastUncoveredItem = -1;
+        boolean firstUnset = true;
+        firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+        int lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
+
+        if (firstVisibleItem >= 0) {
+            int lastItem = mLayoutManager.findLastVisibleItemPosition() + 1;
+            for (int i = firstVisibleItem; i < lastVisibleItem; i++) {
+                FeedAdapter.ItemHolder itemHolder = (FeedAdapter.ItemHolder)rvFeed.getChildViewHolder(mLayoutManager.findViewByPosition(i));
+                if (itemHolder.answerBackground == null ||
+                        !itemHolder.answerBackground.getLocalVisibleRect(scrollBounds) ||
+                        itemHolder.answerBackground.getHeight() != scrollBounds.height())
+                    continue;
+                PhotoComment p = list.get(i);
+                if (p == null || !p.isUnread())
+                    continue;
+                if (firstUnset) {
+                    firstUnset = false;
+                    firstUncoveredItem = i;
+                }
+                lastUncoveredItem = i;
+            }
+        }
+    }
+
+
+    RecyclerView.OnScrollListener endlessRecyclerOnScrollListener = new RecyclerView.OnScrollListener() {
+
+        private int previousTotal = 0; // The total number of items in the dataset after the last load
+        private boolean loading = true; // True if we are still waiting for the last set of data to load.
+        private int visibleThreshold = 1; // The minimum amount of items to have below your current scroll position before loading more.
+        int visibleItemCount, totalItemCount;
+        private int current_page = 1;
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            visibleItemCount = recyclerView.getChildCount();
+            totalItemCount = mLayoutManager.getItemCount();
+
+            int tfirst = firstUncoveredItem;
+            int tlast = lastUncoveredItem;
+            findUncoveredItems();
+
+            if (tfirst != firstUncoveredItem || tlast != lastUncoveredItem)
+                testVisibleAnswers(true);
+
+            if (loading) {
+                if (totalItemCount > previousTotal+1) {
+                    loading = false;
+                    previousTotal = totalItemCount;
+                }
+            }
+            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+                // End has been reached
+                // Do something
+                current_page++;
+                onLoadMore(current_page);
+                loading = true;
+            }
+        }
+
+        public void onLoadMore(int current_page)
+        {
+            if (bottomReached)
+                return;
+            int lastID = list.get(list.size() - 1).id - 1;
+            adapter.setFooterLoading(true);
+            lastNetworkAction = session.getFeedManager().feed(getFeedType())
+                                .setMaxID(lastID);
+            lastNetworkAction.load();
+
+        }
+    };
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    private void setEmptyLayoutVisibility(boolean visible)
-    {
-        if (getFeedType() == FeedManager.FeedType.My)
-        {
-            if (visible)
-                holderNoPost.setVisibility(View.VISIBLE);
-            else
-                holderNoPost.setVisibility(View.GONE);
-        }
-    }
 
-    public void reload()
-    {
-        if (!isViewCreated)
-            return;
-        list.clear();
-        boolean loaded = session.getFeedManager().feed(getFeedType()).getCache(list);
-        setEmptyLayoutVisibility(list.size() == 0 && loaded);
-        if (list.size() == 0) {
-            lastNetworkAction = session.getFeedManager().feed(getFeedType());
-            lastNetworkAction./*setMaxID(400).*/load();
-        } else {
-            lvFeed.scrollToPosition(0);
-            adapter.notifyDataSetChanged();
-        }
-        swipeContainer.setEnabled(list.size() > 0);
-    }
 
     SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
@@ -167,7 +369,6 @@ public abstract class FeedBaseFragment extends Fragment {
             swipeContainer.setEnabled(false);
             if (getFeedType() == FeedManager.FeedType.My)
             {
-                holderNoPost.setVisibility(View.GONE);
                 session.getFeedManager().feed(getFeedType()).clear();
                 list.clear();
                 adapter.notifyDataSetChanged();
@@ -183,6 +384,7 @@ public abstract class FeedBaseFragment extends Fragment {
         public boolean onUnread(FeedManager.FeedWrapper wrapper) {
             if (getFeedType() == FeedManager.FeedType.My)
                 adapter.notifyDataSetChanged();
+            testVisibleAnswers(true);
             return false;
         }
 
@@ -191,38 +393,60 @@ public abstract class FeedBaseFragment extends Fragment {
 
             if (wrapper.feedType != getFeedType())
                 return;
-
+            int listSize = list.size();
+            showLoading(false);
             if (wrapper.max_id == null) {
                 swipeContainer.setRefreshing(false);
+                if (wrapper.exception == null) {
+                    list.clear();
+                    adapter.notifyDataSetChanged();
+                }
             }
 
-            if (wrapper.exception != null)
-            {
-                setEmptyLayoutVisibility(false);
+            if (wrapper.exception != null) {
+                if (list.size() == 0)
+                    showLoadError();
                 adapter.setFooterLoading(false);
                 swipeContainer.setEnabled(false);
                 return;
             }
 
-            if (wrapper.flag_feedBottomReached) {
-                adapter.hideFooter();
-                swipeContainer.setEnabled(true);
+            if (wrapper.flag_feedBottomReached)
+                bottomReached = true;
+            adapter.hideFooter();
+            int maxid = Integer.MAX_VALUE;
+            if (list.size() > 0)
+                maxid = list.get(list.size() - 1).id;
+            ArrayList<PhotoComment> tmp = new ArrayList<PhotoComment>();
+            session.getFeedManager().feed(getFeedType()).getCache(tmp);
+            for (int i = 0; i < tmp.size(); i++) {
+                PhotoComment p = tmp.get(i);
+                if (p.id < maxid) {
+                    list.add(p);
+                    adapter.notifyItemInserted(list.size() - 1);
+                }
             }
-
-            list.clear();
-            session.getFeedManager().feed(getFeedType()).getCache(list);
-
-            adapter.notifyDataSetChanged();
             swipeContainer.setEnabled(list.size() > 0);
 
-            setEmptyLayoutVisibility(list.size() == 0 && wrapper.exception == null);
+            if (list.size() == 0)
+                showNoPost();
+            else
+                accessViewHolder.setVisibility(View.GONE);
 
             if (wrapper.max_id == null) {
-                lvFeed.scrollToPosition(0);
+                rvFeed.scrollToPosition(0);
             }
 
-//            if (!scrollInitialized)
-//                listScroll.onScroll(lvFeed,0,0,0);
+            testVisibleAnswers(true);
+            NavigationBar.Attached attached = ((MainActivity) getActivity()).getNavigationBar().getAttached();
+            if ((attached == NavigationBar.Attached.Feed && getFeedType() == FeedManager.FeedType.Public) ||
+                (attached == NavigationBar.Attached.MyFeed && getFeedType() == FeedManager.FeedType.My))
+            if (list.size() > 0 && listSize == 0)
+            {
+                Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.feedanimation);
+                animation.setFillAfter(false);
+                rvFeed.startAnimation(animation);
+            }
         }
 
 
@@ -252,8 +476,21 @@ public abstract class FeedBaseFragment extends Fragment {
         }
 
         @Override
-        public void onPostResult(int questionID, Exception error) {
-            adapter.notifyDataSetChanged();
+        public void onPosting(PhotoComment photoComment) {
+            if (getFeedType() != FeedManager.FeedType.My)
+                return;
+            list.add(0,photoComment);
+            adapter.notifyItemInserted(0);
+            rvFeed.scrollToPosition(0);
+        }
+
+        @Override
+        public void onPostResult(PhotoComment photoComment, Exception error) {
+            if (getFeedType() != FeedManager.FeedType.My)
+                return;
+            int idx = list.indexOf(photoComment);
+            if (idx >= 0)
+                adapter.notifyItemChanged(idx);
         }
 
     };
@@ -305,16 +542,65 @@ public abstract class FeedBaseFragment extends Fragment {
     */
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        swipeContainer = null;
-        lvFeed = null;
-        mLayoutManager = null;
-        holderNoPost = null;
-        session.getFeedManager().unRegisterOnChangeListener(onFeedChange);
-        list.clear();
-        isViewCreated = false;
+    public void onStart() {
+        super.onStart();
+        isStarted = true;
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(navigationChange, new IntentFilter(NavigationBar.ACTION_CHANGE));
+        navigationChange.onReceive(null, null);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        isStarted = false;
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(navigationChange);
+        mHandler.removeCallbacksAndMessages(null);
+    }
+
+    BroadcastReceiver navigationChange = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            NavigationBar.Attached attached = NavigationBar.Attached.Empty;
+            if (getFeedType() == FeedManager.FeedType.Public)
+                attached = NavigationBar.Attached.Feed;
+            else
+            if (getFeedType() == FeedManager.FeedType.My)
+                attached = NavigationBar.Attached.MyFeed;
+            isVisibleToUser =
+                    ((MainActivity) getActivity()).getNavigationBar().getAttached() == attached;
+            lastTested = 0;
+            testVisibleAnswers(true);
+        }
+    };
+
+
+    Runnable rTestViewed = new Runnable() {
+        @Override
+        public void run() {
+            testVisibleAnswers(false);
+        }
+    };
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        progressBar = null;
+        swipeContainer = null;
+        rvFeed = null;
+        mLayoutManager = null;
+        accessViewHolder = null;
+        session.getFeedManager().unRegisterOnChangeListener(onFeedChange);
+        list.clear();
+    }
+
+    @Override
+    public void onDestroy() {
+        session = null;
+        scrollBounds = null;
+        list = null;
+        adapter = null;
+        mHandler = null;
+        super.onDestroy();
+    }
 
 }

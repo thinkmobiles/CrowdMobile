@@ -46,6 +46,7 @@
 
     <!-- Feed item -->
 
+    <item name="item_unread" type="color">#800880de</item>
     <item name="item_stripe" type="color">#0880de</item>
     <item name="item_separator" type="color">#eee</item>
     <item name="item_background" type="color">#fff</item>

@@ -1,0 +1,307 @@
+TASK com.crowdmobile.kes id=20
+  ACTIVITY com.crowdmobile.kes/.MainActivity 42e164c0 pid=19424
+    Local FragmentActivity 41da4380 State:
+      mCreated=truemResumed=true mStopped=false mReallyStopped=false
+      mLoadersStarted=true
+    Active Fragments in 41da54b0:
+      #0: NewsFeedFragment{41e127f0 #0 id=0x7f0a0055}
+        mFragmentId=#7f0a0055 mContainerId=#7f0a0055 mTag=null
+        mState=5 mIndex=0 mWho=android:fragment:0 mBackStackNesting=0
+        mAdded=true mRemoving=false mResumed=true mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=true mHasMenu=false
+        mRetainInstance=false mRetaining=false mUserVisibleHint=true
+        mFragmentManager=FragmentManager{41da54b0 in MainActivity{41da4380}}
+        mActivity=com.crowdmobile.kes.MainActivity@41da4380
+        mContainer=android.support.v4.view.ViewPager{41decdd8 VFED.... ........ 0,152-480,762 #7f0a0055 app:id/viewPager}
+        mView=android.support.v4.app.NoSaveStateFrameLayout{41dacae0 V.E..... ........ 0,0-480,610}
+        mInnerView=android.support.v4.app.NoSaveStateFrameLayout{41dacae0 V.E..... ........ 0,0-480,610}
+        Child FragmentManager{41d37d78 in NewsFeedFragment{41e127f0}}:
+          FragmentManager misc state:
+            mActivity=com.crowdmobile.kes.MainActivity@41da4380
+            mContainer=android.support.v4.app.Fragment$1@41e0fa30
+            mParent=NewsFeedFragment{41e127f0 #0 id=0x7f0a0055}
+            mCurState=5 mStateSaved=false mDestroyed=false
+      #1: MyFeedFragment{41e14908 #1 id=0x7f0a0055}
+        mFragmentId=#7f0a0055 mContainerId=#7f0a0055 mTag=null
+        mState=5 mIndex=1 mWho=android:fragment:1 mBackStackNesting=0
+        mAdded=true mRemoving=false mResumed=true mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=false mHasMenu=false
+        mRetainInstance=false mRetaining=false mUserVisibleHint=false
+        mFragmentManager=FragmentManager{41da54b0 in MainActivity{41da4380}}
+        mActivity=com.crowdmobile.kes.MainActivity@41da4380
+        mContainer=android.support.v4.view.ViewPager{41decdd8 VFED.... ........ 0,152-480,762 #7f0a0055 app:id/viewPager}
+        mView=android.support.v4.app.NoSaveStateFrameLayout{41db32c8 V.E..... ........ 480,0-960,610}
+        mInnerView=android.support.v4.app.NoSaveStateFrameLayout{41db32c8 V.E..... ........ 480,0-960,610}
+        Child FragmentManager{41dd5e70 in MyFeedFragment{41e14908}}:
+          FragmentManager misc state:
+            mActivity=com.crowdmobile.kes.MainActivity@41da4380
+            mContainer=android.support.v4.app.Fragment$1@41dd5ee8
+            mParent=MyFeedFragment{41e14908 #1 id=0x7f0a0055}
+            mCurState=5 mStateSaved=false mDestroyed=false
+      #2: ComposeFragment{41e14fc0 #2 id=0x7f0a0055}
+        mFragmentId=#7f0a0055 mContainerId=#7f0a0055 mTag=null
+        mState=5 mIndex=2 mWho=android:fragment:2 mBackStackNesting=0
+        mAdded=true mRemoving=false mResumed=true mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=false mHasMenu=true
+        mRetainInstance=false mRetaining=false mUserVisibleHint=false
+        mFragmentManager=FragmentManager{41da54b0 in MainActivity{41da4380}}
+        mActivity=com.crowdmobile.kes.MainActivity@41da4380
+        mContainer=android.support.v4.view.ViewPager{41decdd8 VFED.... ........ 0,152-480,762 #7f0a0055 app:id/viewPager}
+        mView=android.support.v4.app.NoSaveStateFrameLayout{41db6830 V.E..... ........ 960,0-1440,610}
+        mInnerView=android.support.v4.app.NoSaveStateFrameLayout{41db6830 V.E..... ........ 960,0-1440,610}
+        Child FragmentManager{41db5770 in ComposeFragment{41e14fc0}}:
+          FragmentManager misc state:
+            mActivity=com.crowdmobile.kes.MainActivity@41da4380
+            mContainer=android.support.v4.app.Fragment$1@41db57e8
+            mParent=ComposeFragment{41e14fc0 #2 id=0x7f0a0055}
+            mCurState=5 mStateSaved=false mDestroyed=false
+      #3: CreditFragment{41e16360 #3 id=0x7f0a0055}
+        mFragmentId=#7f0a0055 mContainerId=#7f0a0055 mTag=null
+        mState=5 mIndex=3 mWho=android:fragment:3 mBackStackNesting=0
+        mAdded=true mRemoving=false mResumed=true mFromLayout=false mInLayout=false
+        mHidden=false mDetached=false mMenuVisible=false mHasMenu=false
+        mRetainInstance=false mRetaining=false mUserVisibleHint=false
+        mFragmentManager=FragmentManager{41da54b0 in MainActivity{41da4380}}
+        mActivity=com.crowdmobile.kes.MainActivity@41da4380
+        mContainer=android.support.v4.view.ViewPager{41decdd8 VFED.... ........ 0,152-480,762 #7f0a0055 app:id/viewPager}
+        mView=android.support.v4.app.NoSaveStateFrameLayout{41dcd978 V.E..... ........ 1440,0-1920,610}
+        mInnerView=android.support.v4.app.NoSaveStateFrameLayout{41dcd978 V.E..... ........ 1440,0-1920,610}
+        Child FragmentManager{41dbd6a0 in CreditFragment{41e16360}}:
+          FragmentManager misc state:
+            mActivity=com.crowdmobile.kes.MainActivity@41da4380
+            mContainer=android.support.v4.app.Fragment$1@41dbe890
+            mParent=CreditFragment{41e16360 #3 id=0x7f0a0055}
+            mCurState=5 mStateSaved=false mDestroyed=false
+    Added Fragments:
+      #0: NewsFeedFragment{41e127f0 #0 id=0x7f0a0055}
+      #1: MyFeedFragment{41e14908 #1 id=0x7f0a0055}
+      #2: ComposeFragment{41e14fc0 #2 id=0x7f0a0055}
+      #3: CreditFragment{41e16360 #3 id=0x7f0a0055}
+    FragmentManager misc state:
+      mActivity=com.crowdmobile.kes.MainActivity@41da4380
+      mContainer=android.support.v4.app.FragmentActivity$2@41da5d80
+      mCurState=5 mStateSaved=false mDestroyed=false
+    View Hierarchy:
+      com.android.internal.policy.impl.PhoneWindow$DecorView{41dabd48 V.E..... ... 0,0-480,800}
+        android.widget.LinearLayout{41dac3a0 V.E..... ... 0,0-480,800}
+          android.view.ViewStub{41dacf68 G.E..... ... 0,0-0,0 #1020451}
+          android.widget.FrameLayout{41dad1f0 V.E..... ... 0,38-480,800}
+            android.support.v7.internal.widget.FitWindowsLinearLayout{41dc1d28 V.E..... ... 0,0-480,762 #7f0a003a app:id/action_bar_root}
+              android.support.v7.internal.widget.ViewStubCompat{41dc24c0 G.E..... ... 0,0-0,0 #7f0a003b app:id/action_mode_bar_stub}
+              android.support.v7.internal.widget.NativeActionModeAwareLayout{41dc38b0 V.ED.... ... 0,0-480,762 #1020002 android:id/content}
+                android.widget.RelativeLayout{41dc86e0 V.E..... ... 0,0-480,762 #7f0a0052 app:id/container}
+                  android.widget.RelativeLayout{41dc8c88 V.E..... ... 0,0-480,762}
+                    android.support.v7.widget.Toolbar{41dc9810 V.E..... ... 0,0-480,84 #7f0a0053 app:id/toolbar}
+                      android.widget.TextView{41e04bd8 V.ED.... ... 24,21-158,62}
+                      android.support.v7.widget.ActionMenuView{41e07b40 V.E..... ... 282,0-480,84}
+                        android.support.v7.internal.view.menu.ActionMenuItemView{41dbbbc8 VF.D..CL ... 0,6-72,78 #7f0a00b4 app:id/action_credit}
+                        android.support.v7.internal.view.menu.ActionMenuItemView{41d40f40 VFED..CL ... 72,6-144,78 #7f0a00b5 app:id/action_crediticon}
+                        android.support.v7.widget.ActionMenuPresenter$OverflowMenuButton{41e0adc8 VFED..C. ... 144,6-198,78}
+                    android.widget.LinearLayout{41dd09e8 V.E..... ... 0,84-480,152 #7f0a0054 app:id/navigationBar}
+                      android.widget.LinearLayout{41dd0fd8 V.E..... ... 0,0-480,68}
+                        android.widget.ImageView{41dd1548 V.ED..C. ... 0,0-118,68 #7f0a00a8 app:id/btFeed}
+                        android.view.View{41dd7238 V.ED.... ... 118,0-120,68}
+                        android.widget.RelativeLayout{41dd7610 V.E..... ... 120,0-238,68}
+                          android.widget.ImageView{41dd7bc0 V.ED..C. ... 0,0-118,68 #7f0a00a9 app:id/btMyFeed}
+                          android.widget.RelativeLayout{41ddcbd0 V.E..... ... 34,8-84,59}
+                            android.widget.TextView{41ddd3f0 I.ED.... ... 23,0-50,28 #7f0a00aa app:id/tvUnreadCount}
+                        android.view.View{41de18d0 V.ED.... ... 238,0-240,68}
+                        android.widget.ImageView{41de1c38 V.ED..C. ... 240,0-359,68 #7f0a00ab app:id/btCompose}
+                        android.view.View{41de6b48 V.ED.... ... 359,0-361,68}
+                        android.widget.ImageView{41de6eb0 V.ED..C. ... 361,0-480,68 #7f0a00ac app:id/btCheckout}
+                    android.support.v4.view.ViewPager{41decdd8 VFED.... ... 0,152-480,762 #7f0a0055 app:id/viewPager}
+                      android.support.v4.app.NoSaveStateFrameLayout{41dacae0 V.E..... ... 0,0-480,610}
+                        android.widget.RelativeLayout{41da0b48 V.E..... ... 0,0-480,610}
+                          android.support.v4.widget.SwipeRefreshLayout{41da7710 V.ED.... ... 0,0-480,610 #7f0a0091 app:id/swipe_container}
+                            android.support.v7.widget.RecyclerView{41dfcba8 V.ED.... ... 0,0-480,610 #7f0a0092 app:id/rvFeed}
+                              android.widget.RelativeLayout{4216bf18 V.E..... ... 0,-622-480,79}
+                                android.support.v7.widget.CardView{4216c4f0 V.E...C. ... 16,8-464,701 #7f0a0099 app:id/itemCard}
+                                  android.widget.LinearLayout{4216ccf8 V.E..... ... 9,12-439,681 #7f0a009a app:id/holderBackground}
+                                    android.view.View{4216d0f0 V.ED.... ... 0,0-430,8}
+                                    android.widget.LinearLayout{4216d530 V.E..... ... 0,8-430,115 #7f0a009b app:id/itemTitle}
+                                      android.widget.RelativeLayout{4216dfc0 V.E..... ... 15,8-415,62}
+                                        android.widget.ImageView{4216ed30 V.ED.... ... 0,8-38,46 #7f0a00a4 app:id/imgTimeQuestion}
+                                        android.widget.TextView{4216f210 V.ED.... ... 38,13-149,41 #7f0a00a5 app:id/tvTimeQuestion}
+                                        android.widget.RelativeLayout{421703f0 V.E..... ... 200,27-200,27}
+                                          android.widget.Button{42170aa0 GFED..C. ... 0,0-0,0 #7f0a0076 app:id/btRetry}
+                                        android.widget.ImageView{421717d0 V.ED..C. ... 362,8-400,46 #7f0a00a6 app:id/imgOpenShare}
+                                      android.widget.TextView{42171cb0 V.ED.... ... 15,62-415,107 #7f0a00a7 app:id/tvMessage}
+                                    com.crowdmobile.kes.widget.FixedARImageView{42172350 V.ED.... ... 0,115-430,545 #7f0a009c app:id/imgFeedPic}
+                                    android.view.View{421726a8 V.ED.... ... 0,545-430,550}
+                                    android.widget.FrameLayout{42172a10 V.E..... ... 0,550-430,669}
+                                      android.view.View{42172e78 I.ED.... ... 0,0-430,119 #7f0a009d app:id/answerBackground}
+                                      android.widget.LinearLayout{42173258 V.E..... ... 0,0-430,119}
+                                        android.widget.RelativeLayout{42173650 V.E..... ... 0,8-430,76}
+                                          android.widget.ImageView{42173cf0 V.ED.... ... 15,15-53,53 #7f0a009e app:id/imgAnswerLeft}
+                                          android.widget.TextView{421741d0 V.ED.... ... 53,20-140,48 #7f0a009f app:id/tvAnswerLabel}
+                                          android.widget.ImageView{42174970 I.ED.... ... 196,15-234,53 #7f0a00a0 app:id/imgAnswerCenter}
+                                          android.widget.ImageView{42174e50 V.ED..C. ... 377,15-415,53 #7f0a00a1 app:id/imgAnswerRight}
+                                        android.widget.TextView{42175330 V.ED.... ... 0,76-430,119 #7f0a00a2 app:id/tvAnswer}
+                              android.widget.RelativeLayout{4215ef38 V.E..... ... 0,79-480,374}
+                                android.support.v7.widget.CardView{4215f510 V.E...C. ... 16,8-464,295 #7f0a0099 app:id/itemCard}
+                                  android.widget.LinearLayout{4215fd18 V.E..... ... 9,12-439,275 #7f0a009a app:id/holderBackground}
+                                    android.view.View{42160110 V.ED.... ... 0,0-430,8}
+                                    android.widget.LinearLayout{42160550 V.E..... ... 0,8-430,139 #7f0a009b app:id/itemTitle}
+                                      android.widget.RelativeLayout{42160fe0 V.E..... ... 15,8-415,62}
+                                        android.widget.ImageView{42161d50 V.ED.... ... 0,8-38,46 #7f0a00a4 app:id/imgTimeQuestion}
+                                        android.widget.TextView{42162230 V.ED.... ... 38,13-160,41 #7f0a00a5 app:id/tvTimeQuestion}
+                                        android.widget.RelativeLayout{42163410 V.E..... ... 200,27-200,27}
+                                          android.widget.Button{42163ac0 GFED..C. ... 0,0-0,0 #7f0a0076 app:id/btRetry}
+                                        android.widget.ImageView{421647f0 V.ED..C. ... 362,8-400,46 #7f0a00a6 app:id/imgOpenShare}
+                                      android.widget.TextView{42164cd0 V.ED.... ... 15,62-415,131 #7f0a00a7 app:id/tvMessage}
+                                    com.crowdmobile.kes.widget.FixedARImageView{42165370 G.ED.... ... 0,139-430,569 #7f0a009c app:id/imgFeedPic}
+                                    android.view.View{421656c8 V.ED.... ... 0,139-430,144}
+                                    android.widget.FrameLayout{42165a30 V.E..... ... 0,144-430,263}
+                                      android.view.View{42165e98 V.ED.... ... 0,0-430,119 #7f0a009d app:id/answerBackground}
+                                      android.widget.LinearLayout{42166278 V.E..... ... 0,0-430,119}
+                                        android.widget.RelativeLayout{42166670 V.E..... ... 0,8-430,76}
+                                          android.widget.ImageView{42166d10 V.ED.... ... 15,15-53,53 #7f0a009e app:id/imgAnswerLeft}
+                                          android.widget.TextView{421671f0 V.ED.... ... 53,20-140,48 #7f0a009f app:id/tvAnswerLabel}
+                                          android.widget.ImageView{42167990 I.ED.... ... 196,15-234,53 #7f0a00a0 app:id/imgAnswerCenter}
+                                          android.widget.ImageView{42167e70 V.ED..C. ... 377,15-415,53 #7f0a00a1 app:id/imgAnswerRight}
+                                        android.widget.TextView{42168350 V.ED.... ... 0,76-430,119 #7f0a00a2 app:id/tvAnswer}
+                              android.widget.RelativeLayout{420f70e0 V.E..... ... 0,374-480,669}
+                                android.support.v7.widget.CardView{420f7730 V.E...C. ... 16,8-464,295 #7f0a0099 app:id/itemCard}
+                                  android.widget.LinearLayout{420f7f88 V.E..... ... 9,12-439,275 #7f0a009a app:id/holderBackground}
+                                    android.view.View{420f83c0 V.ED.... ... 0,0-430,8}
+                                    android.widget.LinearLayout{420f89c8 V.E..... ... 0,8-430,115 #7f0a009b app:id/itemTitle}
+                                      android.widget.RelativeLayout{420f9600 V.E..... ... 15,8-415,62}
+                                        android.widget.ImageView{420fa3b8 V.ED.... ... 0,8-38,46 #7f0a00a4 app:id/imgTimeQuestion}
+                                        android.widget.TextView{420fa8e0 V.ED.... ... 38,13-160,41 #7f0a00a5 app:id/tvTimeQuestion}
+                                        android.widget.RelativeLayout{420fbb00 V.E..... ... 200,27-200,27}
+                                          android.widget.Button{420fc1f0 GFED..C. ... 0,0-0,0 #7f0a0076 app:id/btRetry}
+                                        android.widget.ImageView{420fcf20 V.ED..C. ... 362,8-400,46 #7f0a00a6 app:id/imgOpenShare}
+                                      android.widget.TextView{420fd400 V.ED.... ... 15,62-415,107 #7f0a00a7 app:id/tvMessage}
+                                    com.crowdmobile.kes.widget.FixedARImageView{420fdb30 G.ED.... ... 0,139-430,569 #7f0a009c app:id/imgFeedPic}
+                                    android.view.View{420fde88 V.ED.... ... 0,115-430,120}
+                                    android.widget.FrameLayout{420fe240 V.E..... ... 0,120-430,263}
+                                      android.view.View{420fe6a8 I.ED.... ... 0,0-430,143 #7f0a009d app:id/answerBackground}
+                                      android.widget.LinearLayout{420fea88 V.E..... ... 0,0-430,143}
+                                        android.widget.RelativeLayout{420fee80 V.E..... ... 0,8-430,76}
+                                          android.widget.ImageView{420ff568 V.ED.... ... 15,15-53,53 #7f0a009e app:id/imgAnswerLeft}
+                                          android.widget.TextView{420ffa90 V.ED.... ... 53,20-140,48 #7f0a009f app:id/tvAnswerLabel}
+                                          android.widget.ImageView{42100230 I.ED.... ... 196,15-234,53 #7f0a00a0 app:id/imgAnswerCenter}
+                                          android.widget.ImageView{42100710 V.ED..C. ... 377,15-415,53 #7f0a00a1 app:id/imgAnswerRight}
+                                        android.widget.TextView{42100bf0 V.ED.... ... 0,76-430,143 #7f0a00a2 app:id/tvAnswer}
+                            android.support.v4.widget.CircleImageView{41da5aa0 G.ED.... ... 205,-70-275,0}
+                          android.widget.LinearLayout{41def250 G.E..... ... 0,0-0,0 #7f0a0093 app:id/holderNoPost}
+                            android.widget.RelativeLayout{41df06b0 V.E..... ... 0,0-0,0}
+                              android.widget.ImageView{41e08db8 V.ED.... ... 0,0-0,0}
+                            android.support.v7.widget.CardView{41e138a0 V.E..... ... 0,0-0,0}
+                              android.widget.LinearLayout{41e093f0 V.E..... ... 0,0-0,0}
+                                android.widget.TextView{41d21be8 V.ED.... ... 0,0-0,0 #7f0a0077 app:id/tvAccessTitle}
+                                android.widget.TextView{41d376e8 V.ED.... ... 0,0-0,0 #7f0a0078 app:id/tvAccessMessage}
+                                android.widget.TextView{41e14ab8 V.ED.... ... 0,0-0,0 #7f0a0079 app:id/btAccessButton}
+                          android.widget.ProgressBar{41da5078 I.ED.... ... 204,269-276,341 #7f0a0094 app:id/progressLoading}
+                      android.support.v4.app.NoSaveStateFrameLayout{41db32c8 V.E..... ... 480,0-960,610}
+                        android.widget.RelativeLayout{41dd5f70 V.E..... ... 0,0-480,610}
+                          android.support.v4.widget.SwipeRefreshLayout{41dadb88 V.ED.... ... 0,0-480,610 #7f0a0091 app:id/swipe_container}
+                            android.support.v4.widget.CircleImageView{41dc5380 G.ED.... ... 205,-70-275,0}
+                            android.support.v7.widget.RecyclerView{41d3ca60 V.ED.... ... 0,0-480,610 #7f0a0092 app:id/rvFeed}
+                              android.widget.RelativeLayout{420572f8 V.E..... ... 0,0-480,725}
+                                android.support.v7.widget.CardView{42057dd0 V.E...C. ... 16,8-464,725 #7f0a0099 app:id/itemCard}
+                                  android.widget.LinearLayout{42058628 V.E..... ... 9,12-439,705 #7f0a009a app:id/holderBackground}
+                                    android.view.View{42058a60 V.ED.... ... 0,0-430,8}
+                                    android.widget.LinearLayout{42059568 V.E..... ... 0,8-430,115 #7f0a009b app:id/itemTitle}
+                                      android.widget.RelativeLayout{4205a2e8 V.E..... ... 15,8-415,62}
+                                        android.widget.ImageView{4205b0a0 V.ED.... ... 0,8-38,46 #7f0a00a4 app:id/imgTimeQuestion}
+                                        android.widget.TextView{42060110 V.ED.... ... 38,13-149,41 #7f0a00a5 app:id/tvTimeQuestion}
+                                        android.widget.RelativeLayout{42061330 V.E..... ... 200,27-200,27}
+                                          android.widget.Button{42061a20 GFED..C. ... 0,0-0,0 #7f0a0076 app:id/btRetry}
+                                        android.widget.ImageView{42062aa8 V.ED..C. ... 362,8-400,46 #7f0a00a6 app:id/imgOpenShare}
+                                      android.widget.TextView{42067ac8 V.ED.... ... 15,62-415,107 #7f0a00a7 app:id/tvMessage}
+                                    com.crowdmobile.kes.widget.FixedARImageView{420681f8 V.ED.... ... 0,115-430,545 #7f0a009c app:id/imgFeedPic}
+                                    android.view.View{42068550 V.ED.... ... 0,545-430,550}
+                                    android.widget.FrameLayout{42068908 V.E..... ... 0,550-430,693}
+                                      android.view.View{42068d70 I.ED.... ... 0,0-430,143 #7f0a009d app:id/answerBackground}
+                                      android.widget.LinearLayout{420695f8 V.E..... ... 0,0-430,143}
+                                        android.widget.RelativeLayout{420699f0 V.E..... ... 0,8-430,76}
+                                          android.widget.ImageView{4206a0f8 I.ED.... ... 15,15-53,53 #7f0a009e app:id/imgAnswerLeft}
+                                          android.widget.TextView{4206f160 I.ED.... ... 53,20-140,48 #7f0a009f app:id/tvAnswerLabel}
+                                          android.widget.ImageView{4206f948 V.ED.... ... 196,15-234,53 #7f0a00a0 app:id/imgAnswerCenter}
+                                          android.widget.ImageView{4206fe28 I.ED..C. ... 377,15-415,53 #7f0a00a1 app:id/imgAnswerRight}
+                                        android.widget.TextView{42070308 V.ED.... ... 0,76-430,143 #7f0a00a2 app:id/tvAnswer}
+                          android.widget.LinearLayout{41d27d68 G.E..... ... 0,0-0,0 #7f0a0093 app:id/holderNoPost}
+                            android.widget.RelativeLayout{41d28318 V.E..... ... 0,0-0,0}
+                              android.widget.ImageView{41d288c8 V.ED.... ... 0,0-0,0}
+                            android.support.v7.widget.CardView{41d28da8 V.E..... ... 0,0-0,0}
+                              android.widget.LinearLayout{41d2cac8 V.E..... ... 0,0-0,0}
+                                android.widget.TextView{41d2ceb0 V.ED.... ... 0,0-0,0 #7f0a0077 app:id/tvAccessTitle}
+                                android.widget.TextView{41d2d550 V.ED.... ... 0,0-0,0 #7f0a0078 app:id/tvAccessMessage}
+                                android.widget.TextView{41d40290 V.ED.... ... 0,0-0,0 #7f0a0079 app:id/btAccessButton}
+                          android.widget.ProgressBar{41d41bc0 I.ED.... ... 204,269-276,341 #7f0a0094 app:id/progressLoading}
+                      android.support.v4.app.NoSaveStateFrameLayout{41db6830 V.E..... ... 960,0-1440,610}
+                        android.widget.LinearLayout{41db6c90 V.E..... ... 0,0-480,610}
+                          com.crowdmobile.kes.widget.EditorCard{41db75d0 V.E..... ... 0,155-480,455}
+                            android.widget.RelativeLayout{41dba6b0 V.E..... ... 7,10-473,290}
+                              android.widget.LinearLayout{41dbac58 V.E..... ... 0,0-466,280}
+                                android.widget.RelativeLayout{41dbb158 G.E..... ... 0,0-0,0 #7f0a007a app:id/holderImage}
+                                  android.widget.RelativeLayout{41dbb708 V.E..... ... 0,0-0,0}
+                                    android.widget.ImageView{41e4b150 V.ED.... ... 0,0-0,0 #7f0a007b app:id/imgPreview}
+                                  android.widget.ImageView{41e4ba78 V.ED..C. ... 0,0-0,0 #7f0a007c app:id/ivPreviewClose}
+                                android.support.v7.internal.widget.TintEditText{41e50988 VFED..CL ... 0,0-466,280 #7f0a007d app:id/edMessage}
+                              android.widget.LinearLayout{41e537a0 V.E..... ... 0,160-466,280 #7f0a007e app:id/buttonHolder}
+                                android.widget.ImageView{41e53ca0 V.ED..C. ... 406,0-466,60 #7f0a007f app:id/imgPrivate}
+                                android.widget.RelativeLayout{41e04528 V.E..... ... 0,60-466,120}
+                                  android.widget.ImageView{41d9f958 V.ED..C. ... 0,0-60,60 #7f0a0080 app:id/imgCamera}
+                                  android.widget.ImageView{41daec30 V.ED..C. ... 406,0-466,60 #7f0a0081 app:id/imgPost}
+                              android.widget.TextView{41dbc888 V.ED.... ... 0,0-466,280 #7f0a0082 app:id/tvHint}
+                      android.support.v4.app.NoSaveStateFrameLayout{41dcd978 V.E..... ... 1440,0-1920,610}
+                        android.widget.RelativeLayout{41e0a3c0 V.E..... ... 0,0-480,610}
+                          android.widget.LinearLayout{41dc71a0 V.E..... ... 15,15-465,428}
+                            android.widget.LinearLayout{41df2518 V.E..... ... 0,0-450,179}
+                              android.widget.LinearLayout{41e06390 V.E..... ... 23,23-292,156}
+                                android.widget.TextView{41e4b6b0 V.ED.... ... 0,0-266,41}
+                                android.view.View{41dbc438 V.ED.... ... 0,41-266,44}
+                                android.widget.TextView{41e50168 V.ED.... ... 0,44-266,133}
+                              android.widget.ImageView{41dedae0 V.ED.... ... 292,78-427,156}
+                            android.view.View{41da65e8 V.ED.... ... 0,179-450,181}
+                            android.widget.ListView{41dbd948 VFED.VC. F.. 0,181-450,413 #7f0a0084 app:id/lvPricelist}
+                              android.widget.RelativeLayout{4203c848 V.E..... ... 0,0-450,76}
+                                android.widget.ImageView{4203cf18 I.ED.... ... 405,0-450,45 #7f0a0096 app:id/ivBestOffer}
+                                android.widget.LinearLayout{42041f70 V.E..... ... 0,0-450,76}
+                                  android.widget.LinearLayout{42042470 V.E..... ... 0,0-450,76}
+                                    android.widget.LinearLayout{42042870 V.E..... ... 8,8-128,68}
+                                      android.widget.TextView{42042cb8 V.ED.... ... 0,5-60,55 #7f0a0097 app:id/tvQuantity}
+                                      android.widget.ImageView{42043390 V.ED.... ... 60,0-120,60}
+                                    android.view.View{420482e8 V.ED.... ... 128,8-202,68}
+                                    android.widget.TextView{42048560 V.ED.... ... 202,21-334,55 #7f0a0098 app:id/tvPrice}
+                                    android.widget.TextView{42048c40 V.ED.... ... 334,21-442,55}
+                              android.widget.RelativeLayout{4204a5f0 V.E..... ... 0,78-450,154}
+                                android.widget.ImageView{4204ac78 I.ED.... ... 405,0-450,45 #7f0a0096 app:id/ivBestOffer}
+                                android.widget.LinearLayout{4204b158 V.E..... ... 0,0-450,76}
+                                  android.widget.LinearLayout{4204b658 V.E..... ... 0,0-450,76}
+                                    android.widget.LinearLayout{4204ba58 V.E..... ... 8,8-128,68}
+                                      android.widget.TextView{4204be58 V.ED.... ... 0,5-60,55 #7f0a0097 app:id/tvQuantity}
+                                      android.widget.ImageView{4204c4f8 V.ED.... ... 60,0-120,60}
+                                    android.view.View{4204c8d8 V.ED.... ... 128,8-202,68}
+                                    android.widget.TextView{4204cb50 V.ED.... ... 202,21-334,55 #7f0a0098 app:id/tvPrice}
+                                    android.widget.TextView{4204d1f0 V.ED.... ... 334,21-442,55}
+                              android.widget.RelativeLayout{4204e340 V.E..... ... 0,156-450,232}
+                                android.widget.ImageView{4204e9c8 V.ED.... ... 405,0-450,45 #7f0a0096 app:id/ivBestOffer}
+                                android.widget.LinearLayout{4204eea8 V.E..... ... 0,0-450,76}
+                                  android.widget.LinearLayout{4204f3a8 V.E..... ... 0,0-450,76}
+                                    android.widget.LinearLayout{4204f7a8 V.E..... ... 8,8-128,68}
+                                      android.widget.TextView{4204fba8 V.ED.... ... 0,5-60,55 #7f0a0097 app:id/tvQuantity}
+                                      android.widget.ImageView{42050248 V.ED.... ... 60,0-120,60}
+                                    android.view.View{42050628 V.ED.... ... 128,8-202,68}
+                                    android.widget.TextView{420508a0 V.ED.... ... 202,21-334,55 #7f0a0098 app:id/tvPrice}
+                                    android.widget.TextView{42050f40 V.ED.... ... 334,21-442,55}
+                          android.support.v7.widget.CardView{41e09970 G.E..... ... 31,243-449,367 #7f0a0085 app:id/holderProgress}
+                            android.widget.LinearLayout{41da8190 V.E..... ... 8,11-410,113}
+                              android.widget.LinearLayout{41dc6aa0 V.E..... ... 0,0-402,102}
+                                android.widget.ProgressBar{41da7e68 G.ED.... ... 15,15-87,87 #7f0a0086 app:id/creditProgress}
+                                android.widget.TextView{41dc2748 V.ED.... ... 87,37-387,65 #7f0a0087 app:id/creditStatus}
+                              android.widget.LinearLayout{41df09f0 G.E..... ... 0,0-0,0 #7f0a0088 app:id/holderButtons}
+                                android.widget.Button{41e4fbf0 VFED..C. ... 0,0-0,0 #7f0a0089 app:id/btCreditRetry}
+                                android.widget.Button{41db5978 VFED..C. ... 0,0-0,0 #7f0a008a app:id/btCreditRefund}
+                          android.widget.ImageView{41df2cc0 V.ED.... ... 0,428-255,610 #7f0a0083 app:id/ivShopFooter}
+                          android.widget.RelativeLayout{41e0a700 I.E..... ... 142,244-337,365 #7f0a008b app:id/holderPurchased}
+                            android.widget.ImageView{41dc3d88 V.ED.... ... 0,0-195,114}
+                            android.widget.TextView{41e4f6a8 V.ED.... ... 46,0-148,121 #7f0a008c app:id/tvPurchased}
+                    android.view.View{41df3600 V.ED.... ... 0,152-480,160 #7f0a0056 app:id/navbarShadow}
+                  android.widget.ListView{41df4f30 IFED.VC. ... 0,537-480,762 #7f0a0057 app:id/lvLogcat}
+                    android.widget.TextView{41fd3ad8 V.ED.... ... 0,0-480,39 #1020014 android:id/text1}
+                    android.widget.TextView{41fd44e8 V.ED.... ... 0,40-480,79 #1020014 android:id/text1}
+                    android.widget.TextView{41fd55b8 V.ED.... ... 0,80-480,137 #1020014 android:id/text1}
+                    android.widget.TextView{41fc71d8 V.ED.... ... 0,138-480,177 #1020014 android:id/text1}

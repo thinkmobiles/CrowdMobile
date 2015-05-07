@@ -112,6 +112,16 @@ public class AccountManager {
         postUserChanged();
     }
 
+    public void updateUnread(int count)
+    {
+        getCachedUser(mSession.getContext());
+        if (user.auth_token == null)
+            return;
+        user.unread_count = count;
+        PreferenceUtil.setUnreadCount(mSession.getContext(), user.balance);
+        postUserChanged();
+    }
+
     public void setUAChannelID(String channelID)
     {
         ua_token = channelID;

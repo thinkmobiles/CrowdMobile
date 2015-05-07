@@ -30,6 +30,13 @@
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="0px"/>
+        <View
+            android:layout_below="@id/navigationBar"
+            android:id="@+id/navbarShadow"
+            android:background="@drawable/bottom_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/navbar_shadow"/>
+
     </RelativeLayout>
     <ListView
         android:id="@+id/lvLogcat"

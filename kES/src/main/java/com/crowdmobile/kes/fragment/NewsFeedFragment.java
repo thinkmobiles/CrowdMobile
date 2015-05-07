@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kes.FeedManager;
+import com.kes.Session;
 import com.kes.model.PhotoComment;
 
 /**
@@ -21,6 +22,7 @@ public class NewsFeedFragment extends FeedBaseFragment {
     @Override
     public void onItemViewed(PhotoComment p) {
         //ignore
+        p.markAsRead(Session.getInstance(getActivity()).getFeedManager());
     }
 
     @Override

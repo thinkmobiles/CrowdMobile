@@ -21,7 +21,7 @@ import com.crowdmobile.kes.fragment.ComposeFragment;
 import com.crowdmobile.kes.fragment.CreditFragment;
 import com.crowdmobile.kes.fragment.MyFeedFragment;
 import com.crowdmobile.kes.fragment.NewsFeedFragment;
-import com.crowdmobile.kes.fragment.NotRegisteredFragment;
+import com.crowdmobile.kes.fragment.AccessFragment;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.kes.Session;
 
@@ -40,7 +40,6 @@ public class NavigationBar {
 	private Attached attached = Attached.Empty;
 	private ViewPager mViewPager;
     private NavbarAdapter adapter;
-    private boolean flag_myfeedInvalidate = false;
     private TextView tvUnreadCount;
 
 	public NavigationBar(ActionBarActivity activity, View v,ViewPager viewPager)
@@ -61,7 +60,7 @@ public class NavigationBar {
 		btCompose.setOnClickListener(onClickListener);
 		btCheckout.setOnClickListener(onClickListener);
         tvUnreadCount = (TextView)v.findViewById(R.id.tvUnreadCount);
-        setUnreadCount(0);
+        setUnreadCount(Session.getInstance(activity).getAccountManager().getUser().unread_count);
 	}
 
     public void setUnreadCount(int count)
@@ -74,21 +73,12 @@ public class NavigationBar {
         }
     }
 
-    public void invalidateMyFeed()
-    {
-        flag_myfeedInvalidate = true;
-    }
-
     private void selectPage(int position)
     {
         Attached newPage = Attached.values()[position + 1];
         updateIcons(newPage);
         LocalBroadcastManager.getInstance(mActivity).sendBroadcast(new Intent(ACTION_CHANGE));
         attached = newPage;
-        if (attached == Attached.MyFeed && flag_myfeedInvalidate) {
-            flag_myfeedInvalidate = false;
-            ((MyFeedFragment) adapter.getItem(position)).reload();
-        }
 
         if (attached != Attached.Compose) {
             final InputMethodManager imm = (InputMethodManager)mActivity.getSystemService(
@@ -145,7 +135,7 @@ public class NavigationBar {
 
 
         if (!Session.getInstance(mActivity).getAccountManager().getUser().isRegistered())
-            return new NotRegisteredFragment();
+            return new AccessFragment();
 
         if (src == Attached.Checkout)
             return new CreditFragment();

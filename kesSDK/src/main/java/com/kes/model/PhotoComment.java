@@ -23,6 +23,17 @@ public class PhotoComment {
     public PostStatus status = PostStatus.Posted;
     public boolean flag_first = false;
     public boolean flag_last = false;
+    private Object tag;
+
+    public void setTag(Object tag)
+    {
+        this.tag = tag;
+    }
+
+    public Object getTag()
+    {
+        return tag;
+    }
 
     //Temporary variables
     public boolean reported = false;
@@ -30,8 +41,6 @@ public class PhotoComment {
     public void markAsRead(FeedManager feedManager)
     {
         if (responses == null || responses.length == 0)
-            return;
-        if (!isUnread())
             return;
         for (int i = 0; i < responses.length; i++)
             if (!responses[i].read) {
@@ -44,9 +53,11 @@ public class PhotoComment {
     {
         if (responses == null || responses.length == 0)
             return false;
-        for (int j = 0; j < responses.length; j++)
-            if (responses[j].read)
+        for (int j = 0; j < responses.length; j++) {
+//            responses[j].read = false;   //todo:remove,debug
+            if (!responses[j].read)
                 return true;
+        }
         return false;
     }
 
