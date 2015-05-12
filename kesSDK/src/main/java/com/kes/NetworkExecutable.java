@@ -16,6 +16,8 @@ abstract class NetworkExecutable<T extends ResultWrapper> {
     public static final String TAG_QUESTION_ID = "questionid";
     public static final String TAG_COMMENT_ID = "commentid";
     protected static final String TAG_CMD = "command";
+    protected static final String TAG_PREEXECUTE = "preexecute";
+
     private T mWrapper;
     protected abstract T getResultWrapper();
 
@@ -43,7 +45,28 @@ abstract class NetworkExecutable<T extends ResultWrapper> {
         run(context, session, mWrapper);
     }
 
+    protected boolean onPreExecute(Context context, Intent intent)
+    {
+        return false;
+    }
+
     protected abstract void onExecute(Context context, Intent intent, T wrapper) throws DataFetcher.KESNetworkException, IOException, InterruptedException;
     protected abstract void run(Context context,Session session, T holder);
+
+    protected static NetworkExecutable createFromIntent(Intent intent)
+    {
+        try {
+            return (NetworkExecutable) Class.forName(intent.getAction()).newInstance();
+        } catch (InstantiationException e)
+        {
+            throw new RuntimeException((e));
+        }
+        catch (IllegalAccessException e) {
+            throw new RuntimeException((e));
+        }
+        catch (ClassNotFoundException e) {
+            throw new RuntimeException((e));
+        }
+    }
 }
 

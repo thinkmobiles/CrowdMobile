@@ -6,6 +6,7 @@ import com.kes.FeedManager;
  * Created by gadza on 2015.03.05..
  */
 public class PhotoComment {
+
     public static enum PostStatus {Posted, Pending, Error};
 
     public int id;
@@ -21,8 +22,7 @@ public class PhotoComment {
     public boolean is_private;
 
     public PostStatus status = PostStatus.Posted;
-    public boolean flag_first = false;
-    public boolean flag_last = false;
+    //public boolean flag_first = false;
     private Object tag;
 
     public void setTag(Object tag)
@@ -75,5 +75,6 @@ public class PhotoComment {
         this.share_url = src.share_url;
         this.is_private = src.is_private;
         this.status = src.status;
+        this.tag = src.tag;
     }
 }

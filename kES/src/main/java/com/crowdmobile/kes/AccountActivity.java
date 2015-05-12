@@ -168,7 +168,7 @@ public class AccountActivity extends Activity {
 
         @Override
         public void onUserInfo(FacebookLogin.UserInfo userInfo) {
-            mSession.getAccountManager().loginFacebook(userInfo.token,null);
+            mSession.getAccountManager().loginFacebook(userInfo.token,KesApplication.getChannelID());
         }
     };
 
@@ -197,7 +197,7 @@ public class AccountActivity extends Activity {
 
         @Override
         public void onSuccess(String token, String secret, long uid) {
-            mSession.getAccountManager().loginTwitter(token,secret,null);
+            mSession.getAccountManager().loginTwitter(token,secret,KesApplication.getChannelID());
         }
 
         @Override

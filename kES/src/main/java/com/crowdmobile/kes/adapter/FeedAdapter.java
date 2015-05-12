@@ -64,9 +64,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         if (s > 0 && list.get(s - 1) == null)
             return;
         list.add(null);
-        notifyItemInserted(s);
         footerLoading = enabled;
-        notifyDataSetChanged();
+        notifyItemInserted(s);
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
@@ -242,6 +241,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         if (feedType == FeedManager.FeedType.My)
             listener.onItemViewed(item);
         */
+
         holder.backgroundAnimator.cancel();
         if (item.isUnread()) {
             holder.answerBackground.setVisibility(View.VISIBLE);

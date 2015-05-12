@@ -17,7 +17,7 @@ import java.util.Set;
 //TODO : weakhashmap to all worker theads and shut them down when service stops
 
 public class NetworkService extends Service {
-	private final String TAG = NetworkService.class.getSimpleName();
+	private static final String TAG = NetworkService.class.getSimpleName();
     private final int IDLE_CHECK_DELAY = 5000;
 
 
@@ -74,6 +74,15 @@ public class NetworkService extends Service {
             return START_NOT_STICKY;
         Log.d(TAG, "OnStart()");
 
+        NetworkExecutable networkExecutable = null;
+
+        if (intent.getBooleanExtra(NetworkExecutable.TAG_PREEXECUTE,false))
+        {
+            networkExecutable = NetworkExecutable.createFromIntent(intent);
+            if (!networkExecutable.onPreExecute(this, intent))
+                return START_NOT_STICKY;
+        }
+
         for (Map.Entry<Intent,WorkerThread> entry : pending.entrySet()) {
             if (areEqual(entry.getKey(),intent))
             {
@@ -82,7 +91,7 @@ public class NetworkService extends Service {
             }
         }
 
-        WorkerThread wt = new WorkerThread(intent);
+        WorkerThread wt = new WorkerThread(intent,networkExecutable);
         Log.d(TAG,"Starting action" + intent.getAction());
         pending.put(intent,wt);
         this.startId = startId;
@@ -146,36 +155,37 @@ public class NetworkService extends Service {
         }
     };
 
+
 	class WorkerThread extends Thread
 	{
 		private Intent intent;
-		
-		public WorkerThread(Intent intent)
+        private NetworkExecutable networkExecutable;
+
+		public WorkerThread(Intent intent, NetworkExecutable networkExecutable)
 		{
 			this.intent = intent;
+            this.networkExecutable = networkExecutable;
 		}
-		
+
+
 		@Override
 		public void run() {
+            if (networkExecutable == null)
+                networkExecutable = NetworkExecutable.createFromIntent(intent);
             try {
-                NetworkExecutable ne = (NetworkExecutable) Class.forName(intent.getAction()).newInstance();
-                ne.serviceExecuteOnThread(NetworkService.this, intent);
-                mHandler.post(new RunnableWrapper(ne, intent));
-            } catch (InstantiationException e)
-            {
-                throw new RuntimeException((e));
-            }
-            catch (IllegalAccessException e) {
-                throw new RuntimeException((e));
-            }
-            catch (ClassNotFoundException e) {
-                throw new RuntimeException((e));
+                networkExecutable.serviceExecuteOnThread(NetworkService.this, intent);
+                mHandler.post(new RunnableWrapper(networkExecutable, intent));
             } catch (InterruptedException ignored) {
             }
         }
 	}
 	
 	private boolean areEqual(Intent a, Intent b) {
+        if (a == null && b == null)
+            return true;
+        if ((a == null && b != null) || (a != null && b == null))
+            return false;
+
         if (a.filterEquals(b)) {
             Bundle aExtras = a.getExtras();
             if (aExtras != null)

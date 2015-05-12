@@ -1,27 +1,48 @@
 package com.crowdmobile.kes.util;
 
 import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 
-import com.crowdmobile.kes.MainActivity;
 import com.crowdmobile.kes.R;
+import com.urbanairship.push.PushMessage;
+import com.urbanairship.push.notifications.NotificationFactory;
+import com.urbanairship.util.NotificationIDGenerator;
 
 /**
  * Created by gadza on 2015.04.27..
  */
-public class NotificationUtil {
+public class NotificationUtil extends NotificationFactory {
 
+    public NotificationUtil(Context context)
+    {
+        super(context);
+    }
+
+    @Override
+    public Notification createNotification(PushMessage message, int notificationId) {
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext())
+                .setContentTitle("Bongo thinks")
+                .setContentText(message.getAlert())
+                .setAutoCancel(true)
+                .setSmallIcon(R.drawable.ic_launcher);
+
+
+        // To support interactive notification buttons extend the NotificationCompat.Builder
+        builder.extend(createNotificationActionsExtender(message, notificationId));
+
+        return builder.build();
+    }
+
+    @Override
+    public int getNextId(PushMessage pushMessage) {
+        return NotificationIDGenerator.nextID();
+    }
+
+    /*
     public static void createNotification(Context context)
     {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(MainActivity.TAG_MYPOSTS,true);
-        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 // build notification
 // the addAction re-use the same intent to keep the example short
@@ -41,5 +62,6 @@ public class NotificationUtil {
         else
             nm.notify(0, b.build());
     }
+    */
 
 }

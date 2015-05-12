@@ -1,6 +1,7 @@
 package com.crowdmobile.kes;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -20,17 +21,16 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.crowdmobile.kes.util.NotificationUtil;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
-import com.kes.BaseNotificationCreator;
 import com.kes.FeedManager;
-import com.kes.PushHandler;
 import com.kes.Session;
 import com.kes.model.PhotoComment;
 import com.kes.model.User;
 import com.kes.net.DataFetcher;
+import com.urbanairship.UAirship;
+import com.urbanairship.google.PlayServicesUtils;
 
 import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
@@ -56,6 +56,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     boolean networkVisible = false;
     ViewPager viewPager;
     ReaderViewPagerTransformer pagerTransformer;
+    NotificationManager notificationManager;
 
 	public static void open(Context context)
 	{
@@ -107,6 +108,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         }
        // if (true)
        //     throw new IllegalStateException("HockeyAPP Crash test onCreate2()");
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
         mHandler = new Handler();
 
         mSession = Session.getInstance(this);
@@ -184,10 +186,16 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onStart() {
         super.onStart();
+        notificationManager.cancelAll();
+        UAirship.shared().getPushManager().setUserNotificationsEnabled(false);
         Session.getInstance(this).getFeedManager().registerOnChangeListener(onFeedChange);
         logCatThread = new LogCatThread();
         logCatThread.start();
         navigate(getIntent());
+        // Handle any Google Play Services errors
+        if (PlayServicesUtils.isGooglePlayStoreAvailable()) {
+            PlayServicesUtils.handleAnyPlayServicesError(this);
+        }
     }
 
     @Override
@@ -199,36 +207,31 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onStop() {
         super.onStop();
+        UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
         Session.getInstance(this).getFeedManager().unRegisterOnChangeListener(onFeedChange);
         logCatThread.interrupt();
         logCatThread = null;
 
     }
 
-    public static class NotificationCreator extends BaseNotificationCreator {
 
-        @Override
-        public void createNotification(Context context, Bundle extras) {
-            NotificationUtil.createNotification(context);
-        }
-    };
-
+    /*
     Runnable refreshTread = new Runnable() {
         @Override
         public void run() {
             Bundle bundle = new Bundle();
-            PushHandler.handlePush(getApplicationContext(),NotificationCreator.class, bundle);
             mHandler.postDelayed(this,10000);
             Toast.makeText(MainActivity.this,"Refreshing tread",Toast.LENGTH_SHORT).show();
         }
     };
+    */
 
     FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener() {
         @Override
         public boolean onUnread(FeedManager.FeedWrapper wrapper) {
             int count = 0;
-            if (wrapper.comments != null)
-                count = wrapper.comments.length;
+            if (wrapper.photoComments != null)
+                count = wrapper.photoComments.length;
             navigationBar.setUnreadCount(count);
             return true;
         }
@@ -306,13 +309,16 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             AccountActivity.logout(MainActivity.this);
 			return true;
 		} else if (id == R.id.action_support) {
-            openURL("http://www.askbongo.com");
+            openURL("http://bongothinks.com/support.php");
             return true;
         } else if (id == R.id.action_about) {
-            openURL("http://www.askbongo.com");
+            openURL("http://bongothinks.com/about.php");
             return true;
         } else if (id == R.id.action_privacy) {
-            openURL("http://www.askbongo.com");
+            openURL("http://bongothinks.com/privacy.php");
+            return true;
+        } else if (id == R.id.action_terms) {
+            openURL("http://bongothinks.com/terms.php");
             return true;
         }
         return super.onOptionsItemSelected(item);

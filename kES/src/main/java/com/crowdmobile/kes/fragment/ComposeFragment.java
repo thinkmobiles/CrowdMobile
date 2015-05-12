@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,6 +29,10 @@ import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.Session;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 
 /**
  * Created by gadza on 2015.03.11..
@@ -49,6 +55,7 @@ public class ComposeFragment extends Fragment {
     boolean afterResume = false;
     boolean isPrivate;
     Handler mHandler;
+    CharsetDecoder UTF8Decoder;
 
     @Override
     public void onResume() {
@@ -65,12 +72,15 @@ public class ComposeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
+        UTF8Decoder =
+                Charset.forName("UTF8").newDecoder().onMalformedInput(CodingErrorAction.REPORT);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         mHandler = null;
+        UTF8Decoder = null;
     }
 
     @Override
@@ -94,6 +104,20 @@ public class ComposeFragment extends Fragment {
         previewClose.setOnClickListener(onClickListener);
         imgPrivate.setOnClickListener(onClickListener);
         edMessage.setText(PreferenceUtils.getComposeText(getActivity()));
+
+        InputFilter filter = new InputFilter() {
+            public CharSequence filter(CharSequence source, int start, int end,
+                                       Spanned dest, int dstart, int dend) {
+                try {
+                    String s = new String(source.toString().getBytes(), "ISO-8859-1");
+                    return null;
+                } catch (UnsupportedEncodingException e) {
+                    return "";
+                }
+            }
+        };
+        edMessage.setFilters(new InputFilter[] { filter });
+
         isPrivate = PreferenceUtils.getComposePrivate(getActivity());
         updatePrivate();
         loadPic();

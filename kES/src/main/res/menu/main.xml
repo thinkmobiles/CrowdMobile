@@ -27,6 +27,11 @@
         kes:showAsAction="never"
         android:title="@string/action_support"/>
     <item
+        android:id="@+id/action_terms"
+        android:orderInCategory="103"
+        kes:showAsAction="never"
+        android:title="@string/action_terms"/>
+    <item
         android:id="@+id/action_logout"
         android:orderInCategory="104"
         kes:showAsAction="never"

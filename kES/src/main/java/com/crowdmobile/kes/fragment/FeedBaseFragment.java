@@ -58,6 +58,7 @@ public abstract class FeedBaseFragment extends Fragment {
     private boolean isStarted = false;
     private boolean isVisibleToUser = false;
     private Rect scrollBounds;
+    private boolean firstShow;
 
     class ReadTag {
         public long oldShownAt;
@@ -151,17 +152,53 @@ public abstract class FeedBaseFragment extends Fragment {
         accessViewHolder.btAccess.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLoading(true);
+                showMainProgressbar(true);
                 lastNetworkAction.load();
             }
         });
         accessViewHolder.setVisibility(View.VISIBLE);
     }
 
+
+    public class PreCachingLayoutManager extends LinearLayoutManager {
+        private static final int DEFAULT_EXTRA_LAYOUT_SPACE = 600;
+        private int extraLayoutSpace = -1;
+        private Context context;
+
+        public PreCachingLayoutManager(Context context) {
+            super(context);
+            this.context = context;
+        }
+
+        public PreCachingLayoutManager(Context context, int extraLayoutSpace) {
+            super(context);
+            this.context = context;
+            this.extraLayoutSpace = extraLayoutSpace;
+        }
+
+        public PreCachingLayoutManager(Context context, int orientation, boolean reverseLayout) {
+            super(context, orientation, reverseLayout);
+            this.context = context;
+        }
+
+        public void setExtraLayoutSpace(int extraLayoutSpace) {
+            this.extraLayoutSpace = extraLayoutSpace;
+        }
+
+        @Override
+        protected int getExtraLayoutSpace(RecyclerView.State state) {
+            if (extraLayoutSpace > 0) {
+                return extraLayoutSpace;
+            }
+            return DEFAULT_EXTRA_LAYOUT_SPACE;
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View result = inflater.inflate(R.layout.fragment_feed, container, false);
+        firstShow = true;
         accessViewHolder = AccessFragment.getViews(result.findViewById(R.id.holderNoPost));
         progressBar = (ProgressBar) result.findViewById(R.id.progressLoading);
         swipeContainer = (SwipeRefreshLayout) result.findViewById(R.id.swipe_container);
@@ -171,7 +208,7 @@ public abstract class FeedBaseFragment extends Fragment {
 //        itemShare = result.findViewById(R.id.itemShare);
 //        shareController = FeedItem.createHolder(itemTitle,itemShare).shareController;
         rvFeed = (RecyclerView) result.findViewById(R.id.rvFeed);
-        rvFeed.setItemViewCacheSize(10);
+        //rvFeed.setItemViewCacheSize(10);
         rvFeed.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getActivity());
         rvFeed.setLayoutManager(mLayoutManager);
@@ -180,7 +217,7 @@ public abstract class FeedBaseFragment extends Fragment {
         session.getFeedManager().registerOnChangeListener(onFeedChange);
         scrollInitialized = false;
         titleVisible = false;
-        showLoading(false);
+        showMainProgressbar(false);
         initFeed();
         return result;
     }
@@ -194,7 +231,7 @@ public abstract class FeedBaseFragment extends Fragment {
             else {
                 lastNetworkAction = session.getFeedManager().feed(getFeedType());
                 lastNetworkAction./*setMaxID(400).*/load();
-                showLoading(true);
+                showMainProgressbar(true);
             }
         } else {
             adapter.notifyDataSetChanged();
@@ -202,7 +239,7 @@ public abstract class FeedBaseFragment extends Fragment {
         swipeContainer.setEnabled(list.size() > 0);
     }
 
-    private void showLoading(boolean enabled) {
+    private void showMainProgressbar(boolean enabled) {
         progressBar.setVisibility(enabled ? View.VISIBLE : View.INVISIBLE);
         progressBar.setIndeterminate(enabled);
     }
@@ -347,10 +384,12 @@ public abstract class FeedBaseFragment extends Fragment {
         {
             if (bottomReached)
                 return;
-            int lastID = list.get(list.size() - 1).id - 1;
+            PhotoComment item = list.get(list.size() - 1);
+            if (session.getFeedManager().feed(getFeedType()).isLastItem(item.id))
+                return;
             adapter.setFooterLoading(true);
             lastNetworkAction = session.getFeedManager().feed(getFeedType())
-                                .setMaxID(lastID);
+                                .setMaxID(item.id - 1);
             lastNetworkAction.load();
 
         }
@@ -393,37 +432,54 @@ public abstract class FeedBaseFragment extends Fragment {
 
             if (wrapper.feedType != getFeedType())
                 return;
-            int listSize = list.size();
-            showLoading(false);
-            if (wrapper.max_id == null) {
+
+            showMainProgressbar(false);
+
+            if (wrapper.max_id == null)
                 swipeContainer.setRefreshing(false);
-                if (wrapper.exception == null) {
-                    list.clear();
-                    adapter.notifyDataSetChanged();
-                }
+
+            int listSize = list.size();
+
+            if ((wrapper.max_id == null && wrapper.since_id == null) || (wrapper.photoComments != null &&
+                    wrapper.photoComments.length > 0 &&
+                    listSize > 0 &&
+                    wrapper.photoComments[0].id > list.get(0).id))
+            {
+                list.clear();
+                adapter.notifyDataSetChanged();
             }
 
             if (wrapper.exception != null) {
+                swipeContainer.setEnabled(false);
                 if (list.size() == 0)
                     showLoadError();
-                adapter.setFooterLoading(false);
-                swipeContainer.setEnabled(false);
+                else
+                    adapter.setFooterLoading(false);
                 return;
             }
 
             if (wrapper.flag_feedBottomReached)
                 bottomReached = true;
-            adapter.hideFooter();
-            int maxid = Integer.MAX_VALUE;
-            if (list.size() > 0)
-                maxid = list.get(list.size() - 1).id;
-            ArrayList<PhotoComment> tmp = new ArrayList<PhotoComment>();
-            session.getFeedManager().feed(getFeedType()).getCache(tmp);
-            for (int i = 0; i < tmp.size(); i++) {
-                PhotoComment p = tmp.get(i);
-                if (p.id < maxid) {
-                    list.add(p);
-                    adapter.notifyItemInserted(list.size() - 1);
+
+            if (list.size() == 0)
+            {
+                session.getFeedManager().feed(getFeedType()).getCache(list);
+                adapter.notifyDataSetChanged();
+                rvFeed.scrollToPosition(0);
+            } else
+            {
+                adapter.hideFooter();
+                int maxID = Integer.MAX_VALUE;
+                if (list.size() > 0)
+                    maxID = list.get(list.size() - 1).id;
+                ArrayList<PhotoComment> tmp = new ArrayList<PhotoComment>();
+                session.getFeedManager().feed(getFeedType()).getCache(tmp);
+                for (int i = 0; i < tmp.size(); i++) {
+                    PhotoComment p = tmp.get(i);
+                    if (p.id < maxID) {
+                        list.add(p);
+                        adapter.notifyItemInserted(list.size() - 1);
+                    }
                 }
             }
             swipeContainer.setEnabled(list.size() > 0);
@@ -433,16 +489,15 @@ public abstract class FeedBaseFragment extends Fragment {
             else
                 accessViewHolder.setVisibility(View.GONE);
 
-            if (wrapper.max_id == null) {
-                rvFeed.scrollToPosition(0);
-            }
-
             testVisibleAnswers(true);
             NavigationBar.Attached attached = ((MainActivity) getActivity()).getNavigationBar().getAttached();
             if ((attached == NavigationBar.Attached.Feed && getFeedType() == FeedManager.FeedType.Public) ||
                 (attached == NavigationBar.Attached.MyFeed && getFeedType() == FeedManager.FeedType.My))
-            if (list.size() > 0 && listSize == 0)
+
+
+            if (firstShow && list.size() > 0 && listSize == 0)
             {
+                firstShow = false;
                 Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.feedanimation);
                 animation.setFillAfter(false);
                 rvFeed.startAnimation(animation);
@@ -479,6 +534,7 @@ public abstract class FeedBaseFragment extends Fragment {
         public void onPosting(PhotoComment photoComment) {
             if (getFeedType() != FeedManager.FeedType.My)
                 return;
+            accessViewHolder.setVisibility(View.GONE);
             list.add(0,photoComment);
             adapter.notifyItemInserted(0);
             rvFeed.scrollToPosition(0);
@@ -488,6 +544,7 @@ public abstract class FeedBaseFragment extends Fragment {
         public void onPostResult(PhotoComment photoComment, Exception error) {
             if (getFeedType() != FeedManager.FeedType.My)
                 return;
+            accessViewHolder.setVisibility(View.GONE);
             int idx = list.indexOf(photoComment);
             if (idx >= 0)
                 adapter.notifyItemChanged(idx);

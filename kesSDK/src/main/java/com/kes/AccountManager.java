@@ -102,7 +102,7 @@ public class AccountManager {
         }
     }
 
-    public void updateBalance(int newBalance)
+    protected void updateBalance(int newBalance)
     {
         getCachedUser(mSession.getContext());
         if (user.auth_token == null)
@@ -112,7 +112,7 @@ public class AccountManager {
         postUserChanged();
     }
 
-    public void updateUnread(int count)
+    protected void updateUnread(int count)
     {
         getCachedUser(mSession.getContext());
         if (user.auth_token == null)

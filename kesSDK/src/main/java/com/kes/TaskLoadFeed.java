@@ -1,24 +1,27 @@
+package com.kes;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.kes.FeedManager;
-import com.kes.NetworkService;
-import com.kes.model.PhotoComment;
 import com.kes.net.DataFetcher;
 import com.kes.net.ModelFactory;
 
 import java.io.IOException;
 
+/*
 Server kilepes es visszatoltes utan adja a teljes feedet mark as read hivas utan
         package com.kes;
+*/
 
-class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
+
+class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
 	public static final String ACTION = TaskLoadFeed.class.getName();
     public static final String TAG_TOKEN = "token";
     public static final String TAG_FEEDTYPE = "feedtype";
     public static final String TAG_MAXID = "maxid";
     public static final String TAG_SINCEID = "sinceid";
+    public static final String TAG_PAGESIZE = "pagesize";
     public static final String TAG_TRANSACTIONID = "transactionid";
     public static final String TAG_TAGS = "tags";
 
@@ -31,6 +34,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
             intent.putExtra(TAG_MAXID,wrapper.max_id);
         if (wrapper.since_id != null)
             intent.putExtra(TAG_SINCEID,wrapper.since_id);
+        intent.putExtra(TAG_PAGESIZE,wrapper.page_size);
         intent.putExtra(TAG_TRANSACTIONID,wrapper.transactionid);
         intent.putExtra(TAG_TAGS,wrapper.tags);
 		NetworkService.execute(context, intent);
@@ -69,6 +73,7 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
             wrapper.max_id = Integer.valueOf(extras.getInt(TAG_MAXID));
         if (extras.containsKey(TAG_SINCEID))
             wrapper.since_id = Integer.valueOf(extras.getInt(TAG_SINCEID));
+        wrapper.page_size = extras.getInt(TAG_PAGESIZE);
         wrapper.tags = extras.getString(TAG_TAGS);
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
@@ -87,25 +92,8 @@ class TaskLoadFeed extends NetworkExecutable<FeedManager.FeedWrapper> {
         */
         //TODO:---------------------
 
-        Thread.sleep(2000);
-        if (wrapper.max_id == null || wrapper.since_id == null && photoCommentWrapper.photo_comments != null)
-        {
-            int max = Integer.MIN_VALUE;
-            int min = Integer.MAX_VALUE;
-            for (int i = 0 ; i < photoCommentWrapper.photo_comments.length; i++)
-            {
-                PhotoComment p = photoCommentWrapper.photo_comments[i];
-                if (p.id > max) max = p.id;
-                if (p.id < min) min = p.id;
-            }
-            /*
-            if (wrapper.max_id == null)
-                wrapper.max_id = max;
-            if (wrapper.since_id == null)
-                wrapper.since_id = min;
-            */
-        }
-        wrapper.comments = photoCommentWrapper.photo_comments;
+     //   Thread.sleep(2000);
+        wrapper.photoComments = photoCommentWrapper.photo_comments;
 	}
 	
 }

@@ -51,6 +51,7 @@
     <string name="action_about">About</string>
     <string name="action_agreement">Terms of agreement</string>
     <string name="action_support">Support</string>
+    <string name="action_terms">Terms</string>
     <string name="action_logout">Log out</string>
     <string name="title_activity_profile">ProfileActivity</string>
 
