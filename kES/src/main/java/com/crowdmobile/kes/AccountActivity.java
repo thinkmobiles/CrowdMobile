@@ -20,6 +20,7 @@ import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
 import com.kes.Session;
 import com.kes.model.User;
+import com.kes.net.DataFetcher;
 
 import net.hockeyapp.android.CrashManager;
 
@@ -120,6 +121,12 @@ public class AccountActivity extends Activity {
 	public void onStart()
 	{
 		super.onStart();
+        if (!LandingActivity.hasGoogleAccount(this))
+        {
+            finish();
+            return;
+        }
+
         if (checkRegistered())
             return;
         mSession.getAccountManager().registerListener(accountListener);
@@ -168,7 +175,7 @@ public class AccountActivity extends Activity {
 
         @Override
         public void onUserInfo(FacebookLogin.UserInfo userInfo) {
-            mSession.getAccountManager().loginFacebook(userInfo.token,KesApplication.getChannelID());
+            mSession.getAccountManager().loginFacebook(userInfo.token,userInfo.uid);
         }
     };
 
@@ -197,7 +204,7 @@ public class AccountActivity extends Activity {
 
         @Override
         public void onSuccess(String token, String secret, long uid) {
-            mSession.getAccountManager().loginTwitter(token,secret,KesApplication.getChannelID());
+            mSession.getAccountManager().loginTwitter(token,secret,Long.toString(uid));
         }
 
         @Override
@@ -233,6 +240,8 @@ public class AccountActivity extends Activity {
         @Override
         public void onLoginFail(Exception e) {
             progressDialog.dismiss();
+            if (e instanceof DataFetcher.KESNetworkException)
+                alertDialog.setMessage(((DataFetcher.KESNetworkException)e).getError());
             alertDialog.show();
         }
     };
@@ -242,7 +251,7 @@ public class AccountActivity extends Activity {
         if (twitterLogin.onActivityResult(requestCode,resultCode,data))
             return;
 
-		if (facebookLogin.onActivityResult(this,requestCode,resultCode,data))
+		if (facebookLogin.onActivityResult(this, requestCode, resultCode, data))
             return;
         super.onActivityResult(requestCode, resultCode, data);
 	}

@@ -9,7 +9,7 @@ public class PhotoComment {
 
     public static enum PostStatus {Posted, Pending, Error};
 
-    public int id;
+    protected int id;
     public String message;
     public CommentResponse[] responses;
     public String first_name;
@@ -30,6 +30,27 @@ public class PhotoComment {
         this.tag = tag;
     }
 
+    public int getID()
+    {
+        return id;
+    }
+
+    public void setID(int id)
+    {
+        this.id = id;
+    }
+
+    public int getID(FeedManager.FeedType feedType) throws NullPointerException
+    {
+        if (feedType == FeedManager.FeedType.My)
+            return id;
+        else {
+            if (responses == null || responses.length == 0)
+                throw new NullPointerException();
+            return responses[0].id;
+        }
+    }
+
     public Object getTag()
     {
         return tag;
@@ -38,15 +59,28 @@ public class PhotoComment {
     //Temporary variables
     public boolean reported = false;
 
-    public void markAsRead(FeedManager feedManager)
+    private void setAsRead(FeedManager feedManager)
     {
         if (responses == null || responses.length == 0)
             return;
         for (int i = 0; i < responses.length; i++)
             if (!responses[i].read) {
                 responses[i].read = true;
-                feedManager.markAsRead(id, responses[i].id);
+                if (feedManager != null)
+                    feedManager.markAsRead(id, responses[i].id);
             }
+    }
+
+    public void setAsRead()
+    {
+        setAsRead(null);
+    }
+
+    public void markAsRead(FeedManager feedManager)
+    {
+        if (feedManager == null)
+            throw new IllegalStateException("Feedmanager can't be null");
+        setAsRead(feedManager);
     }
 
     public boolean isUnread()
@@ -77,4 +111,34 @@ public class PhotoComment {
         this.status = src.status;
         this.tag = src.tag;
     }
+
+    public boolean equals(PhotoComment other)
+    {
+        if (id != other.id ||
+                !StrUtil.strEqual(this.message, other.message) ||
+                !StrUtil.strEqual(first_name, other.first_name) ||
+                !StrUtil.strEqual(last_name, other.last_name) ||
+                !StrUtil.strEqual(profile_photo_url, other.profile_photo_url) ||
+                !StrUtil.strEqual(photo_url, other.photo_url) ||
+                !StrUtil.strEqual(thumbnail_url, other.thumbnail_url) ||
+                created_at != other.created_at ||
+                !StrUtil.strEqual(share_url, other.share_url) ||
+                is_private != other.is_private ||
+                status != other.status)
+            return false;
+        int rlen = 0;
+        int slen = 0;
+        if (responses != null)
+            rlen = responses.length;
+        if (other.responses != null)
+            slen = other.responses.length;
+        if (rlen != slen)
+            return false;
+        for (int i = 0; i < rlen; i++)
+            if (!responses[i].equals(other.responses[i]))
+                return false;
+        return true;
+    }
+
+
 }

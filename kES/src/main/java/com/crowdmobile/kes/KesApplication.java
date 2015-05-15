@@ -16,8 +16,7 @@ import com.urbanairship.push.notifications.DefaultNotificationFactory;
 public class KesApplication extends Application {
 
     public static final String HOCKEYAPP_ID = "7f03f42aa9fceb200d7f931d3d2f49f8";
-    public static final boolean enableHockey = false;
-    private static String channelID = null;
+    public static final boolean enableHockey = true;
 
     public static String getChannelID()
     {

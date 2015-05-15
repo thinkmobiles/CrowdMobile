@@ -145,7 +145,7 @@ public class CropView extends View {
             return;
         if (bmBlur == null && bitmap != null)
         {
-            int maxSize = (int)Math.sqrt(w * h / 4);
+            int maxSize = (int)Math.sqrt(w * h / (blursize * 2));
             Bitmap tmp = null;
             int srcSize = (int)Math.sqrt(bitmap.getWidth() * bitmap.getHeight());
             if (srcSize > maxSize) {

@@ -132,7 +132,6 @@ public class CreditFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (Session.getInstance(getActivity()).getAccountManager().getUser().isRegistered())
             Session.getInstance(getActivity()).getBillingManager().onStart(getActivity(), billingListener);
         if (footerAnimation != null) {
             LocalBroadcastManager.getInstance(getActivity()).registerReceiver(navigationChange, new IntentFilter(NavigationBar.ACTION_CHANGE));

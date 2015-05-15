@@ -21,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crowdmobile.kes.util.BadgeUtils;
 import com.crowdmobile.kes.util.PreferenceUtils;
 import com.crowdmobile.kes.widget.NavigationBar;
 import com.kes.AccountManager;
@@ -78,6 +79,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             if (mCredit != null)
                 mCredit.setTitle(Integer.toString(mSession.getAccountManager().getUser().balance));
             navigationBar.setUnreadCount(user.unread_count);
+            BadgeUtils.setBadge(MainActivity.this,user.unread_count);
         }
 
         @Override
@@ -158,6 +160,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             Bundle extras = intent.getExtras();
             if (extras != null) {
                 if (extras.getBoolean(TAG_MYPOSTS, false))
+                    Session.getInstance(this).getFeedManager().checkUnread();
                     saved = NavigationBar.Attached.MyFeed.ordinal();
                     PreferenceUtils.setActiveFragment(this,saved);
             }
@@ -187,6 +190,12 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     protected void onStart() {
         super.onStart();
         notificationManager.cancelAll();
+        if (!LandingActivity.hasGoogleAccount(this))
+        {
+            finish();
+            return;
+        }
+
         UAirship.shared().getPushManager().setUserNotificationsEnabled(false);
         Session.getInstance(this).getFeedManager().registerOnChangeListener(onFeedChange);
         logCatThread = new LogCatThread();
@@ -227,14 +236,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     */
 
     FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener() {
-        @Override
-        public boolean onUnread(FeedManager.FeedWrapper wrapper) {
-            int count = 0;
-            if (wrapper.photoComments != null)
-                count = wrapper.photoComments.length;
-            navigationBar.setUnreadCount(count);
-            return true;
-        }
 
         @Override
         public void onPageLoaded(FeedManager.FeedWrapper wrapper) {
@@ -292,6 +293,9 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             navigationBar.saveState();
     }
 
+
+    com.facebook.Session session = null;
+
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -299,11 +303,17 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
         if (id == R.id.action_crediticon) {
+            /*
+            if (facebookUtil == null)
+                facebookUtil = new FacebookUtil(this);
+            facebookUtil.execute();
+            /*
             networkVisible = !networkVisible;
             if (networkVisible)
                 lvLogcat.setVisibility(View.VISIBLE);
             else
                 lvLogcat.setVisibility(View.INVISIBLE);
+                */
             return true;
 		} else if (id == R.id.action_logout) {
             AccountActivity.logout(MainActivity.this);

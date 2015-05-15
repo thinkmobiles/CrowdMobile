@@ -27,7 +27,6 @@ public class AccountManager {
         User user;
     }
 
-    private Exception userLoadException;
     private boolean login_progress = false;
 
     private Session mSession;
@@ -76,7 +75,7 @@ public class AccountManager {
         tmpUserListener = null;
     }
 
-    protected AccountManager(Session session)
+    public AccountManager(Session session)
     {
         mSession = session;
     }
@@ -129,19 +128,10 @@ public class AccountManager {
             TaskPostToken.updatePushToken(mSession.getContext(), user.auth_token,ua_token);
     }
 
-    protected void decreaseUnread()
-    {
-        User u = getCachedUser(mSession.getContext());
-        u.unread_count --;
-        if (u.unread_count < 0)
-            u.unread_count = 0;
-        postUserChanged();
-    }
-
     public User getUser()
     {
         getCachedUser(mSession.getContext());
-        if (user.isRegistered() && !user.upToDate && userLoadException == null)
+        if (user.isRegistered() && !user.upToDate)
             TaskLoadUser.loadUser(mSession.getContext(), user.auth_token);
         return user;
     }
@@ -161,20 +151,20 @@ public class AccountManager {
         return user.auth_token;
     }
 
-    public void loginFacebook(String facebook_token, String ua_token)
+    public void loginFacebook(String facebook_token, String facebook_uid)
     {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         login_progress = true;
-        TaskLogin.login(mSession.getContext(), ModelFactory.LoginType.Facebook,facebook_token,null,ua_token, getCachedUser(mSession.getContext()) != null ? user.auth_token : null);
+        TaskLogin.login(mSession.getContext(), ModelFactory.LoginType.Facebook,facebook_token,null, facebook_uid);
     }
 
-    public void loginTwitter(String twitter_token, String twitter_secret, String ua_token)
+    public void loginTwitter(String twitter_token, String twitter_secret, String twitter_uid)
     {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         login_progress = true;
-        TaskLogin.login(mSession.getContext(), ModelFactory.LoginType.Twitter,twitter_token,twitter_secret,ua_token, getCachedUser(mSession.getContext()) != null ? user.auth_token : null);
+        TaskLogin.login(mSession.getContext(), ModelFactory.LoginType.Twitter,twitter_token,twitter_secret,twitter_uid);
     }
 
     public void logout()

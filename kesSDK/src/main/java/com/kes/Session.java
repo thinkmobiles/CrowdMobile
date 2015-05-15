@@ -45,7 +45,7 @@ public class Session {
         return sInstance;
     }
 
-    public Session(Context context) {
+    private Session(Context context) {
         mContext = context.getApplicationContext();
         mHandler = new Handler();
     }

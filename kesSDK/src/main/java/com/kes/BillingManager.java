@@ -80,6 +80,7 @@ public class BillingManager {
         Intent intent = new Intent(context, BillingService.class);
         intent.putExtra(BillingService.TAG_SIGNATURE, mSignature);
         intent.putExtra(BillingService.TAG_PRODUCTLIST, mProductList);
+        intent.putExtra(BillingService.TAG_TOKEN, mSession.getAccountManager().getToken());
         isBond = context.bindService(intent, billingConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -132,8 +133,11 @@ public class BillingManager {
                 mBillingListener.onCreditList(billingService.getCreditItems());
             if (BillingService.ACTION_CREDIT_STATUS.equals(action))
                 mBillingListener.onStatus(BillingStatus.values()[intent.getIntExtra(BillingService.TAG_STATUS, 0)]);
-            if (BillingService.ACTION_PURCHASED.equals(action))
-                mBillingListener.onPurchased(intent.getIntExtra(BillingService.TAG_QUANTITY, 0));
+            if (BillingService.ACTION_PURCHASED.equals(action)) {
+                int quantity = intent.getIntExtra(BillingService.TAG_QUANTITY, 0);
+                Session.getInstance(context).getAccountManager().updateBalance(quantity);
+                mBillingListener.onPurchased(quantity);
+            }
         }
     };
 }

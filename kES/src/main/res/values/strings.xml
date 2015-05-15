@@ -17,6 +17,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <!-- No account -->
+    <string name="noaccount_title">Ops!</string>
+    <string name="noaccount_message">You have no Google account registered! Bongo can\'t address you without Google Cloud Messaging.</string>
+    <string name="noaccount_btquit">Quit</string>
+
     <!-- Notification bar -->
     <string name="notification_title">Bongo</string>
     <string name="notification_text">You have new answered questions</string>
@@ -112,6 +117,7 @@
     <string name="btn_buy">BUY</string>
 
     <!-- Compose -->
+    <string name="compose_invalidchar">Unsupported character</string>
     <string name="compose_title">Ask Bongo</string>
     <string name="compose_hint">Ask your question to Bongo</string>
     <string name="bubble_text">Add a photo or a question to submit to Bongo, or both!</string>

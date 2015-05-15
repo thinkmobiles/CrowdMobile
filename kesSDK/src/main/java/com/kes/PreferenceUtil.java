@@ -114,6 +114,7 @@ class PreferenceUtil {
                 .commit();
     }
 
+    /*
     public static void setHighestUnreadID(Context context, int value) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .putInt(context.getString(R.string.key_highest_unread_id),value)
@@ -124,5 +125,6 @@ class PreferenceUtil {
         return PreferenceManager.getDefaultSharedPreferences(context)
                 .getInt(context.getString(R.string.key_highest_unread_id), -1);
     }
+    */
 
 }

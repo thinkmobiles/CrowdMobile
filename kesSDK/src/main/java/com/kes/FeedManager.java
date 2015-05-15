@@ -9,6 +9,7 @@ import com.kes.model.PhotoComment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.WeakHashMap;
 
 /**
@@ -17,7 +18,6 @@ import java.util.WeakHashMap;
 public class FeedManager {
 
     public interface OnChangeListener {
-        public boolean onUnread(FeedWrapper wrapper);
         public void onPageLoaded(FeedWrapper wrapper);
         public void onMarkAsReadResult(PhotoComment photoComment, Exception error);
         public void onLikeResult(int questionID, int commentID, Exception error);
@@ -92,7 +92,7 @@ public class FeedManager {
         public PhotoComment photoComments[];
         public boolean flag_feedBottomReached = false;
         protected int transactionid;
-        protected boolean unreadOnly = false;
+        public boolean unreadItems = false;
 
         public boolean isEqual(FeedWrapper other) {
             if (feedType != other.feedType)
@@ -185,7 +185,7 @@ public class FeedManager {
         }
 
 
-        public boolean getCache(ArrayList<PhotoComment> dest)
+        public boolean getCache(List<PhotoComment> dest)
         {
             SparseArray<FeedCache> cache = manager.getCache(feedWrapper.feedType);
             int len = cache.size();
@@ -214,12 +214,13 @@ public class FeedManager {
                         continue;
                 }
                 dest.add(item.photoComment);
-                if (item.lowID == FeedCache.ID_END)
+                if (item.lowID < 0)
                     break;
             }
 
             return manager.getLoaded(feedWrapper.feedType);
         }
+
     }
 
     public void checkUnread()
@@ -232,37 +233,9 @@ public class FeedManager {
 
     protected void updateUnread(Context context, FeedWrapper feedWrapper)
     {
-        if (!feedWrapper.unreadOnly)
-        {
-            updateData(feedWrapper);
-            return;
-        }
-
-        if (feedWrapper.photoComments == null || feedWrapper.photoComments.length == 0)
-            return;
-
-        for (int i = 0; i < feedWrapper.photoComments.length; i++) {
-            FeedCache item = myCache.get(feedWrapper.photoComments[i].id);
-            if (item == null)
-                continue;
-            item.photoComment.responses = feedWrapper.photoComments[i].responses;
-        }
-
-        boolean handled = false;
-        Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
-        while (iterator.hasNext()) {
-            tmp = iterator.next();
-            handled |= tmp.onUnread(feedWrapper);
-        }
-        tmp = null; //don't change, GC bug
-
-        //compare highest unread
-        //if (feedWrapper.max_id <= PreferenceUtil.getHighestUnreadID(context))
-        //    return;
-        PreferenceUtil.setHighestUnreadID(context,feedWrapper.max_id);
-
-        if (handled)
-            return;
+        if (feedWrapper.exception == null)
+            mSession.getAccountManager().updateUnread(feedWrapper.user.unread_count);
+        updateData(feedWrapper);
     }
 
     private void addToCache(FeedWrapper feedWrapper)
@@ -272,25 +245,26 @@ public class FeedManager {
             return;
 
         SparseArray<FeedCache> cache = getCache(feedWrapper.feedType);
+        int previousCacheSize = cache.size();
         int lowID = 0;
         int highID = 0;
 
         for (int i = 0; i < feedWrapper.photoComments.length; i++) {
             FeedCache item = null;
             PhotoComment newItem = feedWrapper.photoComments[i];
-            item = cache.get(feedWrapper.photoComments[i].id);
+            item = cache.get(feedWrapper.photoComments[i].getID(feedWrapper.feedType));
             if (item == null)
             {
                 item = new FeedCache();
                 item.photoComment = new PhotoComment();
-                cache.put(newItem.id, item);
+                cache.put(newItem.getID(feedWrapper.feedType), item);
             }
             updateItemInCache(newItem);
         }
 
         for (int i = 0; i < commentsLength - 1; i++) {
-            highID = feedWrapper.photoComments[i].id;
-            lowID = feedWrapper.photoComments[i + 1].id;
+            highID = feedWrapper.photoComments[i].getID(feedWrapper.feedType);
+            lowID = feedWrapper.photoComments[i + 1].getID(feedWrapper.feedType);
 
             cache.get(highID).lowID = lowID;
             cache.get(lowID).highID = highID;
@@ -298,27 +272,40 @@ public class FeedManager {
 
 
         //Check start
-        if (feedWrapper.max_id == null && feedWrapper.since_id == null) {
+        if (previousCacheSize == 0 || (feedWrapper.max_id == null && feedWrapper.since_id == null)) {
             for (int i = 0; i < cache.size(); i++)
                 if (cache.valueAt(i).highID == FeedCache.ID_END)
                     cache.valueAt(i).highID = FeedCache.ID_NONE;
-            cache.get(feedWrapper.photoComments[0].id).highID = FeedCache.ID_END;
+            cache.get(feedWrapper.photoComments[0].getID(feedWrapper.feedType)).highID = FeedCache.ID_END;
         }
 
-        lowID = feedWrapper.photoComments[0].id;
-        highID = feedWrapper.photoComments[commentsLength - 1].id;
+
+        lowID = feedWrapper.photoComments[0].getID(feedWrapper.feedType);
+        highID = feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType);
         if (lowID > highID) {
             int tmp = lowID;
             lowID = highID;
             highID = tmp;
         }
 
+        //Attach high end to cache
+
+        int nextID;
+
         FeedCache tmp = cache.get(lowID - 1);
-        if (tmp != null)
+        if (tmp != null) {
             cache.get(lowID).lowID = lowID - 1;
+            tmp.highID = lowID;
+        }
+
+
         tmp = cache.get(highID + 1);
-        if (tmp != null)
-            cache.get(highID).highID = highID + 1;
+        if (tmp == null && feedWrapper.max_id != null && feedWrapper.photoComments.length > 0)
+            tmp = cache.get(feedWrapper.max_id + 1);
+        if (tmp != null) {
+            cache.get(highID).highID = tmp.photoComment.getID(feedWrapper.feedType);
+            tmp.lowID = highID;
+        }
 
     }
 
@@ -329,6 +316,10 @@ public class FeedManager {
             return;
 
         int commentsLength = feedWrapper.photoComments != null ? feedWrapper.photoComments.length : 0;
+
+        if (feedWrapper.feedType == FeedType.Public)
+            for (int i = 0; i < commentsLength; i++)
+                feedWrapper.photoComments[i].setAsRead();
 
         if (feedWrapper.exception == null && commentsLength == 0)
         {
@@ -346,7 +337,7 @@ public class FeedManager {
         if (feedWrapper.exception == null && feedWrapper.since_id == null && commentsLength < feedWrapper.page_size) {
             feedWrapper.flag_feedBottomReached = true;
             if (commentsLength > 0)
-                getCache(feedWrapper.feedType).get(feedWrapper.photoComments[commentsLength - 1].id).lowID = FeedCache.ID_END;
+                getCache(feedWrapper.feedType).get(feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType)).lowID = FeedCache.ID_END;
         }
 
         if (feedWrapper.feedType == FeedType.Public)
@@ -394,14 +385,14 @@ public class FeedManager {
         for (int i = 0; i < pending.size(); i++)
         {
             PhotoComment tmp = pending.get(i);
-            if (tmp.id == p.id && Utils.strEqual(tmp.message,p.message) && Utils.strEqual(tmp.photo_url, p.photo_url))
+            if (tmp.getID() == p.getID() && Utils.strEqual(tmp.message,p.message) && Utils.strEqual(tmp.photo_url, p.photo_url))
             {
                 p.status = PhotoComment.PostStatus.Pending;
-                TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.id, p.message, p.profile_photo_url, null, p.is_private);
+                TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.getID(), p.message, p.profile_photo_url, null, p.is_private);
                 return;
             }
         }
-        throw new IllegalStateException("can't find pending question id=" + Integer.toString(p.id));
+        throw new IllegalStateException("can't find pending question id=" + Integer.toString(p.getID()));
     }
 
 
@@ -410,13 +401,13 @@ public class FeedManager {
             throw new IllegalStateException("nothing to post");
         PhotoComment p = new PhotoComment();
         p.status = PhotoComment.PostStatus.Pending;
-        p.id = internalID ++;
+        p.setID(internalID ++);
         p.message = question;
         p.is_private = isPrivate;
         if (picturePath != null)
             p.photo_url = "file://" + picturePath;
         pending.add(p);
-        TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.id, question, picturePath, null, p.is_private);
+        TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.getID(), question, picturePath, null, p.is_private);
         Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
         while (iterator.hasNext()) {
             tmp = iterator.next();
@@ -429,12 +420,18 @@ public class FeedManager {
     {
         if (photoComment == null)
             return;
-        FeedCache c = publicCache.get(photoComment.id);
-        if (c != null)
-            c.photoComment.copyFrom(photoComment);
-        c = myCache.get(photoComment.id);
-        if (c != null)
-            c.photoComment.copyFrom(photoComment);
+        FeedCache c = null;
+        try {
+            c = publicCache.get(photoComment.getID(FeedType.Public));
+            if (c != null && !c.photoComment.equals(photoComment))
+                c.photoComment = photoComment;
+        } catch (NullPointerException ignored) {}
+
+        try {
+        c = myCache.get(photoComment.getID(FeedType.My));
+        if (c != null && !c.photoComment.equals(photoComment))
+            c.photoComment = photoComment;
+        } catch (NullPointerException ignored) {}
     }
 
     protected void updateAction(ResultWrapper wrapper)
@@ -485,7 +482,7 @@ public class FeedManager {
         TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.Like, questionID, commentID);
     }
 
-    public void markAsPrivate(int questionID)
+    public void markAsPrivate(int questionID,boolean isPrivate)
     {
         TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.MarkAsPrivate, questionID, 0);
     }
@@ -500,14 +497,14 @@ public class FeedManager {
         for (int i = 0; i < pending.size(); i++)
         {
             PhotoComment p = pending.get(i);
-            if (p.id != holder.internalid)
+            if (p.getID() != holder.internalid)
                 continue;
             if (holder.exception == null && holder.response != null) {
                 p.copyFrom(holder.response);
                 pending.remove(p);
                 FeedCache item = new FeedCache();
                 item.photoComment = p;
-                getCache(FeedType.My).put(holder.response.id, item);
+                getCache(FeedType.My).put(holder.response.getID(FeedType.My), item);
             }
             else
                 p.status = PhotoComment.PostStatus.Error;

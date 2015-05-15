@@ -12,7 +12,7 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
 	public static final String ACTION = TaskCheckUnread.class.getName();
     protected static final String TAG_NOTIFICATION_CREATOR = "notification_creator";
     public static final String TAG_TOKEN = "token";
-    public static final String TAG_MAXID = "token";
+    public static final String TAG_MAXID = "maxid";
 
 	static void loadFeed(Context context, String token, Integer maxID)
 	{
@@ -38,7 +38,7 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
     public void onExecute(Context context, Intent intent, FeedManager.FeedWrapper wrapper) throws DataFetcher.KESNetworkException, IOException, InterruptedException {
         wrapper.extras = intent.getExtras();
 
-        wrapper.unreadOnly = true;
+        wrapper.unreadItems = true;
         wrapper.max_id = null;
         if (wrapper.extras.containsKey(TAG_MAXID))
             wrapper.max_id = wrapper.extras.getInt(TAG_MAXID);
@@ -48,22 +48,22 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
         String filter = "my";
 
         wrapper.user = com.kes.net.NetworkAPI.getAccount(token);
-
         if (wrapper.user.unread_count == 0)
             return;
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
                 com.kes.net.NetworkAPI.getFeed(token,true, null,null, wrapper.user.unread_count, filter, wrapper.tags);
 
-        if (photoCommentWrapper.photo_comments == null && photoCommentWrapper.photo_comments.length == 0)
+        if (photoCommentWrapper.photo_comments == null || photoCommentWrapper.photo_comments.length == 0) {
+            wrapper.user.unread_count = 0;
             return;
+        }
 
-        if (wrapper.max_id == null || wrapper.photoComments[0].id > wrapper.max_id) {
-            wrapper.unreadOnly = false;
+        if (wrapper.max_id == null || photoCommentWrapper.photo_comments[0].getID(FeedManager.FeedType.My) > wrapper.max_id) {
             photoCommentWrapper =
                     com.kes.net.NetworkAPI.getFeed(token, false, null, null, null, filter, wrapper.tags);
         }
-
+        wrapper.max_id = null;
         wrapper.photoComments = photoCommentWrapper.photo_comments;
 	}
 	

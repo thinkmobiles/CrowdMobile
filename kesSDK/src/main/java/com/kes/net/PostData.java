@@ -33,9 +33,8 @@ public class PostData {
         protected String access_token;
         protected String access_token_secret;
         protected String uid;
-        protected String device_push_token;
+        protected String device_id;
         protected String device;
-        protected String auth_token;
     };
 
     protected static class UpdatePushTokenRequest {

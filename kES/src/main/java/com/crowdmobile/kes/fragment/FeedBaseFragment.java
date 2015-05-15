@@ -14,6 +14,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,7 @@ public abstract class FeedBaseFragment extends Fragment {
     private boolean isVisibleToUser = false;
     private Rect scrollBounds;
     private boolean firstShow;
+    private boolean loading;
 
     class ReadTag {
         public long oldShownAt;
@@ -86,6 +88,7 @@ public abstract class FeedBaseFragment extends Fragment {
     ;
 
     FeedAdapter.FeedAdapterListener feedAdapterListener = new FeedAdapter.FeedAdapterListener() {
+        /*
         @Override
         public void onLastItemReached() {
             if (list.size() > 0) {
@@ -95,6 +98,7 @@ public abstract class FeedBaseFragment extends Fragment {
                 lastNetworkAction.load();
             }
         }
+        */
 
         @Override
         public void retryLoadClick() {
@@ -113,13 +117,13 @@ public abstract class FeedBaseFragment extends Fragment {
         @Override
         public void report(PhotoComment p) {
             p.reported = true;
-            Session.getInstance(getActivity()).getFeedManager().report(p.id);
+            Session.getInstance(getActivity()).getFeedManager().report(p.getID(getFeedType()));
         }
 
         @Override
         public void markAsPrivate(PhotoComment p) {
             p.is_private = !p.is_private;
-            Session.getInstance(getActivity()).getFeedManager().markAsPrivate(p.id);
+            Session.getInstance(getActivity()).getFeedManager().markAsPrivate(p.getID(getFeedType()),p.is_private);
         }
 
         @Override
@@ -198,6 +202,7 @@ public abstract class FeedBaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View result = inflater.inflate(R.layout.fragment_feed, container, false);
+        loading = false;
         firstShow = true;
         accessViewHolder = AccessFragment.getViews(result.findViewById(R.id.holderNoPost));
         progressBar = (ProgressBar) result.findViewById(R.id.progressLoading);
@@ -230,7 +235,7 @@ public abstract class FeedBaseFragment extends Fragment {
                 showNoPost();
             else {
                 lastNetworkAction = session.getFeedManager().feed(getFeedType());
-                lastNetworkAction./*setMaxID(400).*/load();
+                lastNetworkAction./*setMaxID(2).*/load();
                 showMainProgressbar(true);
             }
         } else {
@@ -258,6 +263,10 @@ public abstract class FeedBaseFragment extends Fragment {
     private boolean hasUnread = false;
 
     private void testVisibleAnswers(boolean force) {
+        if (getFeedType() != FeedManager.FeedType.My)
+            return;
+        if (list.size() == 0)
+            return;
         if (force)
             lastTested = 0;
         if (!isVisibleToUser || !isStarted)
@@ -304,8 +313,10 @@ public abstract class FeedBaseFragment extends Fragment {
                 }
                 hasUnread |= p.isUnread();
         }
-        if (hasUnread && isVisibleToUser && isStarted)
+        if (hasUnread && isVisibleToUser && isStarted) {
+            mHandler.removeCallbacks(rTestViewed);
             mHandler.postDelayed(rTestViewed, CHECK_UNREAD_INTERVAL);
+        }
         else
             mHandler.removeCallbacks(rTestViewed);
     }
@@ -317,6 +328,9 @@ public abstract class FeedBaseFragment extends Fragment {
 
     private void findUncoveredItems()
     {
+        if (list.size() == 0)
+            return;
+        firstUncoveredItem = -1;
         firstUncoveredItem = -1;
         lastUncoveredItem = -1;
         boolean firstUnset = true;
@@ -347,7 +361,7 @@ public abstract class FeedBaseFragment extends Fragment {
     RecyclerView.OnScrollListener endlessRecyclerOnScrollListener = new RecyclerView.OnScrollListener() {
 
         private int previousTotal = 0; // The total number of items in the dataset after the last load
-        private boolean loading = true; // True if we are still waiting for the last set of data to load.
+//        private boolean loading = true; // True if we are still waiting for the last set of data to load.
         private int visibleThreshold = 1; // The minimum amount of items to have below your current scroll position before loading more.
         int visibleItemCount, totalItemCount;
         private int current_page = 1;
@@ -365,12 +379,15 @@ public abstract class FeedBaseFragment extends Fragment {
             if (tfirst != firstUncoveredItem || tlast != lastUncoveredItem)
                 testVisibleAnswers(true);
 
+            /*
             if (loading) {
                 if (totalItemCount > previousTotal+1) {
                     loading = false;
                     previousTotal = totalItemCount;
                 }
             }
+            */
+
             if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
                 // End has been reached
                 // Do something
@@ -382,14 +399,16 @@ public abstract class FeedBaseFragment extends Fragment {
 
         public void onLoadMore(int current_page)
         {
-            if (bottomReached)
+            if (bottomReached || list.size() == 0)
                 return;
             PhotoComment item = list.get(list.size() - 1);
-            if (session.getFeedManager().feed(getFeedType()).isLastItem(item.id))
+            if (item == null)
+                return;
+            if (session.getFeedManager().feed(getFeedType()).isLastItem(item.getID(getFeedType())))
                 return;
             adapter.setFooterLoading(true);
             lastNetworkAction = session.getFeedManager().feed(getFeedType())
-                                .setMaxID(item.id - 1);
+                                .setMaxID(item.getID(getFeedType()) - 1);
             lastNetworkAction.load();
 
         }
@@ -406,12 +425,14 @@ public abstract class FeedBaseFragment extends Fragment {
         @Override
         public void onRefresh() {
             swipeContainer.setEnabled(false);
+            /*
             if (getFeedType() == FeedManager.FeedType.My)
             {
                 session.getFeedManager().feed(getFeedType()).clear();
                 list.clear();
                 adapter.notifyDataSetChanged();
             }
+            */
             lastNetworkAction = session.getFeedManager().feed(getFeedType());
             lastNetworkAction.load();
         }
@@ -419,13 +440,6 @@ public abstract class FeedBaseFragment extends Fragment {
 
     FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener()
     {
-        @Override
-        public boolean onUnread(FeedManager.FeedWrapper wrapper) {
-            if (getFeedType() == FeedManager.FeedType.My)
-                adapter.notifyDataSetChanged();
-            testVisibleAnswers(true);
-            return false;
-        }
 
         @Override
         public void onPageLoaded(FeedManager.FeedWrapper wrapper) {
@@ -433,6 +447,7 @@ public abstract class FeedBaseFragment extends Fragment {
             if (wrapper.feedType != getFeedType())
                 return;
 
+            loading = false;
             showMainProgressbar(false);
 
             if (wrapper.max_id == null)
@@ -440,18 +455,9 @@ public abstract class FeedBaseFragment extends Fragment {
 
             int listSize = list.size();
 
-            if ((wrapper.max_id == null && wrapper.since_id == null) || (wrapper.photoComments != null &&
-                    wrapper.photoComments.length > 0 &&
-                    listSize > 0 &&
-                    wrapper.photoComments[0].id > list.get(0).id))
-            {
-                list.clear();
-                adapter.notifyDataSetChanged();
-            }
-
             if (wrapper.exception != null) {
                 swipeContainer.setEnabled(false);
-                if (list.size() == 0)
+                if (listSize == 0 || wrapper.max_id == null)
                     showLoadError();
                 else
                     adapter.setFooterLoading(false);
@@ -461,22 +467,73 @@ public abstract class FeedBaseFragment extends Fragment {
             if (wrapper.flag_feedBottomReached)
                 bottomReached = true;
 
-            if (list.size() == 0)
+            SparseArray<PhotoComment> tmp = new SparseArray<PhotoComment>();
+            ArrayList<PhotoComment> ltmp = new ArrayList<PhotoComment>();
+            session.getFeedManager().feed(getFeedType()).getCache(ltmp);
+            for (int i = 0; i < ltmp.size(); i++) {
+                PhotoComment p = ltmp.get(i);
+                tmp.put(p.getID(getFeedType()), p);
+            }
+
+            ltmp.clear();
+            ltmp = null;
+
+            //New data can't be connected to the list
+            if (tmp.size() == 0 || (listSize > 0 && list.get(0).getID(getFeedType()) + 1 < tmp.valueAt(0).getID(getFeedType())))
             {
-                session.getFeedManager().feed(getFeedType()).getCache(list);
+                bottomReached = false;
+                list.clear();
+                for (int i = tmp.size(); i > 0; i--)
+                    list.add(tmp.valueAt(i - 1));
                 adapter.notifyDataSetChanged();
                 rvFeed.scrollToPosition(0);
             } else
             {
                 adapter.hideFooter();
-                int maxID = Integer.MAX_VALUE;
+
+                //first update existing items
+                for (int i = list.size(); i > 0; i--)
+                {
+                    PhotoComment c = list.get(i - 1);
+                    PhotoComment newItem = tmp.get(c.getID(getFeedType()));
+                    if (newItem == null)
+                    {
+                        list.remove(i - 1);
+                        adapter.notifyItemRemoved(i - 1);
+                    } else
+                    {
+                        if (c != newItem) {
+                            list.set(i - 1, newItem);
+                            adapter.notifyItemChanged(i - 1);
+                        }
+                    }
+                }
+
+                //first insert higher id items
+                int highID = Integer.MIN_VALUE;
                 if (list.size() > 0)
-                    maxID = list.get(list.size() - 1).id;
-                ArrayList<PhotoComment> tmp = new ArrayList<PhotoComment>();
-                session.getFeedManager().feed(getFeedType()).getCache(tmp);
+                    highID = list.get(0).getID(getFeedType());
+
+                boolean inserted = false;
                 for (int i = 0; i < tmp.size(); i++) {
-                    PhotoComment p = tmp.get(i);
-                    if (p.id < maxID) {
+                    PhotoComment p = tmp.valueAt(i);
+                    if (p.getID(getFeedType()) > highID) {
+                        list.add(0,p);
+                        adapter.notifyItemInserted(0);
+                        inserted = true;
+                    }
+                }
+                if (inserted)
+                    rvFeed.scrollToPosition(0);
+
+                //add lower id items
+                int lowID = Integer.MAX_VALUE;
+                if (list.size() > 0)
+                    lowID = list.get(list.size() - 1).getID(getFeedType());
+
+                for (int i = tmp.size(); i > 0; i--) {
+                    PhotoComment p = tmp.valueAt(i - 1);
+                    if (p.getID(getFeedType()) < lowID) {
                         list.add(p);
                         adapter.notifyItemInserted(list.size() - 1);
                     }
@@ -502,6 +559,9 @@ public abstract class FeedBaseFragment extends Fragment {
                 animation.setFillAfter(false);
                 rvFeed.startAnimation(animation);
             }
+
+            //if (wrapper.unreadItems)
+            //    testVisibleAnswers(true);
         }
 
 

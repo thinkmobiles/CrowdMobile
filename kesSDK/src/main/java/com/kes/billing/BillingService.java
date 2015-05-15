@@ -12,7 +12,6 @@ import android.os.Parcelable;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.kes.BillingManager;
-import com.kes.Session;
 import com.kes.model.CreditResponse;
 import com.kes.net.DataFetcher;
 import com.kes.net.NetworkAPI;
@@ -33,6 +32,7 @@ public class BillingService extends Service {
     private static final String TAG_PURCHASE = "purchase";
     public static final String TAG_SIGNATURE = "signature";
     public static final String TAG_PRODUCTLIST = "productlist";
+    public static final String TAG_TOKEN = "token";
 
     public static final String TAG_STATUS = "status";
     private BillingManager.BillingStatus status = BillingManager.BillingStatus.Idle;
@@ -51,6 +51,11 @@ public class BillingService extends Service {
         void onReceived(ArrayList<CreditItem> items);
     }
 
+    public interface OnCreditsUpdatedListener
+    {
+        public void updateBalance(int balance);
+    }
+
     private static final int RC_REQUEST = 10101;
 
     private IabHelper iabHelper;
@@ -63,6 +68,7 @@ public class BillingService extends Service {
     private String products[];
     private CompletePurchase completePurchase;
     private ArrayList<String>pendingOrder = null;
+    private String token;
 
     public class BillingServiceBinder extends Binder {
         public BillingService getService() {
@@ -76,6 +82,7 @@ public class BillingService extends Service {
         if (iabHelper == null) {
             signature = extras.getString(TAG_SIGNATURE);
             products = extras.getStringArray(TAG_PRODUCTLIST);
+            token = extras.getString(TAG_TOKEN);
             setStatus(BillingManager.BillingStatus.Init);
             iabHelper = new com.kes.billing.IabHelper(BillingService.this, signature);
             iabHelper.enableDebugLogging(false);
@@ -120,10 +127,9 @@ public class BillingService extends Service {
 
     private void purchase(Bundle extras)
     {
-        String auth_token = Session.getInstance(this).getAccountManager().getUser().auth_token;
         if ((status != BillingManager.BillingStatus.PaymentProcess &&
             status != BillingManager.BillingStatus.Idle)
-                || auth_token == null)
+                || token == null)
         {
             stopSelf();
             return;
@@ -132,7 +138,7 @@ public class BillingService extends Service {
 
         Parcelable parcelable[] = extras.getParcelableArray(TAG_PURCHASE);
         Purchase purchase[] = Arrays.copyOf(parcelable, parcelable.length, Purchase[].class);
-        completePurchase = new CompletePurchase(auth_token);
+        completePurchase = new CompletePurchase(token);
         completePurchase.execute(purchase);
     }
 
@@ -182,10 +188,9 @@ public class BillingService extends Service {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            Session.getInstance(BillingService.this).getAccountManager().updateBalance(values[0]);
             Intent intent = new Intent(ACTION_PURCHASED);
             intent.putExtra(TAG_QUANTITY, values[0]);
-            LocalBroadcastManager.getInstance(BillingService.this).sendBroadcast(new Intent(intent));
+            LocalBroadcastManager.getInstance(BillingService.this).sendBroadcastSync(new Intent(intent));
         }
 
         @Override
@@ -228,7 +233,7 @@ public class BillingService extends Service {
         this.status = status;
         Intent intent = new Intent(ACTION_CREDIT_STATUS);
         intent.putExtra(TAG_STATUS, status.ordinal());
-        LocalBroadcastManager.getInstance(BillingService.this).sendBroadcast(new Intent(intent));
+        LocalBroadcastManager.getInstance(BillingService.this).sendBroadcastSync(new Intent(intent));
     }
 
     IabHelper.QueryInventoryFinishedListener queryInventoryFinished = new IabHelper.QueryInventoryFinishedListener() {

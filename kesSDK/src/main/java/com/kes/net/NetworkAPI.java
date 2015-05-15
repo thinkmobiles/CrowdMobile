@@ -13,6 +13,8 @@ public class NetworkAPI {
 
 	public static User getAccount(String token) throws DataFetcher.KESNetworkException, InterruptedException
 	{
+        if (token == null || token.length() == 0)
+            throw new IllegalStateException("token can't be null");
 		String url = com.kes.net.ServerNavigator.getMe(token);
 		String result = DataFetcher.requestAction(url, RequestType.GET, null,null, null);
 		return ModelFactory.getAccount(result);
@@ -31,8 +33,8 @@ public class NetworkAPI {
                                   String access_token,
                                   String access_token_secret,
                                   String uid,
-                                  String device_push_token,
-                                  String old_auth_token)
+                                  String device_id
+                                  )
             throws DataFetcher.KESNetworkException, InterruptedException {
             String url = com.kes.net.ServerNavigator.registerMe();
             String params = ModelFactory.getLoginWrapper(
@@ -40,8 +42,7 @@ public class NetworkAPI {
                     access_token,
                     access_token_secret,
                     uid,
-                    device_push_token,
-                    old_auth_token);
+                    device_id);
 
         String result = DataFetcher.requestAction(url, RequestType.POST, null, null, params);
         return ModelFactory.getAccount(result);

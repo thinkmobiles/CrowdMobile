@@ -22,7 +22,7 @@ import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by gadza on 2015.04.01..
@@ -38,7 +38,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     private Handler mHandler = new Handler();
 
     public interface FeedAdapterListener {
-        public void onLastItemReached();
+//        public void onLastItemReached();
         public void retryLoadClick();
         public void retryPostClick(PhotoComment p);
         public void report(PhotoComment p);
@@ -60,11 +60,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
     public void setFooterLoading(boolean enabled)
     {
-        int s = list.size();
-        if (s > 0 && list.get(s - 1) == null)
-            return;
-        list.add(null);
         footerLoading = enabled;
+        int s = list.size();
+        if (s > 0 && list.get(s - 1) == null) {
+            notifyItemChanged(s - 1);
+            return;
+        }
+        list.add(null);
         notifyItemInserted(s);
     }
 
@@ -163,10 +165,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
     private LayoutInflater inflater;
     private Resources resources;
-    private ArrayList<PhotoComment> list;
+    private List<PhotoComment> list;
     FeedManager.FeedType feedType;
 
-    public FeedAdapter(Activity activity, FeedManager.FeedType feedType, ArrayList<PhotoComment> list,FeedAdapterListener listener) {
+    public FeedAdapter(Activity activity, FeedManager.FeedType feedType, List<PhotoComment> list,FeedAdapterListener listener) {
         inflater = activity.getLayoutInflater();
         resources = activity.getResources();
         this.feedType = feedType;

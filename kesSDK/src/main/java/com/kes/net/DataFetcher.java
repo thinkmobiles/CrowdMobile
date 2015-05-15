@@ -134,6 +134,16 @@ public class DataFetcher {
                 error = data.error;
         }
 
+		public String getError()
+		{
+			String result = "";
+			if (httpStatus != 0)
+				result = "HTTP " + Integer.toString(httpStatus);
+			if (error != null && error.message != null)
+				result += error.message;
+			return result;
+		}
+
     }
 
 	public static DefaultHttpClient getHttpClient()

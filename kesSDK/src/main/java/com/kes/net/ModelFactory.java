@@ -97,17 +97,15 @@ public class ModelFactory {
 			String access_token,
 			String access_token_secret,
 			String uid,
-			String device_push_token,
-			String auth_token)
+			String device_id)
 	{
 		PostData.LoginRequest result = new PostData.LoginRequest();
 		result.login_type = loginType.name();
 		result.access_token = access_token;
 		result.access_token_secret = access_token_secret;
 		result.uid = uid;
-		result.device_push_token = device_push_token;
 		result.device = "android";
-		result.auth_token = auth_token;
+		result.device_id = device_id;
 		return gson.toJson(result);
 	}
 

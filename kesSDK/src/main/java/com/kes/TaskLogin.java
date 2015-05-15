@@ -21,23 +21,20 @@ class TaskLogin extends NetworkExecutable<AccountManager.UserWrapper> {
     protected static final String TAG_LOGIN_TYPE = "login_type";
     protected static final String TAG_ACCESS_TOKEN = "access_token";
     protected static final String TAG_ACCESS_TOKEN_SECRET = "access_token_secret";
-    protected static final String TAG_PUSH_TOKEN = "push_token";
-    protected static final String TAG_AUTH_TOKEN = "auth_token";
+    protected static final String TAG_UID = "uid";
 
     public static void login(
             Context context,
             ModelFactory.LoginType loginType,
             String access_token,
             String access_token_secret,
-            String push_token,
-            String old_auth_token) {
+            String uid) {
         Intent intent = new Intent(ACTION);
         intent.putExtra(TAG_CMD, CMD_LOGIN);
         intent.putExtra(TAG_LOGIN_TYPE, loginType.ordinal());
         intent.putExtra(TAG_ACCESS_TOKEN, access_token);
         intent.putExtra(TAG_ACCESS_TOKEN_SECRET, access_token_secret);
-        intent.putExtra(TAG_PUSH_TOKEN, push_token);
-        intent.putExtra(TAG_AUTH_TOKEN, old_auth_token);
+        intent.putExtra(TAG_UID, uid);
         NetworkService.execute(context, intent);
     }
 
@@ -58,9 +55,8 @@ class TaskLogin extends NetworkExecutable<AccountManager.UserWrapper> {
                 ModelFactory.LoginType.values()[extras.getInt(TAG_LOGIN_TYPE)],
                 extras.getString(TAG_ACCESS_TOKEN),
                 extras.getString(TAG_ACCESS_TOKEN_SECRET),
-                Secure.getString(context.getContentResolver(), Secure.ANDROID_ID),
-                extras.getString(TAG_PUSH_TOKEN),
-                extras.getString(TAG_AUTH_TOKEN));
+                extras.getString(TAG_UID),
+                Secure.getString(context.getContentResolver(), Secure.ANDROID_ID));
         if (wrapper.user == null)
             throw new DataFetcher.KESNetworkException(DataFetcher.KESNetworkException.CODE_Invalid_authentication_code,"invalid token");
     }

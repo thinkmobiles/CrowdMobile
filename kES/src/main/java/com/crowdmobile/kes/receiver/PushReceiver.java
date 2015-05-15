@@ -22,6 +22,7 @@ public class PushReceiver extends BaseIntentReceiver {
     @Override
     protected void onChannelRegistrationSucceeded(Context context, String channelId) {
         Log.i(TAG, "Channel registration updated. Channel Id:" + channelId + ".");
+        Session.getInstance(context).getAccountManager().setUAChannelID(channelId);
     }
 
     @Override

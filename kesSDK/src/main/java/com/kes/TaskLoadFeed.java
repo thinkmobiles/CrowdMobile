@@ -78,7 +78,7 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
                 com.kes.net.NetworkAPI.getFeed(token, false, wrapper.max_id,wrapper.since_id, null, filter, wrapper.tags);
-
+        //Thread.sleep(1000);
         //TODO:remove,debug stuff, removes answers
         /*
         if (wrapper.feedType == FeedManager.FeedType.My)

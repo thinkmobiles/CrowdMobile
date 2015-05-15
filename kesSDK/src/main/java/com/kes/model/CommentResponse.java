@@ -10,4 +10,16 @@ public class CommentResponse {
     public String photo_url;
     public int likes_count;
     public long created_at;
+
+    public boolean equals(CommentResponse other)
+    {
+        if (id != other.id ||
+                !StrUtil.strEqual(comment,other.comment) ||
+                read != other.read ||
+                !StrUtil.strEqual(photo_url,other.photo_url) ||
+                likes_count != other.likes_count ||
+                created_at != other.created_at)
+            return false;
+        return true;
+    }
 }
