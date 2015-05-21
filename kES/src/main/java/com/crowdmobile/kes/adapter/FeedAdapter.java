@@ -85,7 +85,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         ImageView ivAnswerCenter;
         ImageView ivAnswerRight;
         //Footer
-        TextView tvFooterStatus;
         Button btRetry;
         View progress;
         View holderBackground;
@@ -154,7 +153,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                     }
                 });
             } else {
-                tvFooterStatus = (TextView) view.findViewById(R.id.tvFooterStatus);
                 progress = view.findViewById(R.id.progress);
                 btRetry = (Button) view.findViewById(R.id.btRetry);
                 btRetry.setOnClickListener(retryClick);
@@ -218,7 +216,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             if (footerLoading) {
                 holder.progress.setVisibility(View.VISIBLE);
                 holder.btRetry.setVisibility(View.GONE);
-                holder.tvFooterStatus.setText(R.string.item_loading);
                 /*
                 mHandler.post(new Runnable() {
                     @Override
@@ -230,7 +227,6 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             } else {
                 holder.progress.setVisibility(View.GONE);
                 holder.btRetry.setVisibility(View.VISIBLE);
-                holder.tvFooterStatus.setText(R.string.item_loaderror);
             }
             return;
         }

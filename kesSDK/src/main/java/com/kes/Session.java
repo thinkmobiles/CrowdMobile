@@ -55,7 +55,7 @@ public class Session {
         return mContext;
     }
 
-    public KesDB getDB()
+    protected KesDB getDB()
     {
         if (kesDB == null)
             kesDB = new KesDB(mContext);

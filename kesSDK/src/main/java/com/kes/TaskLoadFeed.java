@@ -24,6 +24,7 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
     public static final String TAG_PAGESIZE = "pagesize";
     public static final String TAG_TRANSACTIONID = "transactionid";
     public static final String TAG_TAGS = "tags";
+    public static final String TAG_APPENDED = "appended";
 
 	static void loadFeed(Context context, String token, FeedManager.FeedWrapper wrapper)
 	{
@@ -37,6 +38,7 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
         intent.putExtra(TAG_PAGESIZE,wrapper.page_size);
         intent.putExtra(TAG_TRANSACTIONID,wrapper.transactionid);
         intent.putExtra(TAG_TAGS,wrapper.tags);
+        intent.putExtra(TAG_APPENDED,wrapper.appended);
 		NetworkService.execute(context, intent);
 	}
 
@@ -74,10 +76,11 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
         if (extras.containsKey(TAG_SINCEID))
             wrapper.since_id = Integer.valueOf(extras.getInt(TAG_SINCEID));
         wrapper.page_size = extras.getInt(TAG_PAGESIZE);
+        wrapper.appended = extras.getBoolean(TAG_APPENDED);
         wrapper.tags = extras.getString(TAG_TAGS);
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
-                com.kes.net.NetworkAPI.getFeed(token, false, wrapper.max_id,wrapper.since_id, null, filter, wrapper.tags);
+                com.kes.net.NetworkAPI.getFeed(token, false, wrapper.max_id,wrapper.since_id, wrapper.page_size, filter, wrapper.tags);
         //Thread.sleep(1000);
         //TODO:remove,debug stuff, removes answers
         /*

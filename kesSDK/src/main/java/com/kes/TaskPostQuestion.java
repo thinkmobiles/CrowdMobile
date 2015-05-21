@@ -35,7 +35,7 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
     }
 
     protected void run(Context context, Session session, FeedManager.PhotoCommentResponseHolder wrapper) {
-        session.getFeedManager().updatePostedQuestion(wrapper);
+        session.getFeedManager().updatePendingQuestion(wrapper);
     }
 
     static int responseid = 599;
@@ -52,10 +52,16 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
         String photo_data = null;
         if (filePath != null)
             photo_data = Utils.fileToBase64(filePath);
+        wrapper.internalid = internalID;
 //        Thread.sleep(3000);
 //        if (true) throw new IOException("Test IO exception");
         wrapper.response = com.kes.net.NetworkAPI.postQuestion(token,message,photo_data,tags,is_private);
-        wrapper.internalid = internalID;
+        /*
+        wrapper.response = new PhotoComment();
+        wrapper.response.setID(999);
+        wrapper.response.message = message;
+        wrapper.response.status = PhotoComment.PostStatus.Posted;
+        */
         //throw new DataFetcher.KESNetworkException("Cool");
         /*
         wrapper.response = new PhotoComment();

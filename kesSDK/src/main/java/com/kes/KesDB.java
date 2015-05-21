@@ -2,8 +2,13 @@ package com.kes;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.kes.model.PhotoComment;
+
+import java.util.List;
 
 /**
  * Created by gadza on 2015.03.12..
@@ -53,16 +58,18 @@ class KesDB extends SQLiteOpenHelper {
 
     }
 
-    public long addPending(String question, String picture)
+    public void addPending(PhotoComment p)
     {
-      ContentValues values = new ContentValues();
-      values.put(KEY_QUESTION, question);
-      values.put(KEY_PICTURE, picture);
-      values.put(KEY_FAILED, 0);
-      return getWritableDatabase().insert(TABLE_PENDING,null,values);
+        ContentValues values = new ContentValues();
+        if (Utils.strHasValue(p.message))
+            values.put(KEY_QUESTION, p.message);
+        if (Utils.strHasValue(p.photo_url))
+            values.put(KEY_PICTURE, p.photo_url);
+        values.put(KEY_FAILED, 0);
+        p.setID((int) getWritableDatabase().insert(TABLE_PENDING, null, values));
     }
 
-    public void updatePending(long id, boolean success)
+    public void updatePendingQuestion(long id, boolean success)
     {
         if (success)
             getWritableDatabase().delete(TABLE_PENDING, KEY_ID + " = ?",
@@ -76,8 +83,7 @@ class KesDB extends SQLiteOpenHelper {
         }
     }
 
-    /*
-    public void getAllPending(List<PendingQuestion> dest) {
+    public void getAllPending(List<PhotoComment> result) {
         String selectQuery = "SELECT * FROM " + TABLE_PENDING;
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -91,16 +97,15 @@ class KesDB extends SQLiteOpenHelper {
 
         if (c.moveToFirst()) {
             do {
-                PendingQuestion pq = new PendingQuestion();
-                pq.id = c.getLong(col_id);
-                pq.question = c.getString(col_question);
-                pq.picturePath = c.getString(col_picture);
-                pq.failed = c.getInt(col_failed) != 0;
-                dest.add(pq);
+                PhotoComment p = new PhotoComment();
+                p.setID(c.getInt(col_id));
+                p.message = c.getString(col_question);
+                p.photo_url = c.getString(col_picture);
+                p.status = c.getInt(col_failed) != 0 ? PhotoComment.PostStatus.Error : PhotoComment.PostStatus.Pending;
+                result.add(p);
             } while (c.moveToNext());
         }
         c.close();
     }
-    */
 
 }

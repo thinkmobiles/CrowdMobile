@@ -18,8 +18,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 
 import com.crowdmobile.kes.MainActivity;
@@ -48,7 +46,9 @@ public abstract class FeedBaseFragment extends Fragment {
     private boolean scrollInitialized;
     private boolean titleVisible = false;
     //    FeedItem.ShareController shareController;
+
     private FeedManager.QueryParams lastNetworkAction = null;
+
     private SwipeRefreshLayout swipeContainer;
     private int minID = 0;
     private boolean hasFooterView = false;
@@ -104,7 +104,13 @@ public abstract class FeedBaseFragment extends Fragment {
         public void retryLoadClick() {
             if (lastNetworkAction != null) {
                 adapter.setFooterLoading(true);
-                lastNetworkAction.load();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        lastNetworkAction.load();
+
+                    }
+                },2000);
             }
         }
 
@@ -157,7 +163,7 @@ public abstract class FeedBaseFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showMainProgressbar(true);
-                lastNetworkAction.load();
+                onRefreshListener.onRefresh();
             }
         });
         accessViewHolder.setVisibility(View.VISIBLE);
@@ -404,11 +410,13 @@ public abstract class FeedBaseFragment extends Fragment {
             PhotoComment item = list.get(list.size() - 1);
             if (item == null)
                 return;
-            if (session.getFeedManager().feed(getFeedType()).isLastItem(item.getID(getFeedType())))
+            if (item.status == PhotoComment.PostStatus.Posted && session.getFeedManager().feed(getFeedType()).isLastItem(item.getID(getFeedType())))
                 return;
             adapter.setFooterLoading(true);
-            lastNetworkAction = session.getFeedManager().feed(getFeedType())
-                                .setMaxID(item.getID(getFeedType()) - 1);
+            lastNetworkAction = session.getFeedManager().feed(getFeedType());
+            if (item.status == PhotoComment.PostStatus.Posted)
+                lastNetworkAction.setMaxID(item.getID(getFeedType()) - 1);
+            lastNetworkAction.setAppended(true);
             lastNetworkAction.load();
 
         }
@@ -457,88 +465,151 @@ public abstract class FeedBaseFragment extends Fragment {
 
             if (wrapper.exception != null) {
                 swipeContainer.setEnabled(false);
-                if (listSize == 0 || wrapper.max_id == null)
+                if (listSize == 0 || wrapper.appended == false)
                     showLoadError();
                 else
                     adapter.setFooterLoading(false);
                 return;
             }
 
+            adapter.hideFooter();
             if (wrapper.flag_feedBottomReached)
                 bottomReached = true;
 
-            SparseArray<PhotoComment> tmp = new SparseArray<PhotoComment>();
-            ArrayList<PhotoComment> ltmp = new ArrayList<PhotoComment>();
-            session.getFeedManager().feed(getFeedType()).getCache(ltmp);
-            for (int i = 0; i < ltmp.size(); i++) {
-                PhotoComment p = ltmp.get(i);
-                tmp.put(p.getID(getFeedType()), p);
+            SparseArray<PhotoComment> indexedPosted = new SparseArray<PhotoComment>();
+            SparseArray<PhotoComment> indexedLocal = new SparseArray<PhotoComment>();
+
+            //Get all items to a temporary cache
+            //Index and separate them by type
+            ArrayList<PhotoComment> cacheTmp = new ArrayList<PhotoComment>();
+            session.getFeedManager().feed(getFeedType()).getCache(cacheTmp);
+            for (int i = 0; i < cacheTmp.size(); i++) {
+                PhotoComment pc = cacheTmp.get(i);
+                if (pc.status == PhotoComment.PostStatus.Posted)
+                    indexedPosted.put(pc.getID(getFeedType()), pc);
+                else
+                    indexedLocal.put(pc.getID(), pc);
             }
 
-            ltmp.clear();
-            ltmp = null;
+            //Find first posted item ID
+            int firstPostedID = -1;
+            for (int i = 0; i < list.size(); i++)
+                if (list.get(i).status == PhotoComment.PostStatus.Posted)
+                {
+                    firstPostedID = list.get(i).getID(getFeedType());
+                    break;
+                }
 
-            //New data can't be connected to the list
-            if (tmp.size() == 0 || (listSize > 0 && list.get(0).getID(getFeedType()) + 1 < tmp.valueAt(0).getID(getFeedType())))
+            //New data is valid but empty or new data can't be connected to the list
+            if (cacheTmp.size() == 0 || (firstPostedID < 0 && indexedPosted.size() > 0) || firstPostedID + 1 < indexedPosted.keyAt(0))
             {
                 bottomReached = false;
                 list.clear();
-                for (int i = tmp.size(); i > 0; i--)
-                    list.add(tmp.valueAt(i - 1));
+                for (int i = 0; i < cacheTmp.size(); i++)
+                    list.add(cacheTmp.get(i));
                 adapter.notifyDataSetChanged();
                 rvFeed.scrollToPosition(0);
-            } else
+                if (list.size() == 0)
+                    showNoPost();
+                else
+                    swipeContainer.setEnabled(true);
+                showListAnimation();
+                return;
+            }
+
+
+            //first remove missing items and update changed items
+            for (int i = list.size() - 1; i >= 0; i --)
             {
-                adapter.hideFooter();
+                PhotoComment oldItem = list.get(i);
+                int oldID = oldItem.getID(getFeedType());
+                PhotoComment newItem = null;
 
-                //first update existing items
-                for (int i = list.size(); i > 0; i--)
+                if (oldItem.status == PhotoComment.PostStatus.Posted) {
+                    newItem = indexedPosted.get(oldID);
+                    if (newItem != null)
+                        indexedPosted.delete(oldID);
+                }
+                else {
+                    newItem = indexedLocal.get(oldID);
+                    if (newItem != null)
+                        indexedLocal.remove(oldID);
+                }
+
+                if (newItem == null)
                 {
-                    PhotoComment c = list.get(i - 1);
-                    PhotoComment newItem = tmp.get(c.getID(getFeedType()));
-                    if (newItem == null)
-                    {
-                        list.remove(i - 1);
-                        adapter.notifyItemRemoved(i - 1);
-                    } else
-                    {
-                        if (c != newItem) {
-                            list.set(i - 1, newItem);
-                            adapter.notifyItemChanged(i - 1);
-                        }
-                    }
-                }
-
-                //first insert higher id items
-                int highID = Integer.MIN_VALUE;
-                if (list.size() > 0)
-                    highID = list.get(0).getID(getFeedType());
-
-                boolean inserted = false;
-                for (int i = 0; i < tmp.size(); i++) {
-                    PhotoComment p = tmp.valueAt(i);
-                    if (p.getID(getFeedType()) > highID) {
-                        list.add(0,p);
-                        adapter.notifyItemInserted(0);
-                        inserted = true;
-                    }
-                }
-                if (inserted)
-                    rvFeed.scrollToPosition(0);
-
-                //add lower id items
-                int lowID = Integer.MAX_VALUE;
-                if (list.size() > 0)
-                    lowID = list.get(list.size() - 1).getID(getFeedType());
-
-                for (int i = tmp.size(); i > 0; i--) {
-                    PhotoComment p = tmp.valueAt(i - 1);
-                    if (p.getID(getFeedType()) < lowID) {
-                        list.add(p);
-                        adapter.notifyItemInserted(list.size() - 1);
+                    list.remove(i);
+                    adapter.notifyItemRemoved(i);
+                } else
+                {
+                    if (oldItem != newItem) {
+                        list.set(i, newItem);
+                        adapter.notifyItemChanged(i);
                     }
                 }
             }
+
+            //Insert pending items
+
+            //Insert posted items
+            boolean insertedToTop = false;
+            int startSearch = 0;
+            boolean found;
+            for (int j = indexedPosted.size() - 1; j >= 0; j--)
+            {
+                found = false;
+                PhotoComment newItem = indexedPosted.valueAt(j);
+                int newID = newItem.getID(getFeedType());
+                for (int i = startSearch; i < list.size(); i++)
+                {
+                    startSearch = i;
+                    PhotoComment oldItem = list.get(i);
+                    if (oldItem.status != PhotoComment.PostStatus.Posted)
+                        continue;
+                    int oldID = oldItem.getID(getFeedType());
+                    if (oldID < newID) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    startSearch ++;
+                if (startSearch == 0)
+                    insertedToTop = true;
+                list.add(startSearch, newItem);
+            }
+
+            /*
+            //first insert higher id items
+            int highID = Integer.MIN_VALUE;
+            if (list.size() > 0)
+                highID = list.get(0).getID(getFeedType());
+
+            for (int i = 0; i < tmp.size(); i++) {
+                PhotoComment p = tmp.valueAt(i);
+                if (p.getID(getFeedType()) > highID) {
+                    list.add(0,p);
+                    adapter.notifyItemInserted(0);
+                    inserted = true;
+                }
+            }
+            */
+            if (insertedToTop)
+                rvFeed.scrollToPosition(0);
+            /*
+            //add lower id items
+            int lowID = Integer.MAX_VALUE;
+            if (list.size() > 0)
+                lowID = list.get(list.size() - 1).getID(getFeedType());
+
+            for (int i = tmp.size(); i > 0; i--) {
+                PhotoComment p = tmp.valueAt(i - 1);
+                if (p.getID(getFeedType()) < lowID) {
+                    list.add(p);
+                    adapter.notifyItemInserted(list.size() - 1);
+                }
+            }
+            */
             swipeContainer.setEnabled(list.size() > 0);
 
             if (list.size() == 0)
@@ -547,23 +618,34 @@ public abstract class FeedBaseFragment extends Fragment {
                 accessViewHolder.setVisibility(View.GONE);
 
             testVisibleAnswers(true);
+            /*
             NavigationBar.Attached attached = ((MainActivity) getActivity()).getNavigationBar().getAttached();
             if ((attached == NavigationBar.Attached.Feed && getFeedType() == FeedManager.FeedType.Public) ||
                 (attached == NavigationBar.Attached.MyFeed && getFeedType() == FeedManager.FeedType.My))
+            */
 
 
-            if (firstShow && list.size() > 0 && listSize == 0)
-            {
-                firstShow = false;
-                Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.feedanimation);
-                animation.setFillAfter(false);
-                rvFeed.startAnimation(animation);
-            }
+            showListAnimation();
 
             //if (wrapper.unreadItems)
             //    testVisibleAnswers(true);
         }
 
+        private void showListAnimation()
+        {
+            if (!firstShow)
+                return;
+            firstShow = false;
+            if (!isVisibleToUser)
+                return;
+            if (list.size() == 0)
+                return;
+            /*
+            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.feedanimation);
+            animation.setFillAfter(false);
+            rvFeed.startAnimation(animation);
+            */
+        }
 
         @Override
         public void onMarkAsReadResult(PhotoComment photoComment, Exception error) {
@@ -605,9 +687,48 @@ public abstract class FeedBaseFragment extends Fragment {
             if (getFeedType() != FeedManager.FeedType.My)
                 return;
             accessViewHolder.setVisibility(View.GONE);
-            int idx = list.indexOf(photoComment);
-            if (idx >= 0)
-                adapter.notifyItemChanged(idx);
+            if (error != null)
+            {
+                int i = list.indexOf(photoComment);
+                if (i >= 0)
+                    adapter.notifyItemChanged(i);
+                return;
+            }
+            //Check if already updated with pull down to refresh
+            int last = list.lastIndexOf(photoComment);
+            int first = list.indexOf(photoComment);
+            if (first != last)
+            {
+                list.remove(last);
+                adapter.notifyItemRemoved(last);
+                return;
+            }
+
+            //Move to new position
+
+            int newPosition = list.size();
+            for (int i = 0, l = list.size(); i < l; i++)
+            {
+                PhotoComment pc = list.get(i);
+                if (pc == null || pc == photoComment || pc.status != PhotoComment.PostStatus.Posted)
+                    continue;
+                if (pc.getID(FeedManager.FeedType.My) > photoComment.getID(FeedManager.FeedType.My))
+                    continue;
+                newPosition = i;
+                break;
+            }
+            if (newPosition > first)
+                newPosition --;
+
+            if (first != newPosition) {
+                list.remove(first);
+                adapter.notifyItemRemoved(first);
+                list.add(newPosition, photoComment);
+                adapter.notifyItemInserted(newPosition);
+                //adapter.notifyItemMoved(first,newPosition);
+            } else
+                adapter.notifyItemChanged(newPosition);
+
         }
 
     };

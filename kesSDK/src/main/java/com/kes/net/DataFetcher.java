@@ -41,6 +41,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
@@ -146,6 +147,8 @@ public class DataFetcher {
 
     }
 
+	static String locale = Locale.getDefault().toString();
+
 	public static DefaultHttpClient getHttpClient()
 	{
         //Log.d(TAG,"Initializing HTTP client");
@@ -160,7 +163,6 @@ public class DataFetcher {
 		int timeoutSocket = 10000;
 		HttpConnectionParams.setSoTimeout(params, timeoutSocket);
 		HttpProtocolParams.setUserAgent(params, defaultUserAgent);
-		
 //		params.setParameter("User-Agent", defaultUserAgent);
 
 		result = new DefaultHttpClient(params);
@@ -173,7 +175,7 @@ public class DataFetcher {
 		HttpGet retval = new HttpGet(url);
 		retval.setHeader("Accept","text/html,application/json,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 		retval.setHeader("Accept-Encoding", "gzip,deflate");
-		retval.setHeader("Accept-Language","en-US,en;q=0.8");
+		retval.setHeader("Accept-Language",locale);
 		return retval;
 	}
 	
@@ -354,7 +356,8 @@ public class DataFetcher {
                 throw new KESNetworkException(KESNetworkException.CODE_Unsupported_Encoding, 0);
             }
             setHeaders(request, headers);
-            DefaultHttpClient client = getHttpClient();
+			request.setHeader("Accept-Language", locale);
+			DefaultHttpClient client = getHttpClient();
             try {
                 response = client.execute(request);
             } catch (IOException e) {

@@ -85,8 +85,6 @@
     <string name="myfeed">My questions</string>
     <string name="item_share">SHARE</string>
     <string name="loremipsum">Bacon ipsum dolor amet rump spare ribs t-bone swine, fatback pork belly meatball drumstick porchetta. Salami chuck porchetta meatloaf, beef picanha ball tip venison alcatra pancetta meatball tongue turkey. Picanha frankfurter chicken, biltong tongue corned beef pork belly chuck. T-bone pancetta tail ball tip biltong salami.</string>
-    <string name="item_loading">Loading...</string>
-    <string name="item_loaderror">Error loading feed</string>
     <string name="item_retry">Retry</string>
     <string name="item_noanswer">Bongo will answer your question as soon as possible</string>
     <string name="timeformat_day" formatted="false">%d days ago</string>
