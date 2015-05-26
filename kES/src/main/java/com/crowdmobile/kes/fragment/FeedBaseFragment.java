@@ -680,6 +680,8 @@ public abstract class FeedBaseFragment extends Fragment {
             list.add(0,photoComment);
             adapter.notifyItemInserted(0);
             rvFeed.scrollToPosition(0);
+            if (list.size() == 1)
+                swipeContainer.setEnabled(true);
         }
 
         @Override
@@ -722,13 +724,12 @@ public abstract class FeedBaseFragment extends Fragment {
 
             if (first != newPosition) {
                 list.remove(first);
-                adapter.notifyItemRemoved(first);
+                //adapter.notifyItemRemoved(first);
                 list.add(newPosition, photoComment);
-                adapter.notifyItemInserted(newPosition);
-                //adapter.notifyItemMoved(first,newPosition);
-            } else
-                adapter.notifyItemChanged(newPosition);
-
+                //adapter.notifyItemInserted(newPosition);
+                adapter.notifyItemMoved(first,newPosition);
+            }
+            adapter.notifyItemChanged(newPosition);
         }
 
     };

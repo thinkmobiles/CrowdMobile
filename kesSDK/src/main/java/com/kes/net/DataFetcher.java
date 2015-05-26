@@ -163,7 +163,9 @@ public class DataFetcher {
 		int timeoutSocket = 10000;
 		HttpConnectionParams.setSoTimeout(params, timeoutSocket);
 		HttpProtocolParams.setUserAgent(params, defaultUserAgent);
+
 //		params.setParameter("User-Agent", defaultUserAgent);
+
 
 		result = new DefaultHttpClient(params);
 		result.addResponseInterceptor(new Interceptor());
@@ -303,12 +305,14 @@ public class DataFetcher {
 
             url = buildGetUrl(url, getParams);
             addNetworkLog(url.toString());
+			Log.v(TAG,url);
             HttpResponse response = null;
             HttpUriRequest request = null;
-
+			String sType = null;
             try {
                 switch (type) {
                     case GET:
+						sType = "GET";
                         DefaultHttpClient result = null;
                         /*
                         HttpParams params = new BasicHttpParams();
@@ -323,11 +327,11 @@ public class DataFetcher {
                         request = get;
                         break;
                     case POST:
+						sType = "POST";
                         HttpPost post = new HttpPost(url);
                         StringEntity entity = getPostEntity(postParams);
                         if (entity == null && postData != null) {
                             entity = new StringEntity(postData);
-                            Log.v(TAG, "Entity data: " + postData);
                         }
                         if (entity != null) {
                             post.setEntity(entity);
@@ -335,15 +339,16 @@ public class DataFetcher {
                         request = post;
                         break;
                     case DELETE:
+						sType = "DELETE";
                         HttpDelete del = new HttpDelete(url);
                         request = del;
                         break;
                     case PUT:
+						sType = "PUT";
                         HttpPut put = new HttpPut(url);
                         StringEntity putEntity = getPostEntity(postParams);
                         if (putEntity == null && postData != null) {
                             putEntity = new StringEntity(postData);
-                            Log.v(TAG, "Entity data: " + postData);
                         }
                         if (putEntity != null) {
                             put.setEntity(putEntity);
@@ -357,6 +362,9 @@ public class DataFetcher {
             }
             setHeaders(request, headers);
 			request.setHeader("Accept-Language", locale);
+			request.setHeader("Accept", "application/json");
+			request.setHeader("Accept-Encoding", "gzip,deflate");
+
 			DefaultHttpClient client = getHttpClient();
             try {
                 response = client.execute(request);
@@ -368,6 +376,11 @@ public class DataFetcher {
 
             int statusCode = response.getStatusLine().getStatusCode();
             String result = null;
+			if (statusCode != HttpURLConnection.HTTP_OK) {
+				Log.w(TAG, "HTTP " + sType + " " + Integer.toString(statusCode) + " " + url);
+				if (postData != null)
+					Log.w(TAG, "Post data: " + postData);
+			}
 
             HttpEntity entity = response.getEntity();
 		    if (entity == null)
@@ -390,12 +403,8 @@ public class DataFetcher {
                     throw new KESNetworkException();
                 }
 
-            //Debug information
-            if (statusCode != HttpURLConnection.HTTP_OK) {
-                Log.d(TAG,"HTTP " + Integer.toString(statusCode) + ", URL:" + url);
-                Log.d(TAG,result);
+            if (statusCode != HttpURLConnection.HTTP_OK)
                 throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, statusCode);
-            }
             return result;
 		}
 
@@ -403,8 +412,10 @@ public class DataFetcher {
         {
             if (data == null || data.length() == 0)
                 return data;
-            if (data.startsWith("{\"error"))
-                throw new KESNetworkException(statusCode, data);
+            if (data.startsWith("{\"error")) {
+				Log.w(TAG,"Return value: " + data);
+				throw new KESNetworkException(statusCode, data);
+			}
             return data;
         }
 

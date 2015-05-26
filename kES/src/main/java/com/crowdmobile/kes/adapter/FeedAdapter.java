@@ -85,7 +85,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         ImageView ivAnswerCenter;
         ImageView ivAnswerRight;
         //Footer
-        Button btRetry;
+        View btRetry;
         View progress;
         View holderBackground;
         public View answerBackground;
@@ -118,7 +118,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 ivAnswerCenter = (ImageView) view.findViewById(R.id.imgAnswerCenter);
                 ivAnswerRight = (ImageView) view.findViewById(R.id.imgAnswerRight);
 
-                btRetry = (Button) view.findViewById(R.id.btRetry);
+                btRetry = view.findViewById(R.id.btRetry);
                 btRetry.setOnClickListener(retryPostClick);
                 ivAnswerRight.setOnClickListener(report_privateClick);
                 backgroundAnimator = new ValueAnimator();

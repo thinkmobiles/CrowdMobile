@@ -93,6 +93,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         }
     };
 
+    enum accesslevel {Basic, Advanced, Full};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 //        Configuration configuration = getResources().getConfiguration();
@@ -183,7 +185,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		getMenuInflater().inflate(R.menu.main, menu);
         mCredit = menu.findItem(R.id.action_credit);
         mCredit.setTitle(Integer.toString(mSession.getAccountManager().getUser().balance));
-		return true;
+        return true;
 	}
 
     @Override

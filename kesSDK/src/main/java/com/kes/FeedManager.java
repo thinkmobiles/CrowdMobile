@@ -49,6 +49,7 @@ public class FeedManager {
     int minIDPublicFeed = 0;
     int minIDMyFeed = 0;
 
+    //Drop received data if request happened before clearing cache
     int transactionIDPublicFeed = 0;
     int transactionIDMyFeed = 0;
 
@@ -65,7 +66,7 @@ public class FeedManager {
         return null;
     }
 
-    private boolean getLoaded(FeedType type)
+    private boolean isLoaded(FeedType type)
     {
         if (type == FeedType.Public)
             return publicCacheLoaded;
@@ -191,7 +192,7 @@ public class FeedManager {
 
         public boolean getCache(List<PhotoComment> dest)
         {
-            boolean isLoaded = manager.getLoaded(feedWrapper.feedType);
+            boolean isLoaded = manager.isLoaded(feedWrapper.feedType);
             SparseArray<FeedCache> cache = manager.cacheOf(feedWrapper.feedType);
 
             //return feed between two end points
@@ -208,8 +209,9 @@ public class FeedManager {
             }
 
             //Todo : re-enable below
-            //if (addCount == 0)
-            //    return isLoaded;
+            //When commented, won't load myfeed if there are pending items - for testing purpose
+            if (addCount == 0)
+                return isLoaded;
 
             if (feedWrapper.feedType == FeedType.Public.My)
                 dest.addAll(0,manager.pending);
@@ -236,41 +238,58 @@ public class FeedManager {
 
     private void addToCache(FeedWrapper feedWrapper) {
         SparseArray<FeedCache> cache = cacheOf(feedWrapper.feedType);
+
+        //Check if we have received data
+        int commentsLength = feedWrapper.photoComments != null ? feedWrapper.photoComments.length : 0;
+
+        //If there is anything in the cache with higher ID than top of the feed, remove it
+        if (feedWrapper.max_id == null && commentsLength > 0 && cache.size() > 0) {
+            int highestID = feedWrapper.photoComments[0].getID(feedWrapper.feedType);
+            for (int l = cache.size() -1; l >= 0; l--)
+                if (cache.valueAt(l).photoComment.getID(feedWrapper.feedType) > highestID)
+                    cache.removeAt(l);
+        }
+
+        //When feed top is received, mark cached top item as "not connected"
+        //If cached and received will overlap, they will be reconnected again few lines below
         if (feedWrapper.max_id == null && cache.size() > 0)
             cache.valueAt(cache.size() - 1).cacheConnected = false;
 
-        int commentsLength = feedWrapper.photoComments != null ? feedWrapper.photoComments.length : 0;
         if (commentsLength < 1)
             return;
 
-        int previousCacheSize = cache.size();
-
+        //Add items to cache one by one
         for (int i = 0; i < feedWrapper.photoComments.length; i++) {
-            FeedCache item = null;
+            FeedCache cachedItem = null;
             PhotoComment newItem = feedWrapper.photoComments[i];
-            int currentID = feedWrapper.photoComments[i].getID(feedWrapper.feedType);
-            item = cache.get(currentID);
-            if (item == null) {
-                item = new FeedCache();
-                item.photoComment = new PhotoComment();
-                cache.put(newItem.getID(feedWrapper.feedType), item);
+            //Try to find it in the cache
+            cachedItem = cache.get(newItem.getID(feedWrapper.feedType));
+            if (cachedItem == null) {
+                cachedItem = new FeedCache();
+                cachedItem.photoComment = new PhotoComment();
+                cache.put(newItem.getID(feedWrapper.feedType), cachedItem);
             }
-            if (i == 0)
-            {
-                if (feedWrapper.max_id != null) {
+            updateItemInCache(newItem); //replace item if different, so app can easily check if there is a change
+
+            if (i != 0)
+                cachedItem.cacheConnected = true;
+            else {
+                //Examine first item of the received feed
+                if (feedWrapper.max_id == null)
+                    cachedItem.cacheConnected = true;
+                else
+                {
                     FeedCache tmp = cache.get(feedWrapper.max_id + 1);
                     if (tmp != null)
-                        item.cacheConnected = true;
-                } else
-                    item.cacheConnected = true;
-            } else
-                item.cacheConnected = true;
+                        cachedItem.cacheConnected = true;
+                }
+            }
 
-            updateItemInCache(newItem);
         }
     }
 
     protected void updateData(FeedWrapper feedWrapper) {
+        //Prevent updating data if clearCache was called after the request
         if (feedWrapper.feedType == FeedType.My && feedWrapper.transactionid < transactionIDMyFeed)
                 return;
         if (feedWrapper.feedType == FeedType.Public && feedWrapper.transactionid < transactionIDPublicFeed)
@@ -278,25 +297,29 @@ public class FeedManager {
 
         int commentsLength = feedWrapper.photoComments != null ? feedWrapper.photoComments.length : 0;
 
+        //Safety feature : mark all public feed items as read to prevent UI from taking care of it
         if (feedWrapper.feedType == FeedType.Public)
             for (int i = 0; i < commentsLength; i++)
                 feedWrapper.photoComments[i].setAsRead();
 
-        if (feedWrapper.exception == null && commentsLength == 0)
-        {
-            int maxid = 0;
-            if (feedWrapper.max_id != null)
-                maxid = feedWrapper.max_id;
-
-            if (feedWrapper.feedType == FeedType.Public)
-                minIDPublicFeed = maxid;
-            else if (feedWrapper.feedType == FeedType.My)
-                minIDMyFeed = maxid;
-        }
-
         addToCache(feedWrapper);
+
+        //Check if received feed length is shorter than expected (EOF)
         if (feedWrapper.exception == null && feedWrapper.since_id == null && commentsLength < feedWrapper.page_size) {
             feedWrapper.flag_feedBottomReached = true;
+
+            //Min id is last item id or max_id or 0
+            int minID = 0;
+            if (commentsLength > 0)
+                minID = feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType);
+            else if (feedWrapper.max_id != null)
+                minID = feedWrapper.max_id;
+
+            if (feedWrapper.feedType == FeedType.Public)
+                minIDPublicFeed = minID;
+            else if (feedWrapper.feedType == FeedType.My)
+                minIDMyFeed = minID;
+
             if (commentsLength > 0)
                 cacheOf(feedWrapper.feedType).get(feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType)).lastItem = true;
         }

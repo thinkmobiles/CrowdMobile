@@ -9,8 +9,10 @@
         android:title="0"
         android:orderInCategory="9" app:showAsAction="always" />
     <item android:id="@+id/action_crediticon"
+        android:enabled="false"
         android:icon="@drawable/ic_navbar_credit_icon"
-        android:orderInCategory="10" app:showAsAction="always|withText" />
+        android:orderInCategory="10" app:showAsAction="always|withText"
+        android:title="" />
     <item
         android:id="@+id/action_privacy"
         android:orderInCategory="100"
