@@ -11,8 +11,6 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -30,8 +28,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,6 +43,7 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
 public class DataFetcher {
+	private static final boolean LOG_ERRORS = true;
 	private static final String TAG = DataFetcher.class.getSimpleName();
 
 	public static enum RequestType {
@@ -198,13 +195,12 @@ public class DataFetcher {
 	               final HttpContext context) throws HttpException,
 	               IOException {
 	           HttpEntity entity = response.getEntity();
-	           Header encheader = entity.getContentEncoding();
-	           if (encheader != null) {
-	               HeaderElement[] codecs = encheader.getElements();
-	               for (int i = 0; i < codecs.length; i++) {
-	                   if (codecs[i].getName().equalsIgnoreCase("gzip")) {
-	                       response.setEntity(new GzipDecompressingEntity(
-	                               entity));
+	           Header header = entity.getContentEncoding();
+	           if (header != null) {
+	               HeaderElement[] elements = header.getElements();
+	               for (int i = 0; i < elements.length; i++) {
+	                   if (elements[i].getName().equalsIgnoreCase("gzip")) {
+	                       response.setEntity(new GzipDecompressingEntity(entity));
 	                       return;
 	                   }
 	               }
@@ -220,8 +216,8 @@ public class DataFetcher {
 	          @Override
 	          public InputStream getContent() throws IOException, IllegalStateException {
 	             // the wrapped entity's getContent() decides about repeatability
-	             InputStream wrappedin = wrappedEntity.getContent();
-	             return new GZIPInputStream(wrappedin);
+	             InputStream wrappedIn = wrappedEntity.getContent();
+	             return new GZIPInputStream(wrappedIn);
 	          }
 
 	          @Override
@@ -230,7 +226,8 @@ public class DataFetcher {
 	             return -1;
 	          }
 	}
-	   
+
+	/*
 		protected static JSONObject getJSONFromUrl(String url) throws ClientProtocolException, IOException, JSONException {
 			JSONObject jObj = null;
 		    HttpGet request = getRequest(url);
@@ -278,7 +275,7 @@ public class DataFetcher {
 		    }
 			return jObj;
 		}
-
+	*/
 	   
 		public static String requestAction(String url, RequestType type, Map<String, String> getParams, Map<String, String> postParams, String postData) throws KESNetworkException, InterruptedException {
 			return requestAction(url, type, getParams, postParams, acceptHeader, postData);
@@ -302,10 +299,8 @@ public class DataFetcher {
 		public static String requestAction(String url, RequestType type, Map<String, String> getParams,
             Map<String, String> postParams, Map<String, String> headers, String postData)
             throws KESNetworkException,InterruptedException {
-
             url = buildGetUrl(url, getParams);
-            addNetworkLog(url.toString());
-			Log.v(TAG,url);
+//            addNetworkLog(url.toString());
             HttpResponse response = null;
             HttpUriRequest request = null;
 			String sType = null;
@@ -369,14 +364,15 @@ public class DataFetcher {
             try {
                 response = client.execute(request);
             } catch (IOException e) {
-                e.printStackTrace();
+				if (LOG_ERRORS)
+                	e.printStackTrace();
                 throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, 0);
             }
 
 
             int statusCode = response.getStatusLine().getStatusCode();
             String result = null;
-			if (statusCode != HttpURLConnection.HTTP_OK) {
+			if (LOG_ERRORS && statusCode != HttpURLConnection.HTTP_OK) {
 				Log.w(TAG, "HTTP " + sType + " " + Integer.toString(statusCode) + " " + url);
 				if (postData != null)
 					Log.w(TAG, "Post data: " + postData);
@@ -413,7 +409,8 @@ public class DataFetcher {
             if (data == null || data.length() == 0)
                 return data;
             if (data.startsWith("{\"error")) {
-				Log.w(TAG,"Return value: " + data);
+				if (LOG_ERRORS)
+					Log.w(TAG,"Return value: " + data);
 				throw new KESNetworkException(statusCode, data);
 			}
             return data;
@@ -455,9 +452,11 @@ public class DataFetcher {
 				}
 			}
 		}
-		
+
+        /*
 		public static class StatusLineWrapper {
 			public StatusLine status;
 		}
+		*/
 
 }

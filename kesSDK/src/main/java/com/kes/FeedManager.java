@@ -161,7 +161,7 @@ public class FeedManager {
         public void load() {
             String token = null;
 
-            feedWrapper.page_size = 3;  //TODO:remove
+            //feedWrapper.page_size = 3;  //TODO:remove
             if (feedWrapper.max_id != null)
             {
                 int compareID = 0;

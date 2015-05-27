@@ -33,8 +33,7 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
     static final int REQUEST_IMAGE_CAPTURE = 0x5678;
     private Toolbar toolbar;
     private ImageView transfer = null;
-    private File mCameraPicture;
-    private File mComposedPicture;
+    private String cropPath = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +50,13 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
             setSupportActionBar(toolbar);
         }
         //transfer = (ImageView)findViewById(R.id.imgTransfer);
-        getFragmentManager().beginTransaction()
-            .replace(R.id.fragmentHolder,new GalleryFragment()).commit();
+        if (savedInstanceState != null)
+            cropPath = savedInstanceState.getString(CropFragment.TAG_FILEPATH, null);
+        if (cropPath == null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentHolder, new GalleryFragment()).commit();
+        } else
+            crop(cropPath);
     }
 
     @Override
@@ -62,15 +66,20 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
 
     @Override
     public void onCroppedImage(Bitmap picture) {
+        cropPath = null;
+        File tmpFile = null;
         FileOutputStream out = null;
-        boolean success = false;
         try {
-            createComposedFile();
-            out = new FileOutputStream(mComposedPicture);
+            tmpFile = createComposedFile();
+            out = new FileOutputStream(tmpFile);
             picture.compress(Bitmap.CompressFormat.JPEG, 75, out); // bmp is your Bitmap instance
-            success = true;
+            setResult(RESULT_OK);
         } catch (Exception e) {
             Toast.makeText(this, R.string.error_storagewrite, Toast.LENGTH_SHORT).show();
+            setResult(RESULT_CANCELED);
+            if (tmpFile != null && tmpFile.exists())
+                tmpFile.delete();
+            PreferenceUtils.setComposedPicture(this, null);
         }
         finally {
             try {
@@ -79,17 +88,12 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
                 }
             } catch (IOException ignored) {}
         }
-        if (!success)
-        {
-            mCameraPicture.delete();
-            PreferenceUtils.setComposedPicture(this,null);
-        }
-        setResult(success ? RESULT_OK : RESULT_CANCELED);
         onBackPressed();
     }
 
     @Override
     public void onCropCanceled() {
+        cropPath = null;
         getFragmentManager().beginTransaction()
             .setCustomAnimations(R.anim.oa_fade_in, R.anim.oa_fade_out)
             .replace(R.id.fragmentHolder,new GalleryFragment()).commit();
@@ -101,44 +105,46 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
     }
 
 
-    private void createComposedFile() throws IOException {
+    private File createComposedFile() throws IOException {
         // Create an image file name
-        if (mComposedPicture != null && mComposedPicture.exists())
-            return;
+        File tmpFile = null;
         String tmp = PreferenceUtils.getComposedPicture(this);
         if (tmp != null) {
-            mComposedPicture = new File(tmp);
-            if (mComposedPicture.exists())
-                return;
+            tmpFile = new File(tmp);
+            if (tmpFile.exists())
+                return tmpFile;
         }
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        mComposedPicture = File.createTempFile(
+        tmpFile = File.createTempFile(
                 "composed",  /* prefix */
                 ".jpg",         /* suffix */
                 getExternalCacheDir()      /* directory */
         );
-        PreferenceUtils.setComposedPicture(this,mComposedPicture.getAbsolutePath());
+        PreferenceUtils.setComposedPicture(this,tmpFile.getAbsolutePath());
+        return tmpFile;
     }
 
-    private void createCameraFile() throws IOException {
+    private File createCameraFile() throws IOException {
         // Create an image file name
-        if (mCameraPicture != null && mCameraPicture.exists())
-            return;
+        File tmpFile = null;
         String tmp = PreferenceUtils.getCameraPicture(this);
         if (tmp != null) {
-            mCameraPicture = new File(tmp);
-            if (mCameraPicture.exists())
-                return;
+            tmpFile = new File(tmp);
+            if (tmpFile.exists())
+                return tmpFile;
         }
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        mCameraPicture = File.createTempFile(
+        tmpFile = File.createTempFile(
                 "cameratemp",  /* prefix */
                 ".jpg",         /* suffix */
                 getExternalCacheDir()      /* directory */
         );
-        PreferenceUtils.setCameraPicture(this,mCameraPicture.getAbsolutePath());
+        if (tmpFile == null || !tmpFile.exists())
+            throw new IOException();
+        PreferenceUtils.setCameraPicture(this,tmpFile.getAbsolutePath());
+        return tmpFile;
     }
 
     @Override
@@ -147,8 +153,7 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
         {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             try {
-                createCameraFile();
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mCameraPicture));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(createCameraFile()));
                 startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
             } catch (IOException ex) {
                 Toast.makeText(this, R.string.error_storagewrite, Toast.LENGTH_SHORT).show();
@@ -169,6 +174,7 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
 
     private void crop(String path)
     {
+        cropPath = path;
         CropFragment cropFragment = new CropFragment();
         Bundle data = new Bundle();
         data.putString(CropFragment.TAG_FILEPATH, path);
@@ -188,7 +194,7 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if (resultCode != Activity.RESULT_OK)
                 return;
-            crop(mCameraPicture.getAbsolutePath());
+            crop(PreferenceUtils.getCameraPicture(this));
         }
     }
 
@@ -198,5 +204,11 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
             super.onBackPressed();
             overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (cropPath != null) outState.putString(CropFragment.TAG_FILEPATH, cropPath);
     }
 }

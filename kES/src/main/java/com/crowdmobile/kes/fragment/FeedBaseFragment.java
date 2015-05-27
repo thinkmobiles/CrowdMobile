@@ -60,7 +60,7 @@ public abstract class FeedBaseFragment extends Fragment {
     private boolean isVisibleToUser = false;
     private Rect scrollBounds;
     private boolean firstShow;
-    private boolean loading;
+    private boolean loadingNextPage;
 
     class ReadTag {
         public long oldShownAt;
@@ -208,7 +208,7 @@ public abstract class FeedBaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View result = inflater.inflate(R.layout.fragment_feed, container, false);
-        loading = false;
+        loadingNextPage = false;
         firstShow = true;
         accessViewHolder = AccessFragment.getViews(result.findViewById(R.id.holderNoPost));
         progressBar = (ProgressBar) result.findViewById(R.id.progressLoading);
@@ -394,12 +394,12 @@ public abstract class FeedBaseFragment extends Fragment {
             }
             */
 
-            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+            if (!loadingNextPage && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
                 // End has been reached
                 // Do something
                 current_page++;
                 onLoadMore(current_page);
-                loading = true;
+                loadingNextPage = true;
             }
         }
 
@@ -455,7 +455,7 @@ public abstract class FeedBaseFragment extends Fragment {
             if (wrapper.feedType != getFeedType())
                 return;
 
-            loading = false;
+            loadingNextPage = false;
             showMainProgressbar(false);
 
             if (wrapper.max_id == null)
