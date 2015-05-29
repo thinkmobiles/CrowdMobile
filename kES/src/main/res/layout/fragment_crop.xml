@@ -32,7 +32,7 @@
             android:layout_height="@dimen/gallery_title_height" />
     </LinearLayout>
 
-    <com.crowdmobile.kes.widget.CropView
+    <com.crowdmobile.bongothinks.widget.CropView
         android:id="@+id/cropImage"
         android:layout_below="@+id/holderBtn"
         android:layout_alignParentBottom="true"

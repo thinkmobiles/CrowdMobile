@@ -26,7 +26,7 @@
             <include
                 android:id="@+id/itemTitle"
                 layout="@layout/item_title"/>
-            <com.crowdmobile.kes.widget.FixedARImageView
+            <com.crowdmobile.bongothinks.widget.FixedARImageView
                 android:id="@+id/imgFeedPic"
                 android:scaleType="centerCrop"
                 android:layout_width="match_parent"

@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:kes="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.crowdmobile.kes.MainActivity" >
+    tools:context="com.crowdmobile.bongothinks.MainActivity" >
 
     <item android:id="@+id/action_credit"
         android:enabled="false"
         android:title="0"
         android:orderInCategory="9" app:showAsAction="always" />
     <item android:id="@+id/action_crediticon"
-        android:enabled="false"
+        android:enabled="true"
         android:icon="@drawable/ic_navbar_credit_icon"
         android:orderInCategory="10" app:showAsAction="always|withText"
         android:title="" />

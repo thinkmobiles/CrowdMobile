@@ -117,6 +117,7 @@ public class DataFetcher {
         {
             error = new ModelFactory.ServerError();
             error.code = code;
+			this.httpStatus = httpStatus;
         }
 
         public KESNetworkException(int httpStatus, String response)

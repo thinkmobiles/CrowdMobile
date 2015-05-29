@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.crowdmobile.kes"
+        applicationId "com.crowdmobile.bongothinks"
         minSdkVersion 15
         targetSdkVersion 21
         compileOptions {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.crowdmobile.kes"
-    android:versionCode="4"
-    android:versionName="0.2" >
+    package="com.crowdmobile.bongothinks"
+    android:versionCode="5"
+    android:versionName="0.3" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -27,10 +27,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />  <!-- Required for Push -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <permission
-        android:name="com.crowdmobile.kes.permission.UA_DATA"
+        android:name="com.crowdmobile.bongothinks.permission.UA_DATA"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.crowdmobile.kes.permission.UA_DATA" />
+    <uses-permission android:name="com.crowdmobile.bongothinks.permission.UA_DATA" />
 
     <!-- REQUIRED PERMISSIONS for GCM -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -38,12 +38,12 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 
     <!-- This app has permission to register with GCM and receive message -->
-    <permission android:name="com.crowdmobile.kes.permission.permission.C2D_MESSAGE" android:protectionLevel="signature" />
-    <uses-permission android:name="com.crowdmobile.kes.permission.permission.C2D_MESSAGE" />
+    <permission android:name="com.crowdmobile.bongothinks.permission.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.crowdmobile.bongothinks.permission.permission.C2D_MESSAGE" />
     <!-- The two elements above ensure that only this application can receive the messages and registration result -->
 
     <application
-        android:name=".KesApplication"
+        android:name="com.crowdmobile.bongothinks.KesApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -67,7 +67,7 @@
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <category android:name="com.crowdmobile.kes" />
+                <category android:name="com.crowdmobile.bongothinks" />
             </intent-filter>
         </receiver>
 
@@ -79,7 +79,7 @@
         <activity android:name="net.hockeyapp.android.UpdateActivity" />
 
         <activity
-            android:name=".LandingActivity"
+            android:name="com.crowdmobile.bongothinks.LandingActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -90,13 +90,13 @@
 
         <activity
             android:launchMode="singleTask"
-            android:name=".MainActivity"
+            android:name="com.crowdmobile.bongothinks.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" >
         </activity>
         <activity
-            android:name=".AccountActivity"
+            android:name="com.crowdmobile.bongothinks.AccountActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
@@ -112,7 +112,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TwitterActivity"
+            android:name="com.crowdmobile.bongothinks.TwitterActivity"
             android:label="@string/app_name" />
         <service android:name="com.kes.NetworkService" />
 
@@ -122,7 +122,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
         <activity
-            android:name=".PictureActivity"
+            android:name="com.crowdmobile.bongothinks.PictureActivity"
             android:screenOrientation="portrait" />
 
         <!-- REQUIRED for Action.startActivityForResult -->
@@ -143,7 +143,7 @@
             <intent-filter android:priority="-999" >
                 <action android:name="com.urbanairship.push.OPENED" />
 
-                <category android:name="com.crowdmobile.kes" />
+                <category android:name="com.crowdmobile.bongothinks" />
             </intent-filter>
         </receiver>
 
@@ -165,7 +165,7 @@
         </activity>
 
         <receiver
-            android:name=".receiver.PushReceiver"
+            android:name="com.crowdmobile.bongothinks.receiver.PushReceiver"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.urbanairship.push.CHANNEL_UPDATED" />
@@ -174,7 +174,7 @@
                 <action android:name="com.urbanairship.push.DISMISSED" />
 
                 <!-- MODIFICATION REQUIRED - Use your package name as the category -->
-                <category android:name="com.crowdmobile.kes" />
+                <category android:name="com.crowdmobile.bongothinks" />
             </intent-filter>
         </receiver>
 
@@ -203,8 +203,8 @@
         <!-- ArbanAirship Required for the library -->
         <provider
             android:name="com.urbanairship.UrbanAirshipProvider"
-            android:authorities="com.crowdmobile.kes.urbanairship.provider"
-            android:permission="com.crowdmobile.kes.permission.UA_DATA"
+            android:authorities="com.crowdmobile.bongothinks.urbanairship.provider"
+            android:permission="com.crowdmobile.bongothinks.permission.UA_DATA"
             android:exported="true"
             android:multiprocess="true"/>
 

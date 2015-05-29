@@ -57,7 +57,12 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
 //        Thread.sleep(2000);
 //        if (true) throw new IOException("Test IO exception");
 
-        wrapper.response = com.kes.net.NetworkAPI.postQuestion(token,message,photo_data,tags,is_private);
+        wrapper.response = com.kes.net.NetworkAPI.postQuestion(token, message, photo_data, tags, is_private);
+
+        try {
+            wrapper.user = com.kes.net.NetworkAPI.getAccount(token);
+        }
+        catch (DataFetcher.KESNetworkException ignored) {}
 
         /*
         wrapper.response = new PhotoComment();

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="signature_public">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsHJ3bgCj053qh1OUD7m9Aw9X6qXUJkf12FVIt0Umzlmb45wgfN0BrTpOlSuiuu/6O1fuN4cZsee9tdq1JSw7muk10Vii6E7EaEDofP9TJoQaV1R8GwpE2xUqoyVmC0/lZ7A2RAu9dKIadwPfCDgTMxz+Swk9OpEVAic6O7vhmJmgQ7pk3OuRhMzFwgQBto8zNwdMexGWWsmMvMg08PZOH+Y+JHjZqUP/Ke5KU0nyt1JowHedDWctYC0mEtYeDU9jUzCT5u2aj8Wz0TOc9hj16T0htSlS2lURw408lm6q9XWQ/FjlJ5xveKvRlhD+ADytnedgV/gkTjEsXFrWD6izEwIDAQAB</string>
+    <string name="app_name">Bongo Thinks</string>
+    <string name="signature_public">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnMT+S1eO2lrvFLoQ2e2PBQ0zX39Hu10Hj+Cte48sYzUdiDVE1f+haMMg1MoOqQoPSYegYt7E/BwOWeYcgOwzDI4rUqlzRT3pFHMsgLcdYFnR1n8Yxy5e7YfsdB2Mkx8co8sFJTfQU8UT00bMDa8yesReoihlWkxi8NHnE/2A4aPwW6za8aHSlHQyHQnr22huzigXJsY5/wK77d+MxDaCDF/49P8wKD8VFa60g9E3NthMEqfw1LhSz/tCSDncoyffZGPrNTt8Apr5emHKnGAaNtz4eN9wKokVj+hhK3hbRWA2PbTGc2mqFfqxv1qD7niF/3yHfGokb3iCk2KZWi6RowIDAQAB</string>
 
     <plurals name="credits_purchase_messgae_plurals">
         <item quantity="one">DO YOU WANT TO BUY %1$d CREDIT FOR %2$s?</item>
@@ -13,7 +14,6 @@
     </plurals>
 
  	<string name="fb_app_id">760239814072784</string>
-    <string name="app_name">KES</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
@@ -31,12 +31,11 @@
     <string name="login_twitter">Log in with Twitter</string>
     <string name="login_skip">Skip</string>
 
-    <string name="fb_notinstalled">Facebook is not installed</string>
-    <string name="welcome">Welcome to KES</string>
-    <string name="signingin">Signing in</string>
+    <string name="welcome">Welcome to Bongo</string>
     <string name="error">Error</string>
     <string name="ok">OK</string>
-    <string name="fb_login">Loggin in to facebook</string>
+    <string name="fb_login">Connecting to Facebook</string>
+    <string name="twitter_login">Connecting to Twitter</string>
     <string name="connecting">Connecting</string>
     <string name="error_fb_session">Error initializing facebook session</string>
     <string name="error_kes_login">Login to KES failed</string>
@@ -137,9 +136,9 @@
     <!-- In app purchase -->
     <string name="credits_prefix">qredits_</string>
     <string-array name="credits_list">
-        <item>xbanana1</item>
-        <item>xbanana5</item>
-        <item>xbanana10</item>
+        <item>credit_1</item>
+        <item>credit_5</item>
+        <item>credit_10</item>
     </string-array>
 
 </resources>

@@ -478,6 +478,8 @@ public class FeedManager {
     }
 
     protected void updatePendingQuestion(PhotoCommentResponseHolder holder) {
+        if (holder.user != null)
+            mSession.getAccountManager().updateBalance(holder.user.balance);
         for (int i = 0; i < pending.size(); i++)
         {
             PhotoComment p = pending.get(i);
