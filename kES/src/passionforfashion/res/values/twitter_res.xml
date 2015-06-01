@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="consumer_key">lftwIGP8xk2sfRRSwWjMQvGB3</string>
+    <string name="consumer_secret">ZtepX3XQhCQxkAJec15TNg3wUCYTy74Nl63lqWi2GQ9VRT0f9m</string>
+
+    <string name="callback_url_scheme">oauth</string>
+    <string name="callback_url_host">twitterlogin</string>
+</resources>

@@ -5,9 +5,9 @@ package com.kes;
  */
 public abstract class Transaction {
 
-    private Session mSession;
+    private KES mSession;
 
-    protected Transaction(Session session)
+    protected Transaction(KES session)
     {
         mSession = session;
     }

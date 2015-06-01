@@ -36,22 +36,21 @@ public class NetworkService extends Service {
             this.wrapper = wrapper;
         }
 
-        private void execute(Context context,Session session)
+        private void execute(Context context,Session mKES)
         {
             if (wrapper != null &&
                 wrapper.exception != null &&
                 wrapper.exception instanceof DataFetcher.KESNetworkException &&
                 !wrapper.suppressError)
-                session.networkError((DataFetcher.KESNetworkException)wrapper.exception);
+                mKES.networkError((DataFetcher.KESNetworkException)wrapper.exception);
             Log.d("CLASS",this.getClass().getSimpleName());
-            run(context, session, wrapper);
+            run(context, mKES, wrapper);
         }
 
-        public abstract void run(Context context,Session session, T holder);
+        public abstract void run(Context context,Session mKES, T holder);
     }
     */
 
-    private Session session;
     private Handler mHandler;
 	private int startId;
 	private Map<Intent,WorkerThread> pending = new HashMap<Intent,WorkerThread>();
@@ -103,7 +102,6 @@ public class NetworkService extends Service {
     @Override
     public void onCreate()
     {
-        session = Session.getInstance(this);
 
         mHandler = new Handler(Looper.getMainLooper());
         mHandler.postDelayed(checkIdle,IDLE_CHECK_DELAY);
@@ -119,8 +117,7 @@ public class NetworkService extends Service {
         for (WorkerThread value : pending.values()) {
             value.interrupt();
         }
-        session.serviceShutdown();
-        session = null;
+        KES.getInstance().serviceShutdown();
     	super.onDestroy();
     }
 
@@ -138,7 +135,7 @@ public class NetworkService extends Service {
         @Override
         public void run() {
             if (mHandler != null && runnable != null)
-                runnable.serviceExecuteOnUI(NetworkService.this, session);
+                runnable.serviceExecuteOnUI(NetworkService.this, KES.getInstance());
             Log.d(TAG,"Action finished " + intent.getAction());
             pending.remove(intent);
         }

@@ -37,7 +37,7 @@ public class BillingManager {
     private String mProductList[];
     private String mSignature;
     private BillingService billingService;
-    private Session mSession;
+    private KES mKES;
     private BillingStatus mBillingStatus = BillingStatus.Idle;
     ArrayList<ContextWrapper> bondList = new ArrayList<ContextWrapper>();
     ArrayList<CreditItem> mCreditList = null;
@@ -57,9 +57,9 @@ public class BillingManager {
         }
     };
 
-    protected BillingManager(Session session)
+    protected BillingManager(KES kes)
     {
-        mSession = session;
+        mKES = kes;
     }
 
     public void init(String signature_public, String productList[])
@@ -73,13 +73,13 @@ public class BillingManager {
     {
         if (mProductList == null)
             throw new IllegalStateException("Product list is not initialised.Please call init() first.");
-        if (!mSession.getAccountManager().getUser().isRegistered())
+        if (!mKES.getAccountManager().getUser().isRegistered())
             throw new IllegalStateException("User is not registered");
 
         if (bondList.size() == 0) {
-            LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_PURCHASED));
-            LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDIT_STATUS));
-            LocalBroadcastManager.getInstance(mSession.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDITLIST));
+            LocalBroadcastManager.getInstance(mKES.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_PURCHASED));
+            LocalBroadcastManager.getInstance(mKES.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDIT_STATUS));
+            LocalBroadcastManager.getInstance(mKES.getContext()).registerReceiver(receiver, new IntentFilter(BillingService.ACTION_CREDITLIST));
         }
 
         for (int i = 0; i < bondList.size(); i++)
@@ -95,7 +95,7 @@ public class BillingManager {
         Intent intent = new Intent(activity, BillingService.class);
         intent.putExtra(BillingService.TAG_SIGNATURE, mSignature);
         intent.putExtra(BillingService.TAG_PRODUCTLIST, mProductList);
-        intent.putExtra(BillingService.TAG_TOKEN, mSession.getAccountManager().getToken());
+        intent.putExtra(BillingService.TAG_TOKEN, mKES.getAccountManager().getToken());
         cw.isBond = activity.bindService(intent, billingConnection, Context.BIND_AUTO_CREATE);
         listener.onStatus(BillingStatus.Init);
         if (mCreditList != null)
@@ -131,7 +131,7 @@ public class BillingManager {
                 if (bondList.size() == 0)
                 {
                     billingService = null;
-                    LocalBroadcastManager.getInstance(mSession.getContext()).unregisterReceiver(receiver);
+                    LocalBroadcastManager.getInstance(mKES.getContext()).unregisterReceiver(receiver);
                 }
                 return;
             }
@@ -163,7 +163,7 @@ public class BillingManager {
                     bondList.get(i).listener.onStatus(BillingStatus.values()[intent.getIntExtra(BillingService.TAG_STATUS, 0)]);
             if (BillingService.ACTION_PURCHASED.equals(action)) {
                 int quantity = intent.getIntExtra(BillingService.TAG_QUANTITY, 0);
-                Session.getInstance(context).getAccountManager().updateBalance(quantity);
+                mKES.getAccountManager().updateBalance(quantity);
                 for (int i = 0; i < bondList.size(); i++)
                     bondList.get(i).listener.onPurchased(quantity);
             }

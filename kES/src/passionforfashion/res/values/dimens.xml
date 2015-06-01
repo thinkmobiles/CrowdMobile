@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="logosize">80dp</dimen>
+    <dimen name="logotextsize">15sp</dimen>
+    <dimen name="navbar_padding">10dp</dimen>
+    <dimen name="navbar_height">45dp</dimen>
+    <dimen name="navbar_bottomline">3dp</dimen>
+    <dimen name="navbar_elevation">3dp</dimen>
+    <dimen name="navbar_indicator_padding">15dp</dimen>
+    <dimen name="navbar_indicator_font">13dp</dimen>
+    <dimen name="navbar_indicator_font_padding">5dp</dimen>
+    <dimen name="navbar_shadow">5dp</dimen>
+
+    <!-- Login -->
+    <dimen name="bt_login_padding">4dp</dimen>
+    <dimen name="bt_login_height">35dp</dimen>
+    <dimen name="bt_login_space">7dp</dimen>
+    <dimen name="bt_login_text">15sp</dimen>
+
+    <!-- Not registered -->
+    <dimen name="access_iconpaddingside">60dp</dimen>
+    <dimen name="access_cardmargin">10dp</dimen>
+    <dimen name="access_cardpadding">20dp</dimen>
+    <dimen name="access_titletext_padding">10dp</dimen>
+    <dimen name="access_titletext">15sp</dimen>
+    <dimen name="access_messagetext">12sp</dimen>
+    <dimen name="access_btn_margintop">20dp</dimen>
+    <dimen name="access_btn_padding">10dp</dimen>
+    <dimen name="access_btn_start_font">15sp</dimen>
+
+
+    <!-- Feed item -->
+    <dimen name="item_corner_radius">5dp</dimen>
+    <dimen name="item_stripe_radius">3dp</dimen>
+    <dimen name="item_padding">5dp</dimen>
+    <dimen name="item_header_sidepadding">10dp</dimen>
+    <dimen name="share_closed_height">5dp</dimen>
+    <dimen name="item_stripe_height">5dp</dimen>
+    <dimen name="item_separator_height">3dp</dimen>
+    <dimen name="item_header_icon_height">25dp</dimen>
+    <dimen name="item_header_icon_margin">5dp</dimen>
+    <dimen name="item_share_visible_height">5dp</dimen>
+    <dimen name="item_share_holder_padding">15dp</dimen>
+    <dimen name="item_text_size">15sp</dimen>
+
+    <!-- Checkout -->
+    <dimen name="credit_title_padding">15dp</dimen>
+    <dimen name="credit_title_linespace">2dp</dimen>
+    <dimen name="credit_titlefontsize">17sp</dimen>
+    <dimen name="credit_messagefontsize">13sp</dimen>
+    <dimen name="credit_bottomicon_width">150dp</dimen>
+
+    <dimen name="credit_item_height">40dp</dimen>
+    <dimen name="credit_item_width_offer">30dp</dimen>
+    <dimen name="credit_item_title_width">40dp</dimen>
+    <dimen name="credit_item_price_width">60dp</dimen>
+    <dimen name="credit_item_padding">5dp</dimen>
+
+    <dimen name="credit_item_vspace">20dp</dimen>
+    <dimen name="credit_padding">10dp</dimen>
+    <dimen name="credit_item_fontsize">18sp</dimen>
+    <dimen name="credit_item_prize_fontsize">18sp</dimen>
+    <dimen name="credit_item_discount_fontsize">16sp</dimen>
+    <dimen name="credit_item_buy_paddingv">10dp</dimen>
+    <dimen name="credit_item_buy_paddingh">30dp</dimen>
+    <dimen name="credit_item_buy_font">20sp</dimen>
+    <dimen name="credit_item_buy_rightspace">10sp</dimen>
+    <dimen name="credit_item_space">1dp</dimen>
+
+    <dimen name="purchased_font">60dp</dimen>
+
+    <!-- Compose -->
+    <dimen name="compose_editor_height">150dp</dimen>
+    <dimen name="compose_shader">25dp</dimen>
+    <dimen name="compose_buttonheight">40dp</dimen>
+    <dimen name="compose_buttonpadding">10dp</dimen>
+    <dimen name="compose_editpadding">10dp</dimen>
+
+    <dimen name="compose_imagewidth">60dp</dimen>
+    <dimen name="compose_imagepadding">7dp</dimen>
+
+    <dimen name="takepicbutton">60dp</dimen>
+    <dimen name="takepicbuttonpadding">10dp</dimen>
+    <dimen name="triangleheight">15dp</dimen>
+    <dimen name="bubbleheight">70dp</dimen>
+    <dimen name="bubblefont">20sp</dimen>
+    <dimen name="bubblepadding">10dp</dimen>
+    <dimen name="bubbletextpadding">7dp</dimen>
+    <dimen name="bubbleclose">40dp</dimen>
+    <dimen name="imgclose">25dp</dimen>
+
+    <!-- Gallery -->
+    <dimen name="gallery_margin">15dp</dimen>
+    <dimen name="gallery_gridspace">5dp</dimen>
+    <dimen name="gallery_title_height">50dp</dimen>
+    <dimen name="gallery_title_font">16sp</dimen>
+    <dimen name="gallery_title_iconpadding">10dp</dimen>
+
+</resources>

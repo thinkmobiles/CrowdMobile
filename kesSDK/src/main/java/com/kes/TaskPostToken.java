@@ -26,7 +26,7 @@ class TaskPostToken extends NetworkExecutable<AccountManager.UserWrapper> {
         return new AccountManager.UserWrapper();
     }
 
-    protected void run(Context context, Session session, AccountManager.UserWrapper wrapper) {
+    protected void run(Context context, KES session, AccountManager.UserWrapper wrapper) {
         session.getAccountManager().updateUser(wrapper);
     }
 
@@ -35,7 +35,7 @@ class TaskPostToken extends NetworkExecutable<AccountManager.UserWrapper> {
         Bundle extras = intent.getExtras();
         String token = extras.getString(TAG_TOKEN);
         String push_token = extras.getString(TAG_PUSHTOKEN);
-        wrapper.user = com.kes.net.NetworkAPI.updatePushToken(token,push_token);
+        wrapper.user = NetworkAPI.updatePushToken(token, push_token);
         if (wrapper.user == null)
             return;
 	}

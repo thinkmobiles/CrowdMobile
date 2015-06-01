@@ -29,7 +29,7 @@ public class AccountManager {
 
     private boolean login_progress = false;
 
-    private Session mSession;
+    private KES mKES;
     private User user;
     private WeakHashMap<AccountListener, Void> userCallbacks = new WeakHashMap<AccountListener, Void>();
     private String ua_token;
@@ -75,16 +75,16 @@ public class AccountManager {
         tmpUserListener = null;
     }
 
-    public AccountManager(Session session)
+    public AccountManager(KES session)
     {
-        mSession = session;
+        mKES = session;
     }
 
     protected void updateUser(UserWrapper userWrapper)
     {
         if (userWrapper.exception == null)
         {
-            getCachedUser(mSession.getContext());
+            getCachedUser(mKES.getContext());
             user.id = userWrapper.user.id;
             user.first_name = userWrapper.user.first_name;
             user.last_name = userWrapper.user.last_name;
@@ -96,43 +96,43 @@ public class AccountManager {
             user.login_type = userWrapper.user.login_type;
             user.auth_token = userWrapper.user.auth_token;
             user.upToDate = true;
-            PreferenceUtil.setUser(mSession.getContext(), user);
+            PreferenceUtil.setUser(mKES.getContext(), user);
             postUserChanged();
         }
     }
 
     protected void updateBalance(int newBalance)
     {
-        getCachedUser(mSession.getContext());
+        getCachedUser(mKES.getContext());
         if (user.auth_token == null)
             return;
         user.balance = newBalance;
-        PreferenceUtil.setBalance(mSession.getContext(), user.balance);
+        PreferenceUtil.setBalance(mKES.getContext(), user.balance);
         postUserChanged();
     }
 
     protected void updateUnread(int count)
     {
-        getCachedUser(mSession.getContext());
+        getCachedUser(mKES.getContext());
         if (user.auth_token == null)
             return;
         user.unread_count = count;
-        PreferenceUtil.setUnreadCount(mSession.getContext(), user.balance);
+        PreferenceUtil.setUnreadCount(mKES.getContext(), user.balance);
         postUserChanged();
     }
 
     public void setUAChannelID(String channelID)
     {
         ua_token = channelID;
-        if (getCachedUser(mSession.getContext()).isRegistered())
-            TaskPostToken.updatePushToken(mSession.getContext(), user.auth_token,ua_token);
+        if (getCachedUser(mKES.getContext()).isRegistered())
+            TaskPostToken.updatePushToken(mKES.getContext(), user.auth_token,ua_token);
     }
 
     public User getUser()
     {
-        getCachedUser(mSession.getContext());
+        getCachedUser(mKES.getContext());
         if (user.isRegistered() && !user.upToDate)
-            TaskLoadUser.loadUser(mSession.getContext(), user.auth_token);
+            TaskLoadUser.loadUser(mKES.getContext(), user.auth_token);
         return user;
     }
 
@@ -156,7 +156,7 @@ public class AccountManager {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         login_progress = true;
-        TaskLogin.login(mSession.getContext(), ModelFactory.LoginType.Facebook,facebook_token,null, facebook_uid);
+        TaskLogin.login(mKES.getContext(), ModelFactory.LoginType.Facebook,facebook_token,null, facebook_uid);
     }
 
     public void loginTwitter(String twitter_token, String twitter_secret, String twitter_uid)
@@ -164,16 +164,16 @@ public class AccountManager {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         login_progress = true;
-        TaskLogin.login(mSession.getContext(), ModelFactory.LoginType.Twitter,twitter_token,twitter_secret,twitter_uid);
+        TaskLogin.login(mKES.getContext(), ModelFactory.LoginType.Twitter,twitter_token,twitter_secret,twitter_uid);
     }
 
     public void logout()
     {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
-        PreferenceUtil.clearUser(mSession.getContext());
+        PreferenceUtil.clearUser(mKES.getContext());
         user = null;
-        mSession.getFeedManager().feed(FeedManager.FeedType.My).clear();
+        mKES.getFeedManager().feed(FeedManager.FeedType.My).clear();
     }
 
 }

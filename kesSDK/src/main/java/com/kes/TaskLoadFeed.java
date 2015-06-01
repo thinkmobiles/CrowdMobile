@@ -49,7 +49,7 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
 
 
     @Override
-    public void run(Context context, Session session, FeedManager.FeedWrapper wrapper) {
+    public void run(Context context, KES session, FeedManager.FeedWrapper wrapper) {
         session.getFeedManager().updateData(wrapper);
     }
 
@@ -80,7 +80,7 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
         wrapper.tags = extras.getString(TAG_TAGS);
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
-                com.kes.net.NetworkAPI.getFeed(token, false, wrapper.max_id,wrapper.since_id, wrapper.page_size, filter, wrapper.tags);
+                NetworkAPI.getFeed(token, false, wrapper.max_id, wrapper.since_id, wrapper.page_size, filter, wrapper.tags);
         //Thread.sleep(1000);
         //TODO:remove,debug stuff, removes answers
         /*

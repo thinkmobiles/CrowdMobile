@@ -51,7 +51,7 @@ class TaskLogin extends NetworkExecutable<AccountManager.UserWrapper> {
         user.auth_token = "auth_token";
         user.syncStatus = User.SyncStatus.UpToDate;
         */
-        wrapper.user = com.kes.net.NetworkAPI.registerMe(
+        wrapper.user = NetworkAPI.registerMe(
                 ModelFactory.LoginType.values()[extras.getInt(TAG_LOGIN_TYPE)],
                 extras.getString(TAG_ACCESS_TOKEN),
                 extras.getString(TAG_ACCESS_TOKEN_SECRET),
@@ -67,7 +67,7 @@ class TaskLogin extends NetworkExecutable<AccountManager.UserWrapper> {
     }
 
 
-    public void run(Context context, Session session, AccountManager.UserWrapper wrapper) {
+    public void run(Context context, KES session, AccountManager.UserWrapper wrapper) {
         session.getAccountManager().postLoginResult(wrapper);
     }
 

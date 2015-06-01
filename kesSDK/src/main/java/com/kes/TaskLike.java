@@ -26,7 +26,7 @@ class TaskLike extends NetworkExecutable<ResultWrapper> {
         return new ResultWrapper();
     }
 
-    protected void run(Context context, Session session, ResultWrapper wrapper) {
+    protected void run(Context context, KES session, ResultWrapper wrapper) {
         session.getFeedManager().updateAction(wrapper);
     }
 
@@ -36,7 +36,7 @@ class TaskLike extends NetworkExecutable<ResultWrapper> {
         String token = extras.getString(TAG_TOKEN);
         wrapper.questionID = extras.getInt(TAG_QUESTION_ID);
         wrapper.commentID = extras.getInt(TAG_COMMENT_ID);
-        com.kes.net.NetworkAPI.like(token, wrapper.questionID, wrapper.commentID);
+        NetworkAPI.like(token, wrapper.questionID, wrapper.commentID);
 	}
 	
 }

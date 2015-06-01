@@ -30,7 +30,7 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
 
 
     @Override
-    public void run(Context context, Session session, FeedManager.FeedWrapper wrapper) {
+    public void run(Context context, KES session, FeedManager.FeedWrapper wrapper) {
         session.getFeedManager().updateUnread(context, wrapper);
     }
 
@@ -47,12 +47,12 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
         wrapper.feedType = FeedManager.FeedType.My;
         String filter = "my";
 
-        wrapper.user = com.kes.net.NetworkAPI.getAccount(token);
+        wrapper.user = NetworkAPI.getAccount(token);
         if (wrapper.user.unread_count == 0)
             return;
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
-                com.kes.net.NetworkAPI.getFeed(token,true, null,null, wrapper.user.unread_count, filter, wrapper.tags);
+                NetworkAPI.getFeed(token, true, null, null, wrapper.user.unread_count, filter, wrapper.tags);
 
         if (photoCommentWrapper.photo_comments == null || photoCommentWrapper.photo_comments.length == 0) {
             wrapper.user.unread_count = 0;
@@ -61,7 +61,7 @@ class TaskCheckUnread extends NetworkExecutable<FeedManager.FeedWrapper> {
 
         if (wrapper.max_id == null || photoCommentWrapper.photo_comments[0].getID(FeedManager.FeedType.My) > wrapper.max_id) {
             photoCommentWrapper =
-                    com.kes.net.NetworkAPI.getFeed(token, false, null, null, null, filter, wrapper.tags);
+                    NetworkAPI.getFeed(token, false, null, null, null, filter, wrapper.tags);
         }
         wrapper.max_id = null;
         wrapper.photoComments = photoCommentWrapper.photo_comments;

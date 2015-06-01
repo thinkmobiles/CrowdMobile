@@ -14,7 +14,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.kes.BillingManager;
 import com.kes.model.CreditResponse;
 import com.kes.net.DataFetcher;
-import com.kes.net.NetworkAPI;
+import com.kes.NetworkAPI;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -23,13 +23,13 @@ class TaskLoadUser extends  NetworkExecutable<AccountManager.UserWrapper> {
     }
 
     @Override
-    public void run(Context context, Session session, AccountManager.UserWrapper wrapper) {
+    public void run(Context context, KES session, AccountManager.UserWrapper wrapper) {
         session.getAccountManager().updateUser(wrapper);
     }
 
     @Override
     public void onExecute(Context context, Intent intent, AccountManager.UserWrapper wrapper) throws DataFetcher.KESNetworkException, IOException, InterruptedException {
         String token = intent.getStringExtra(TAG_TOKEN);
-        wrapper.user = com.kes.net.NetworkAPI.getAccount(token);
+        wrapper.user = NetworkAPI.getAccount(token);
     }
 }

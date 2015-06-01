@@ -38,7 +38,7 @@ public class FeedManager {
 
     private static final int DEFAULT_PAGE_SIZE = 10;
 
-    private Session mSession;
+    private KES mSession;
 
     private WeakHashMap<OnChangeListener, Void> callbacks = new WeakHashMap<OnChangeListener, Void>();
 
@@ -352,7 +352,7 @@ public class FeedManager {
     }
 
 
-    protected FeedManager(Session session) {
+    protected FeedManager(KES session) {
         mSession = session;
         mSession.getDB().getAllPending(pending);
     }

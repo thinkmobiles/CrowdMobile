@@ -14,6 +14,8 @@ import java.util.Properties;
  */
 public class KesConfigOptions {
 
+    public String serverURL;
+
     public static KesConfigOptions loadDefaultOptions(Context ctx) {
         KesConfigOptions options = new KesConfigOptions();
         options.loadFromProperties(ctx,"kes.cfg");

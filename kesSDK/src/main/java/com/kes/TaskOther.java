@@ -27,7 +27,7 @@ class TaskOther extends NetworkExecutable<ResultWrapper> {
         return new ResultWrapper();
     }
 
-    protected void run(Context context, Session session, ResultWrapper wrapper) {
+    protected void run(Context context, KES session, ResultWrapper wrapper) {
         session.getFeedManager().updateAction(wrapper);
     }
 
@@ -39,13 +39,13 @@ class TaskOther extends NetworkExecutable<ResultWrapper> {
         wrapper.questionID = extras.getInt(TAG_QUESTION_ID);
         wrapper.commentID = extras.getInt(TAG_COMMENT_ID);
         if (wrapper.actionType == ResultWrapper.ActionType.Report)
-            com.kes.net.NetworkAPI.report(token, wrapper.questionID);
+            NetworkAPI.report(token, wrapper.questionID);
         else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsRead) {
-            wrapper.photoComment = com.kes.net.NetworkAPI.markAsRead(token, wrapper.questionID, wrapper.commentID);
-            wrapper.user = com.kes.net.NetworkAPI.getAccount(token);
+            wrapper.photoComment = NetworkAPI.markAsRead(token, wrapper.questionID, wrapper.commentID);
+            wrapper.user = NetworkAPI.getAccount(token);
         }
         else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsPrivate)
-            wrapper.photoComment = com.kes.net.NetworkAPI.markAsPrivate(token, wrapper.questionID);
+            wrapper.photoComment = NetworkAPI.markAsPrivate(token, wrapper.questionID);
 	}
 	
 }

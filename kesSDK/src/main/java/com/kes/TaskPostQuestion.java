@@ -34,7 +34,7 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
         return new FeedManager.PhotoCommentResponseHolder();
     }
 
-    protected void run(Context context, Session session, FeedManager.PhotoCommentResponseHolder wrapper) {
+    protected void run(Context context, KES session, FeedManager.PhotoCommentResponseHolder wrapper) {
         session.getFeedManager().updatePendingQuestion(wrapper);
     }
 
@@ -57,10 +57,10 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
 //        Thread.sleep(2000);
 //        if (true) throw new IOException("Test IO exception");
 
-        wrapper.response = com.kes.net.NetworkAPI.postQuestion(token, message, photo_data, tags, is_private);
+        wrapper.response = NetworkAPI.postQuestion(token, message, photo_data, tags, is_private);
 
         try {
-            wrapper.user = com.kes.net.NetworkAPI.getAccount(token);
+            wrapper.user = NetworkAPI.getAccount(token);
         }
         catch (DataFetcher.KESNetworkException ignored) {}
 

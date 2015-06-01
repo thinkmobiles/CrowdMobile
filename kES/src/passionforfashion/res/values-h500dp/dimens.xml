@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="credit_titlefontsize">20sp</dimen>
+    <dimen name="credit_messagefontsize">15sp</dimen>
+    <dimen name="credit_bottomicon_width">170dp</dimen>
+
+    <!-- Compose -->
+    <dimen name="compose_editor_height">200dp</dimen>
+
+</resources>

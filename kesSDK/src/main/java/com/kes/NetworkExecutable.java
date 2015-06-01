@@ -34,7 +34,7 @@ abstract class NetworkExecutable<T extends ResultWrapper> {
         }
     }
 
-    protected void serviceExecuteOnUI(Context context,Session session)
+    protected void serviceExecuteOnUI(Context context,KES session)
     {
         if (mWrapper != null &&
                 mWrapper.exception != null &&
@@ -51,7 +51,7 @@ abstract class NetworkExecutable<T extends ResultWrapper> {
     }
 
     protected abstract void onExecute(Context context, Intent intent, T wrapper) throws DataFetcher.KESNetworkException, IOException, InterruptedException;
-    protected abstract void run(Context context,Session session, T holder);
+    protected abstract void run(Context context,KES session, T holder);
 
     protected static NetworkExecutable createFromIntent(Intent intent)
     {

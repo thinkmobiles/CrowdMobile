@@ -1,6 +1,7 @@
 package com.kes.model;
 
 import com.kes.FeedManager;
+import com.kes.KES;
 
 /**
  * Created by gadza on 2015.03.05..
@@ -76,11 +77,9 @@ public class PhotoComment {
         setAsRead(null);
     }
 
-    public void markAsRead(FeedManager feedManager)
+    public void markAsRead()
     {
-        if (feedManager == null)
-            throw new IllegalStateException("Feedmanager can't be null");
-        setAsRead(feedManager);
+        setAsRead(KES.shared().getFeedManager());
     }
 
     public boolean isUnread()
