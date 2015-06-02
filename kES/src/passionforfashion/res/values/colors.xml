@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- P4F colors -->
 
     <!-- Compose -->
-    <item name="splash_background" type="color">#fff</item>
+    <item name="splash_background" type="color">#ff004e</item>
     <item name="splash_text" type="color">#000</item>
 
     <item name="white" type="color">#fff</item>
-    <item name="appTitleColor" type="color">#0a93ff</item>
-    <item name="colorPrimary" type="color">#096fc2</item>
+    <item name="appTitleColor" type="color">#0000</item>
+    <item name="colorPrimary" type="color">#0000</item>
 
     <item name="questionFont" type="color">#555</item>
     <item name="answerBackground" type="color">#0000</item>
     <item name="answerFont" type="color">#555</item>
 
-    <item name="appbackground" type="color">#fff</item>
+    <item name="appbackground" type="color">#0f0</item>
     <item name="apptextcolor" type="color">#444</item>
     <item name="apptextcolorhint" type="color">#ccc</item>
 
-    <item name="navbarbackground" type="color">#0a93ff</item>
-    <item name="navbarseparator" type="color">#46a7f2</item>
+    <item name="navbarbackground" type="color">#0000</item>
+    <item name="navbarseparator" type="color">#0000</item>
 
 
     <item name="bubblecolor" type="color">#000</item>
@@ -43,7 +44,7 @@
     <item name="access_btstart_text" type="color">#000</item>
 
     <!-- Feed -->
-    <item name="feed_background" type="color">#e3f1f5</item>
+    <item name="feed_background" type="color">#0000</item>
 
     <!-- Feed item -->
 

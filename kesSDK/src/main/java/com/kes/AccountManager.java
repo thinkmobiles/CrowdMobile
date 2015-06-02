@@ -171,9 +171,10 @@ public class AccountManager {
     {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
+        mKES.getFeedManager().feed(FeedManager.FeedType.My).clear();
         PreferenceUtil.clearUser(mKES.getContext());
         user = null;
-        mKES.getFeedManager().feed(FeedManager.FeedType.My).clear();
+        postUserChanged();
     }
 
 }

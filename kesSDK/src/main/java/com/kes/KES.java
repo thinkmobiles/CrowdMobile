@@ -38,8 +38,8 @@ public class KES {
 
     protected void networkError(DataFetcher.KESNetworkException exception)
     {
-        //if (exception.error.code == DataFetcher.KESNetworkException.CODE_Invalid_authentication_code)
-        //    accountManager.logout();
+        if (exception.error.code == DataFetcher.KESNetworkException.CODE_Invalid_authentication_code)
+            accountManager.logout();
     }
 
     public static void initialize(Context context,KesConfigOptions configOptions) {

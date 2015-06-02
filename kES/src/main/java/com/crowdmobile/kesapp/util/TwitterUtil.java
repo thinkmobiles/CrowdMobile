@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.RelativeLayout;
 
+import com.crowdmobile.kesapp.AppCfg;
 import com.crowdmobile.kesapp.R;
 import com.crowdmobile.kesapp.TwitterActivity;
 
@@ -188,8 +189,8 @@ public class TwitterUtil {
         callbackUrl = context.getString(R.string.callback_url_scheme) + "://" +
                 context.getString(R.string.callback_url_host) + "?force_login=true";
         Configuration configuration = new ConfigurationBuilder()
-                .setOAuthConsumerKey(context.getString(R.string.consumer_key))
-                .setOAuthConsumerSecret(context.getString(R.string.consumer_secret)).build();
+                .setOAuthConsumerKey(AppCfg.TwitterKey)
+                .setOAuthConsumerSecret(AppCfg.TwitterSecret).build();
 
         twitter = new TwitterFactory(configuration).getInstance();
     }

@@ -17,10 +17,7 @@ import android.widget.Toast;
 import com.crowdmobile.kesapp.fragment.CropFragment;
 import com.crowdmobile.kesapp.fragment.GalleryFragment;
 import com.crowdmobile.kesapp.util.PreferenceUtils;
-import com.crowdmobile.kesapp.R;
 import com.urbanairship.analytics.Analytics;
-
-import net.hockeyapp.android.CrashManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,9 +40,6 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         }
         super.onCreate(savedInstanceState);
-        if (KesApplication.enableHockey) {
-            CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
-        }
         setContentView(R.layout.activity_picture);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -76,6 +70,11 @@ public class PictureActivity extends ActionBarActivity implements GalleryFragmen
     protected void onStop() {
         super.onStop();
         Analytics.activityStopped(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

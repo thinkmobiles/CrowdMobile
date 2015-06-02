@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Passion for Fashion</string>
-    <string name="signature_public">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnMT+S1eO2lrvFLoQ2e2PBQ0zX39Hu10Hj+Cte48sYzUdiDVE1f+haMMg1MoOqQoPSYegYt7E/BwOWeYcgOwzDI4rUqlzRT3pFHMsgLcdYFnR1n8Yxy5e7YfsdB2Mkx8co8sFJTfQU8UT00bMDa8yesReoihlWkxi8NHnE/2A4aPwW6za8aHSlHQyHQnr22huzigXJsY5/wK77d+MxDaCDF/49P8wKD8VFa60g9E3NthMEqfw1LhSz/tCSDncoyffZGPrNTt8Apr5emHKnGAaNtz4eN9wKokVj+hhK3hbRWA2PbTGc2mqFfqxv1qD7niF/3yHfGokb3iCk2KZWi6RowIDAQAB</string>
 
     <plurals name="credits_purchase_messgae_plurals">
         <item quantity="one">DO YOU WANT TO BUY %1$d CREDIT FOR %2$s?</item>
@@ -13,7 +12,7 @@
         <item quantity="other">credits</item>
     </plurals>
 
- 	<string name="fb_app_id">760239814072784</string>
+ 	<string name="fb_app_id">675883875849951</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
@@ -141,4 +140,9 @@
         <item>credit_10</item>
     </string-array>
 
+    <!-- Twitter -->
+    <string name="callback_url_host">oauth</string>
+    <string name="callback_url_scheme">twitterlogin</string>
+    
+    
 </resources>

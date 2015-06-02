@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import com.crowdmobile.kesapp.R;
+
 /**
  * Created by gadza on 2015.04.23..
  */
@@ -36,6 +36,11 @@ public class TwitterActivity extends Activity {
         webView = (WebView) findViewById(R.id.webView);
         webView.setWebViewClient(wvc);
         webView.loadUrl(authUrl);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     WebViewClient wvc = new WebViewClient() {

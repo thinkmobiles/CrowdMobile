@@ -26,7 +26,7 @@ public class NotificationUtil extends NotificationFactory {
                 .setContentTitle("Bongo thinks")
                 .setContentText(message.getAlert())
                 .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_launcher);
+                .setSmallIcon(R.mipmap.ic_launcher);
 
 
         // To support interactive notification buttons extend the NotificationCompat.Builder

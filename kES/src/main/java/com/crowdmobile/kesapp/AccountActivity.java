@@ -5,38 +5,32 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.crowdmobile.kesapp.util.FacebookLogin;
+import com.crowdmobile.kesapp.util.HockeyUtil;
 import com.crowdmobile.kesapp.util.PreferenceUtils;
 import com.crowdmobile.kesapp.util.TwitterUtil;
 import com.crowdmobile.kesapp.widget.NavigationBar;
-import com.crowdmobile.kesapp.R;
 import com.kes.AccountManager;
 import com.kes.KES;
 import com.kes.model.User;
 import com.kes.net.DataFetcher;
 import com.urbanairship.analytics.Analytics;
 
-import net.hockeyapp.android.CrashManager;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class AccountActivity extends Activity {
 
+    private static final String TAG = AccountActivity.class.getSimpleName();
 	private View btFacebook,btTwitter,btSkip;
 	private ProgressDialog progressDialog;
 	private AlertDialog alertDialog;
 
     private TwitterUtil.LoginManager twitterLogin;
     private FacebookLogin facebookLogin;
+    private boolean openingMainActivity = false;
 
     public static void logout(Context context)
     {
@@ -58,6 +52,7 @@ public class AccountActivity extends Activity {
             ((Activity)context).overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 	}
 
+    /*
     private void getHash()
     {
         try {
@@ -73,16 +68,12 @@ public class AccountActivity extends Activity {
         } catch (NoSuchAlgorithmException e) {
         }
     }
-
+    */
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-        if (KesApplication.enableHockey) {
-            CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
-        }
-        getHash();
 		this.setContentView(R.layout.activity_login);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
 		facebookLogin = new FacebookLogin(this, fbCallback);
@@ -103,13 +94,17 @@ public class AccountActivity extends Activity {
 		.setTitle(R.string.error)
 		.setPositiveButton(R.string.ok, null)
 		.create();
+        HockeyUtil.onMainActivityCreate(this);
 	}
 
 
 	private boolean checkRegistered()
 	{
+        if (openingMainActivity)
+            return true;
         if (KES.shared().getAccountManager().getUser().isRegistered())
 		{
+            openingMainActivity = true;
 			MainActivity.open(this);
 			return true;
 		}
@@ -121,27 +116,34 @@ public class AccountActivity extends Activity {
 	public void onStart()
 	{
 		super.onStart();
+        openingMainActivity = false;
         Analytics.activityStarted(this);
         if (!LandingActivity.hasGoogleAccount(this))
         {
             finish();
             return;
         }
-
+        Log.d(TAG,"OnStart checkRegistered()");
         if (checkRegistered())
             return;
         KES.shared().getAccountManager().registerListener(accountListener);
 	}
-	
-	@Override
+
+    @Override
 	public void onStop()
 	{
 		super.onStop();
         Analytics.activityStopped(this);
         KES.shared().getAccountManager().unRegisterListener(accountListener);
 	}
-	
-	OnClickListener onClickListener = new OnClickListener() {
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        HockeyUtil.onMainActivityPause();
+    }
+
+    OnClickListener onClickListener = new OnClickListener() {
 
 		@Override
 		public void onClick(View v) {
@@ -161,6 +163,9 @@ public class AccountActivity extends Activity {
                 }
             } else if (v == btSkip)
             {
+                if (openingMainActivity)
+                    return;
+                openingMainActivity = true;
                 PreferenceUtils.setActiveFragment(AccountActivity.this, NavigationBar.Attached.Feed.ordinal());
                 PreferenceUtils.setSkipLogin(AccountActivity.this, true);
                 MainActivity.open(AccountActivity.this);
@@ -234,6 +239,7 @@ public class AccountActivity extends Activity {
         @Override
         public void onUserChanged(User user) {
             progressDialog.dismiss();
+            Log.d(TAG, "OnUserChanged checkRegistered()");
             checkRegistered();
         }
 

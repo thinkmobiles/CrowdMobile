@@ -120,6 +120,13 @@ public class DataFetcher {
 			this.httpStatus = httpStatus;
         }
 
+        public KESNetworkException(int httpStatus, int errorcode, String errormessage) {
+            this.httpStatus = httpStatus;
+            error = new ModelFactory.ServerError();
+            error.code = errorcode;
+            error.message = errormessage;
+        }
+
         public KESNetworkException(int httpStatus, String response)
         {
             this.httpStatus = httpStatus;
@@ -137,7 +144,7 @@ public class DataFetcher {
 		{
 			String result = "";
 			if (httpStatus != 0)
-				result = "HTTP " + Integer.toString(httpStatus);
+				result = "HTTP " + Integer.toString(httpStatus) + " ";
 			if (error != null && error.message != null)
 				result += error.message;
 			return result;
@@ -154,11 +161,11 @@ public class DataFetcher {
 		HttpParams params = new BasicHttpParams();
 		// Set the timeout in milliseconds until a connection is established.
 		// The default value is zero, that means the timeout is not used. 
-		int timeoutConnection = 10000;
+		int timeoutConnection = 20000;
 		HttpConnectionParams.setConnectionTimeout(params, timeoutConnection);
 		// Set the default socket timeout (SO_TIMEOUT)
 		// in milliseconds which is the timeout for waiting for data.
-		int timeoutSocket = 10000;
+		int timeoutSocket = 20000;
 		HttpConnectionParams.setSoTimeout(params, timeoutSocket);
 		HttpProtocolParams.setUserAgent(params, defaultUserAgent);
 
@@ -363,11 +370,17 @@ public class DataFetcher {
 
 			DefaultHttpClient client = getHttpClient();
             try {
+                /*
+				if (type == RequestType.POST) {
+                    throw new KESNetworkException(500, 0, "Timeout");
+                } else
+                */
                 response = client.execute(request);
             } catch (IOException e) {
 				if (LOG_ERRORS)
                 	e.printStackTrace();
-                throw new KESNetworkException(KESNetworkException.CODE_ClientProtocolException, 0);
+
+                throw new KESNetworkException(0, 0, "Connection error");
             }
 
 

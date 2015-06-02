@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.crowdmobile.kesapp.util.BadgeUtils;
+import com.crowdmobile.kesapp.util.HockeyUtil;
 import com.crowdmobile.kesapp.util.PreferenceUtils;
 import com.crowdmobile.kesapp.widget.NavigationBar;
 import com.kes.AccountManager;
@@ -34,7 +35,6 @@ import com.urbanairship.UAirship;
 import com.urbanairship.analytics.Analytics;
 import com.urbanairship.google.PlayServicesUtils;
 
-import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.UpdateManager;
 
 import java.io.BufferedReader;
@@ -76,10 +76,12 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
         @Override
         public void onUserChanged(User user) {
-            if (mCredit != null)
-                mCredit.setTitle(Integer.toString(KES.shared().getAccountManager().getUser().balance));
-            navigationBar.setUnreadCount(user.unread_count);
-            BadgeUtils.setBadge(MainActivity.this,user.unread_count);
+            if (user != null) {
+                if (mCredit != null)
+                    mCredit.setTitle(Integer.toString(user.balance));
+                navigationBar.setUnreadCount(user.unread_count);
+                BadgeUtils.setBadge(MainActivity.this, user.unread_count);
+            }
         }
 
         @Override
@@ -104,12 +106,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         }
 		super.onCreate(savedInstanceState);
-        KES.shared().getBillingManager().init(getString(R.string.signature_public),getResources().getStringArray(R.array.credits_list));
+        KES.shared().getBillingManager().init(AppCfg.SIGNATURE_PUBLIC,getResources().getStringArray(R.array.credits_list));
 
-        if (KesApplication.enableHockey) {
-            CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
-            UpdateManager.register(this, KesApplication.HOCKEYAPP_ID);
-        }
        // if (true)
        //     throw new IllegalStateException("HockeyAPP Crash test onCreate2()");
         notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
@@ -149,6 +147,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		setContentView(R.layout.activity_main);
 		*/
 //        mHandler.postDelayed(refreshTread, 10000);
+        HockeyUtil.onMainActivityCreate(this);
 	}
 
     private void navigate(Intent intent)
@@ -172,9 +171,9 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        KES.shared().getAccountManager().unRegisterListener(accountListener);
         mHandler.removeCallbacksAndMessages(null);
         UpdateManager.unregister();
-        KES.shared().getAccountManager().unRegisterListener(accountListener);
     }
 
 
@@ -284,13 +283,12 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     @Override
     protected void onResume() {
         super.onResume();
-        if (KesApplication.enableHockey)
-            CrashManager.register(this, KesApplication.HOCKEYAPP_ID);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        HockeyUtil.onMainActivityPause();
         if (navigationBar != null)
             navigationBar.saveState();
     }
