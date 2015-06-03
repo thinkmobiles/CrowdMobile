@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/item_retry_background" />
+    <corners android:radius="@dimen/item_corner_radius"/>
+</shape>

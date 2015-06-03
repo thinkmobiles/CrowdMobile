@@ -5,6 +5,15 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
+    signingConfigs {
+        release {
+            storeFile file("/home/gadza/AndroidStudioProjects/KES/clientkeystore")
+            storePassword "crowdmobile"
+            keyAlias "release"
+            keyPassword "BostonGiraffe5566"
+        }
+    }
+
     defaultConfig {
         applicationId 'com.crowdmobile.kesapp'
         minSdkVersion 15
@@ -18,6 +27,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
@@ -25,14 +35,34 @@ android {
     productFlavors {
         bongothinks {
             applicationId 'com.crowdmobile.bongothinks'
-            versionCode 5
-            versionName "0.3"
+            versionCode 6
+            versionName "0.9"
         }
         passionforfashion {
             applicationId 'com.crowdmobile.p4f'
             versionCode 1
             versionName "0.1"
         }
+    }
+
+    android.applicationVariants.all { variant ->
+        def appName
+        if (project.hasProperty("applicationName")) {
+            appName = applicationName
+            } else {
+            appName = parent.name
+            }
+
+        variant.outputs.each { output ->
+        def newApkName
+        //If there's no ZipAlign task it means that our artifact will be unaligned and we need to mark it as such.
+        if (output.zipAlign) {
+        newApkName = "${appName}-${output.baseName}-${variant.versionName}.apk"
+        } else {
+        newApkName = "${appName}-${output.baseName}-${variant.versionName}-unaligned.apk"
+                }
+            output.outputFile = new File(output.outputFile.parent, newApkName)
+            }
     }
 }
 

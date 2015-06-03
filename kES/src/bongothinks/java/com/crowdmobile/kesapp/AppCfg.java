@@ -5,8 +5,8 @@ package com.crowdmobile.kesapp;
 * */
 public class AppCfg {
 
-    private static final String BASE_URL_STAGING = "http://kes-middletier-staging.elasticbeanstalk.com/api/bongothinks/v1/";
-    private static final String BASE_URL_PROD = "http://kes-middletier-prod.elasticbeanstalk.com/api/bongothinks/v1.1/";
+    private static final String BASE_URL_STAGING = "http://kes-middletier-staging.elasticbeanstalk.com/api/bongothinks/v1.1/";
+    private static final String BASE_URL_PROD = "https://middletier.globalaqa.com/api/bongothinks/v1.1/";
 
     public static final String BASE_URL = BASE_URL_STAGING;
 
@@ -14,8 +14,8 @@ public class AppCfg {
 
     public static final String HOCKEYAPP_ID = "7f03f42aa9fceb200d7f931d3d2f49f8";
 
-    public static final String TwitterKey = "nyINz3dkx2ruwRBByQYCmZ6Z5";
-    public static final String TwitterSecret = "dFudvGHbDBEkSjdmmk5oCIrYNLDgWxyatdjmQODZUsjHTpTF3V";
+    public static final String TwitterKey = "aM5iuM7nhCyyMTmNtRKHbaxbD";
+    public static final String TwitterSecret = "OBjkkelLjBuORQQYSKa9rQqgYCryoT8orSeYKec4SDSHGtDS8q";
 
 }
 

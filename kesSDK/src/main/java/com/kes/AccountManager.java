@@ -17,7 +17,6 @@ public class AccountManager {
     protected static final String TOKEN_NULL = "token can't be null";
 
     public interface AccountListener {
-        public void onUserLoadError(Exception e);
         public void onUserChanged(User user);
         public void onLoggingIn();
         public void onLoginFail(Exception e);
@@ -172,6 +171,7 @@ public class AccountManager {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         mKES.getFeedManager().feed(FeedManager.FeedType.My).clear();
+        mKES.getFeedManager().clearPendingDB();
         PreferenceUtil.clearUser(mKES.getContext());
         user = null;
         postUserChanged();

@@ -15,6 +15,7 @@ public class ResultWrapper {
     protected boolean suppressError = false;
     protected int questionID;
     protected int commentID;
+    protected boolean isPrivate;
     protected User user;
     protected PhotoComment photoComment;
 }

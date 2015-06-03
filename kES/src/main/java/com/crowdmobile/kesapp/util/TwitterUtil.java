@@ -37,7 +37,7 @@ public class TwitterUtil {
 
         void onSuccess(String token, String secret, long uid);
 
-        void onFailed();
+        void onFailed(String message);
 
         void onCanceled();
     }
@@ -103,6 +103,7 @@ public class TwitterUtil {
                     return;
                 }
                 tokenTask = new AsyncTask<String, Void, AccessToken>() {
+
                     @Override
                     protected AccessToken doInBackground(String... params) {
                         AccessToken accessToken = null;
@@ -121,7 +122,7 @@ public class TwitterUtil {
                                 twitter.setOAuthAccessToken(accessToken);
                                 callback.onSuccess(accessToken.getToken(), accessToken.getTokenSecret(), accessToken.getUserId());
                             } else {
-                                callback.onFailed();
+                                callback.onFailed("Login to twitter failed");
                             }
                         }
                     }
@@ -140,6 +141,7 @@ public class TwitterUtil {
                     try {
                         result = twitter.getOAuthRequestToken(callbackUrl);
                     } catch (TwitterException e) {
+                        e.printStackTrace();
                     }
                     return result;
                 }
@@ -150,7 +152,7 @@ public class TwitterUtil {
                     if (isCancelled())
                         callback.onCanceled();
                     if (requestToken == null)
-                        callback.onFailed();
+                        callback.onFailed("Can't connect to twitter");
                     else {
                         Intent intent = new Intent(activity, TwitterActivity.class);
                         intent.putExtra(TwitterActivity.AUTH_URL, requestToken.getAuthenticationURL());
@@ -165,7 +167,7 @@ public class TwitterUtil {
             if (requestCode == REQUESTCODE)
             {
                 if (resultCode == TwitterActivity.RESULT_ERROR) {
-                    callback.onFailed();
+                    callback.onFailed("Can't login");
                     return true;
                 }
                 if (resultCode == Activity.RESULT_CANCELED) {

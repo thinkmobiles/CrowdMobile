@@ -2,10 +2,8 @@ package com.crowdmobile.kesapp;
 
 import android.app.Application;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.crowdmobile.kesapp.util.HockeyUtil;
-import com.facebook.Settings;
 import com.kes.KES;
 import com.kes.KesConfigOptions;
 import com.urbanairship.AirshipConfigOptions;
@@ -25,8 +23,8 @@ public class KesApplication extends Application {
         HockeyUtil.init(this);
         AirshipConfigOptions options = AirshipConfigOptions.loadDefaultOptions(this);
         options.inProduction = false; //determines which app key to use
-        String hash = Settings.getApplicationSignature(this);
-        Log.d("HASH",hash);
+//        String hash = Settings.getApplicationSignature(this);
+//        Log.w("HASH", hash);    //2BYxpeK18kZzvsdogYqHJiLCK2M
         // Take off initializes the services
         UAirship.takeOff(this, options, new UAirship.OnReadyCallback() {
             @Override

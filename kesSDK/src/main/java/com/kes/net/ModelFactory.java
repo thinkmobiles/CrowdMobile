@@ -195,4 +195,16 @@ public class ModelFactory {
         return gson.toJson(result);
     }
 
+    static class PrivateWrapper {
+        String auth_token;
+        boolean is_private;
+    }
+
+    public static String getPrivateJson(String token, boolean isPrivate) {
+        PrivateWrapper result = new PrivateWrapper();
+        result.auth_token = token;
+        result.is_private = isPrivate;
+        return gson.toJson(result);
+    }
+
 }

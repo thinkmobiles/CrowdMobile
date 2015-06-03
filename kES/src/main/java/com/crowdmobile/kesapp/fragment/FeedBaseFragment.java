@@ -408,6 +408,8 @@ public abstract class FeedBaseFragment extends Fragment {
             PhotoComment item = list.get(list.size() - 1);
             if (item == null)
                 return;
+            if (item.status != PhotoComment.PostStatus.Posted)
+                return;
             if (item.status == PhotoComment.PostStatus.Posted && KES.shared().getFeedManager().feed(getFeedType()).isLastItem(item.getID(getFeedType())))
                 return;
             adapter.setFooterLoading(true);
@@ -548,7 +550,11 @@ public abstract class FeedBaseFragment extends Fragment {
             }
 
             //Insert pending items
-
+            for (int j = 0; j < indexedLocal.size(); j++)
+            {
+                list.add(0,indexedLocal.valueAt(j));
+                adapter.notifyItemInserted(0);
+            }
             //Insert posted items
             boolean insertedToTop = false;
             int startSearch = 0;
@@ -575,6 +581,7 @@ public abstract class FeedBaseFragment extends Fragment {
                 if (startSearch == 0)
                     insertedToTop = true;
                 list.add(startSearch, newItem);
+                adapter.notifyItemInserted(startSearch);
             }
 
             /*

@@ -58,6 +58,11 @@ class KesDB extends SQLiteOpenHelper {
 
     }
 
+    public void clearPending()
+    {
+        getWritableDatabase().delete(TABLE_PENDING, null,null);
+    }
+
     public void addPending(PhotoComment p)
     {
         ContentValues values = new ContentValues();
@@ -84,7 +89,7 @@ class KesDB extends SQLiteOpenHelper {
     }
 
     public void getAllPending(List<PhotoComment> result) {
-        String selectQuery = "SELECT * FROM " + TABLE_PENDING;
+        String selectQuery = "SELECT * FROM " + TABLE_PENDING + " ORDER BY " + KEY_ID + " DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery(selectQuery, null);

@@ -11,6 +11,7 @@ import java.io.IOException;
 class TaskOther extends NetworkExecutable<ResultWrapper> {
 	public static final String ACTION = TaskOther.class.getName();
     private static final String TAG_ACTIONTYPE = "action_type";
+    private static final String TAG_IS_PRIVATE = "is_private";
 
 	static void execute(Context context, String token, ResultWrapper.ActionType actionType, int questionid, int commentid)
 	{
@@ -21,6 +22,16 @@ class TaskOther extends NetworkExecutable<ResultWrapper> {
         intent.putExtra(TAG_COMMENT_ID,commentid);
 		NetworkService.execute(context, intent);
 	}
+
+    static void markAsPrivate(Context context, String token, int questionid, boolean isPrivate)
+    {
+        Intent intent = new Intent(ACTION);
+        intent.putExtra(TAG_TOKEN,token);
+        intent.putExtra(TAG_ACTIONTYPE, ResultWrapper.ActionType.MarkAsPrivate.ordinal());
+        intent.putExtra(TAG_QUESTION_ID,questionid);
+        intent.putExtra(TAG_IS_PRIVATE,isPrivate);
+        NetworkService.execute(context, intent);
+    }
 
     @Override
     protected ResultWrapper getResultWrapper() {
@@ -38,6 +49,7 @@ class TaskOther extends NetworkExecutable<ResultWrapper> {
         wrapper.actionType = ResultWrapper.ActionType.values()[extras.getInt(TAG_ACTIONTYPE)];
         wrapper.questionID = extras.getInt(TAG_QUESTION_ID);
         wrapper.commentID = extras.getInt(TAG_COMMENT_ID);
+        wrapper.isPrivate = extras.getBoolean(TAG_IS_PRIVATE);
         if (wrapper.actionType == ResultWrapper.ActionType.Report)
             NetworkAPI.report(token, wrapper.questionID);
         else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsRead) {
@@ -45,7 +57,7 @@ class TaskOther extends NetworkExecutable<ResultWrapper> {
             wrapper.user = NetworkAPI.getAccount(token);
         }
         else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsPrivate)
-            wrapper.photoComment = NetworkAPI.markAsPrivate(token, wrapper.questionID);
+            wrapper.photoComment = NetworkAPI.markAsPrivate(token, wrapper.questionID,wrapper.isPrivate);
 	}
 	
 }

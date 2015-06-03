@@ -13,6 +13,8 @@
     </plurals>
 
  	<string name="fb_app_id">760239814072784</string>
+
+
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
@@ -36,7 +38,7 @@
     <string name="fb_login">Connecting to Facebook</string>
     <string name="twitter_login">Connecting to Twitter</string>
     <string name="connecting">Connecting</string>
-    <string name="error_fb_session">Error initializing facebook session</string>
+    <string name="error_fb_login">Facebook connection error</string>
     <string name="error_kes_login">Login to KES failed</string>
     <string name="error_fb_nouserinfo">Could not retrieve user info</string>
     
@@ -141,7 +143,7 @@
     </string-array>
 
     <!-- Twitter -->
-    <string name="callback_url_host">oauth</string>
-    <string name="callback_url_scheme">twitterlogin</string>
+    <string name="callback_url_scheme">oauth</string>
+    <string name="callback_url_host">twitterlogin</string>
 
 </resources>

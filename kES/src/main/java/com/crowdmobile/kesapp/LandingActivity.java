@@ -4,8 +4,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -38,13 +36,7 @@ public class LandingActivity extends Activity {
         setContentView(R.layout.activity_landing);
         tvVersion = (TextView)findViewById(R.id.tvVersion);
         String s = "";
-        try {
-            PackageInfo pInfo = null;
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            s = "Version " + pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            s = "Unknown version";
-        }
+        s = "Version " + BuildConfig.VERSION_NAME;
         if (BuildConfig.DEBUG)
             s += "\r\nDEMO / Staging";
         tvVersion.setText(s);

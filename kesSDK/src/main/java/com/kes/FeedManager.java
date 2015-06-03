@@ -195,30 +195,23 @@ public class FeedManager {
             boolean isLoaded = manager.isLoaded(feedWrapper.feedType);
             SparseArray<FeedCache> cache = manager.cacheOf(feedWrapper.feedType);
 
-            //return feed between two end points
-            int addCount = 0;
-            boolean foundFirst = false;
             for (int i = cache.size() - 1; i >= 0; i--)
             {
                 FeedCache item = cache.valueAt(i);
                 if (item.cacheConnected) {
                     dest.add(item.photoComment);
-                    addCount++;
                 } else
                     break;
             }
 
-            //Todo : re-enable below
-            //When commented, won't load myfeed if there are pending items - for testing purpose
-            if (addCount == 0)
-                return isLoaded;
+            if (!isLoaded)
+                return false;
 
             if (feedWrapper.feedType == FeedType.Public.My)
                 dest.addAll(0,manager.pending);
 
             return isLoaded;
         }
-
     }
 
     public void checkUnread()
@@ -324,10 +317,11 @@ public class FeedManager {
                 cacheOf(feedWrapper.feedType).get(feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType)).lastItem = true;
         }
 
+        boolean loaded = (feedWrapper.exception == null && feedWrapper.max_id == null);
         if (feedWrapper.feedType == FeedType.Public)
-            publicCacheLoaded = feedWrapper.exception == null;
+            publicCacheLoaded = loaded;
         else if (feedWrapper.feedType == FeedType.My)
-            myCacheLoaded = feedWrapper.exception == null;
+            myCacheLoaded = loaded;
 
         postChange(feedWrapper);
     }
@@ -389,7 +383,7 @@ public class FeedManager {
         p.is_private = isPrivate;
         if (picturePath != null)
             p.photo_url = "file://" + picturePath;
-        pending.add(p);
+        pending.add(0,p);
         mSession.getDB().addPending(p); //also sets id
         TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.getID(), question, picturePath, null, p.is_private);
         Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
@@ -398,6 +392,11 @@ public class FeedManager {
             tmp.onPosting(p);
         }
         tmp = null; //don't change, GC bug
+    }
+
+    protected void clearPendingDB()
+    {
+        mSession.getDB().clearPending(); //also sets id
     }
 
     private void updateItemInCache(PhotoComment photoComment)
@@ -468,7 +467,7 @@ public class FeedManager {
 
     public void markAsPrivate(int questionID,boolean isPrivate)
     {
-        TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.MarkAsPrivate, questionID, 0);
+        TaskOther.markAsPrivate(mSession.getContext(), mSession.getAccountManager().getToken(), questionID, isPrivate);
     }
 
     public void markAsRead(int questionID, int commentID)

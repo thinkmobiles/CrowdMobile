@@ -31,6 +31,7 @@ public class AccountActivity extends Activity {
     private TwitterUtil.LoginManager twitterLogin;
     private FacebookLogin facebookLogin;
     private boolean openingMainActivity = false;
+    private boolean isForeground = false;
 
     public static void logout(Context context)
     {
@@ -95,27 +96,32 @@ public class AccountActivity extends Activity {
 		.setPositiveButton(R.string.ok, null)
 		.create();
         HockeyUtil.onMainActivityCreate(this);
+        KES.shared().getAccountManager().registerListener(accountListener);
 	}
 
 
 	private boolean checkRegistered()
 	{
-        if (openingMainActivity)
+        if (openingMainActivity) {
+            Log.d(TAG, "already opening main activity");
             return true;
+        }
         if (KES.shared().getAccountManager().getUser().isRegistered())
 		{
-            openingMainActivity = true;
-			MainActivity.open(this);
+            openMainActivity();
 			return true;
 		}
-		else
-			return false;
+		else {
+            Log.d(TAG, "user is not registered");
+            return false;
+        }
 	}
 	
 	@Override
 	public void onStart()
 	{
 		super.onStart();
+        isForeground = true;
         openingMainActivity = false;
         Analytics.activityStarted(this);
         if (!LandingActivity.hasGoogleAccount(this))
@@ -123,18 +129,18 @@ public class AccountActivity extends Activity {
             finish();
             return;
         }
-        Log.d(TAG,"OnStart checkRegistered()");
+        Log.d(TAG, "OnStart checkRegistered()");
         if (checkRegistered())
             return;
-        KES.shared().getAccountManager().registerListener(accountListener);
 	}
 
     @Override
 	public void onStop()
 	{
+        Log.d(TAG, "onStop()");
 		super.onStop();
+        isForeground = false;
         Analytics.activityStopped(this);
-        KES.shared().getAccountManager().unRegisterListener(accountListener);
 	}
 
     @Override
@@ -165,26 +171,35 @@ public class AccountActivity extends Activity {
             {
                 if (openingMainActivity)
                     return;
-                openingMainActivity = true;
                 PreferenceUtils.setActiveFragment(AccountActivity.this, NavigationBar.Attached.Feed.ordinal());
                 PreferenceUtils.setSkipLogin(AccountActivity.this, true);
-                MainActivity.open(AccountActivity.this);
+                openMainActivity();
             }
 
 		}
 		
 	};
 
+    private void openMainActivity()
+    {
+        if (openingMainActivity)
+            return;
+        openingMainActivity = true;
+        MainActivity.open(AccountActivity.this);
+    }
+
     FacebookLogin.FacebookCallback fbCallback = new FacebookLogin.FacebookCallback() {
         @Override
         public void onFail(FacebookLogin.Fail fail) {
-            progressDialog.dismiss();
-            if (fail == FacebookLogin.Fail.SessionOpen)
-                showError(R.string.error_fb_session);
+            Log.d(TAG,"Facebook fail");
+            progressDialog.hide();
+            //if (fail == FacebookLogin.Fail.SessionOpen)
+            showError(R.string.error_fb_login);
         }
 
         @Override
         public void onUserInfo(FacebookLogin.UserInfo userInfo) {
+            Log.d(TAG,"Facebook success");
             KES.shared().getAccountManager().loginFacebook(userInfo.token,userInfo.uid);
         }
     };
@@ -218,9 +233,10 @@ public class AccountActivity extends Activity {
         }
 
         @Override
-        public void onFailed() {
+        public void onFailed(String message) {
             //twitterLogin.loadUrl("about:blank");
             progressDialog.hide();
+            alertDialog.setMessage(message);
             alertDialog.show();
         }
 
@@ -232,25 +248,28 @@ public class AccountActivity extends Activity {
 
     AccountManager.AccountListener accountListener = new AccountManager.AccountListener() {
         @Override
-        public void onUserLoadError(Exception e) {
-
-        }
-
-        @Override
         public void onUserChanged(User user) {
-            progressDialog.dismiss();
-            Log.d(TAG, "OnUserChanged checkRegistered()");
-            checkRegistered();
+            Log.d(TAG,"onUserChanged");
+            Log.d(TAG,user.first_name);
+            Log.d(TAG,user.auth_token);
+            Log.d(TAG,user.toString());
+
+            if (user != null && user.isRegistered() && isForeground)
+            {
+                progressDialog.hide();
+                openMainActivity();
+            }
         }
 
         @Override
         public void onLoggingIn() {
-
+            progressDialog.setMessage(getString(R.string.twitter_login));
+            progressDialog.show();
         }
 
         @Override
         public void onLoginFail(Exception e) {
-            progressDialog.dismiss();
+            progressDialog.hide();
             if (e instanceof DataFetcher.KESNetworkException)
                 alertDialog.setMessage(((DataFetcher.KESNetworkException)e).getError());
             alertDialog.show();
@@ -275,6 +294,7 @@ public class AccountActivity extends Activity {
         facebookLogin.release();
 		progressDialog.dismiss();
 		alertDialog.dismiss();
+        KES.shared().getAccountManager().unRegisterListener(accountListener);
 		super.onDestroy();
 	}
 

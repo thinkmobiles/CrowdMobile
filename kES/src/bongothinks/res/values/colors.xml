@@ -52,7 +52,9 @@
     <item name="item_separator" type="color">#eee</item>
     <item name="item_background" type="color">#fff</item>
     <item name="item_background_disabled" type="color">#aaa</item>
-
+    <item name="item_retry_background" type="color">#afff</item>
+    <item name="item_retry_font" type="color">#096fc2</item>
+d
     <!-- Gallery -->
     <item name="gallery_title_font" type="color">#808080</item>
     <item name="gallery_background" type="color">#fff</item>

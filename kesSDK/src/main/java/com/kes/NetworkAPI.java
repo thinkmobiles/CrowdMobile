@@ -149,10 +149,10 @@ public class NetworkAPI {
         DataFetcher.requestAction(url, RequestType.DELETE, null,null, postData);
     }
 
-    protected static PhotoComment markAsPrivate(String token, int id) throws DataFetcher.KESNetworkException, InterruptedException
+    protected static PhotoComment markAsPrivate(String token, int id, boolean isPrivate) throws DataFetcher.KESNetworkException, InterruptedException
     {
         String url = com.kes.net.ServerNavigator.markAsPrivate(id);
-        String postData = ModelFactory.getTokenJson(token);
+        String postData = ModelFactory.getPrivateJson(token,isPrivate);
         String result = DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
         return ModelFactory.getPhotoComment(result);
     }

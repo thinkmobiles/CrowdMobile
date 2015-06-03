@@ -70,11 +70,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
     AccountManager.AccountListener accountListener = new AccountManager.AccountListener() {
         @Override
-        public void onUserLoadError(Exception e) {
-
-        }
-
-        @Override
         public void onUserChanged(User user) {
             if (user != null) {
                 if (mCredit != null)
@@ -106,6 +101,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         }
 		super.onCreate(savedInstanceState);
+        HockeyUtil.onMainActivityCreate(this);
+
         KES.shared().getBillingManager().init(AppCfg.SIGNATURE_PUBLIC,getResources().getStringArray(R.array.credits_list));
 
        // if (true)
@@ -147,7 +144,6 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		setContentView(R.layout.activity_main);
 		*/
 //        mHandler.postDelayed(refreshTread, 10000);
-        HockeyUtil.onMainActivityCreate(this);
 	}
 
     private void navigate(Intent intent)
