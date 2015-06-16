@@ -21,7 +21,7 @@ public class NewsFeedFragment extends FeedBaseFragment {
     @Override
     public void onItemViewed(PhotoComment p) {
         //ignore
-        //p.markAsRead(Session.getInstance(getActivity()).getFeedManager());
+        p.markAsRead();
     }
 
     @Override

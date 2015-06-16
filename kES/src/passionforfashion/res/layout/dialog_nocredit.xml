@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_margin="@dimen/activity_horizontal_margin"
+    android:id="@+id/accessFragment"
+    android:background="@color/login_background"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_access_error"
+        android:scaleType="fitCenter"
+        android:paddingTop="@dimen/access_iconpaddingside"
+        android:paddingBottom="@dimen/access_iconpaddingside"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:padding="@dimen/access_cardmargin"
+        android:id="@+id/tvNocreditMessage"
+        android:gravity="center_horizontal"
+        android:text="@string/nocredit_message"
+        android:textSize="@dimen/access_titletext"
+        android:textColor="@color/access_font"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

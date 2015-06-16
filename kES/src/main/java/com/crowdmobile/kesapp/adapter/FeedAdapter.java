@@ -71,7 +71,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
-        int itemPosition = -1;
+        public int itemID;
         int viewType;
         View itemCard;
         TextView tvTimeQuestion;
@@ -179,13 +179,23 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         @Override
         public void onClick(View v) {
             ItemHolder holder = (ItemHolder)v.getTag();
-            PhotoComment p = list.get(holder.itemPosition);
+            PhotoComment p = findByID(holder.itemID);
+            if (p == null)
+                return;
             if (!p.isUnread())
                 return;
             listener.onItemViewed(p);
             holder.backgroundAnimator.start();
         }
     };
+
+    private PhotoComment findByID(int id)
+    {
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i).getID(feedType) == id)
+                return list.get(i);
+        return null;
+    }
 
     @Override
     public int getItemViewType(int position) {
@@ -231,8 +241,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             return;
         }
 
-        holder.itemPosition = i;
         PhotoComment item = list.get(i);
+        holder.itemID = item.getID(feedType);
         holder.itemCard.setTag(holder);
 
         /*
@@ -252,6 +262,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         holder.imgOpenShare.setTag(item.share_url);
 
         if (item.status == PhotoComment.PostStatus.Posted) {
+            /*
             String elapsedStr = null;
             long elapsed = (System.currentTimeMillis() - item.created_at) / 1000;
             int days = (int) (elapsed / 86400);
@@ -267,6 +278,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                     elapsedStr = String.format(resources.getString(R.string.timeformat_min), min);
             }
             holder.tvTimeQuestion.setText(elapsedStr);
+            */
+            holder.tvTimeQuestion.setText(R.string.feed_question);
             holder.tvTimeQuestion.setVisibility(View.VISIBLE);
         }
         else if (item.status == PhotoComment.PostStatus.Pending) {

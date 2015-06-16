@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/credit_background"
     android:orientation="vertical"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
@@ -8,13 +7,13 @@
         android:layout_marginLeft="@dimen/credit_padding"
         android:layout_marginRight="@dimen/credit_padding"
         android:layout_marginTop="@dimen/credit_padding"
-        android:background="@color/credit_card_background"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
         android:layout_height="0px"
         android:layout_above="@+id/ivShopFooter">
         <LinearLayout
+            android:background="@color/credit_card_background"
             android:padding="@dimen/credit_title_padding"
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -48,7 +47,6 @@
             </LinearLayout>
             <ImageView
                 android:layout_gravity="bottom"
-                android:src="@drawable/ic_checkout_logo"
                 android:adjustViewBounds="true"
                 android:layout_weight="1"
                 android:layout_width="0px"
@@ -121,10 +119,9 @@
     <ImageView
         android:id="@+id/ivShopFooter"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/shop_footer"
         android:adjustViewBounds="true"
         android:layout_width="@dimen/credit_bottomicon_width"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:scaleType="fitStart" />
     <RelativeLayout
         android:visibility="invisible"
@@ -133,8 +130,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <ImageView
+            android:src="@drawable/ic_shop_credit_icon"
             android:layout_gravity="bottom"
-            android:src="@drawable/ic_checkout_logo"
             android:adjustViewBounds="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

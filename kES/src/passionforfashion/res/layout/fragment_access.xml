@@ -11,7 +11,7 @@
         android:layout_weight="1">
         <ImageView
             android:layout_centerInParent="true"
-            android:src="@drawable/ic_access_bongo"
+            android:src="@drawable/ic_access_error"
             android:scaleType="fitCenter"
             android:paddingLeft="@dimen/access_iconpaddingside"
             android:paddingRight="@dimen/access_iconpaddingside"

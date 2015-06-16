@@ -75,7 +75,7 @@
                     <ImageView
                         android:layout_alignParentLeft="true"
                         android:id="@+id/imgCamera"
-                        android:src="@drawable/ic_post_add_image_active"
+                        android:src="@drawable/ic_camera"
                         android:padding="@dimen/compose_buttonpadding"
                         android:layout_width="@dimen/compose_buttonheight"
                         android:layout_height="@dimen/compose_buttonheight" />

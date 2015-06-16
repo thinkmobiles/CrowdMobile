@@ -81,6 +81,8 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
 
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
                 NetworkAPI.getFeed(token, false, wrapper.max_id, wrapper.since_id, wrapper.page_size, filter, wrapper.tags);
+
+
         //Thread.sleep(1000);
         //TODO:remove,debug stuff, removes answers
         /*
@@ -92,11 +94,29 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
                     photoCommentWrapper.photo_comments[i].responses = null;
             }
         }
+
         */
+
         //TODO:---------------------
 
+
+
      //   Thread.sleep(2000);
+
         wrapper.photoComments = photoCommentWrapper.photo_comments;
+        /*
+        if (wrapper.feedType == FeedManager.FeedType.Public && wrapper.max_id == null)
+        {
+            if (counter++ == 1)
+            {
+                int size = photoCommentWrapper.photo_comments.length - 1;
+                wrapper.photoComments = new PhotoComment[size];
+                wrapper.photoComments[0] = photoCommentWrapper.photo_comments[0];
+                for (int i = 1; i < size; i++)
+                    wrapper.photoComments[i] = photoCommentWrapper.photo_comments[i + 1];
+            }
+        }
+        */
 	}
 	
 }

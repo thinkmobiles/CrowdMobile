@@ -15,8 +15,8 @@
  	<string name="fb_app_id">760239814072784</string>
 
 
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
 
     <!-- No account -->
     <string name="noaccount_title">Ops!</string>
@@ -75,6 +75,7 @@
     <string name="feed_error_btn">Retry</string>
 
     <!-- Feed -->
+    <string name="feed_question">Question:</string>
     <string name="feed_answer">Answer:</string>
     <string name="feed_posting">Posting question...</string>
     <string name="share_title">Share question</string>
@@ -113,6 +114,8 @@
     <string name="credit_message">Hurry up and feed him bananas so he can answer more questions!</string>
     <string name="credit_itemname">\u0020/ Banana</string>
     <string name="btn_buy">BUY</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Would you like to feed him bananas so he can answer more questions?</string>
 
     <!-- Compose -->
     <string name="compose_invalidchar">Unsupported character</string>

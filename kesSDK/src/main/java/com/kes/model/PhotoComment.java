@@ -60,26 +60,26 @@ public class PhotoComment {
     //Temporary variables
     public boolean reported = false;
 
-    private void setAsRead(FeedManager feedManager)
+    private void setAsRead(FeedManager feedManager,boolean value)
     {
         if (responses == null || responses.length == 0)
             return;
         for (int i = 0; i < responses.length; i++)
-            if (!responses[i].read) {
-                responses[i].read = true;
-                if (feedManager != null)
+            if (responses[i].read != value) {
+                responses[i].read = value;
+                if (feedManager != null && value)
                     feedManager.markAsRead(id, responses[i].id);
             }
     }
 
-    public void setAsRead()
+    public void setAsRead(boolean value)
     {
-        setAsRead(null);
+        setAsRead(null,value);
     }
 
     public void markAsRead()
     {
-        setAsRead(KES.shared().getFeedManager());
+        setAsRead(KES.shared().getFeedManager(), true);
     }
 
     public boolean isUnread()

@@ -121,6 +121,8 @@ public abstract class FeedBaseFragment extends Fragment {
         @Override
         public void report(PhotoComment p) {
             p.reported = true;
+            if (!KES.shared().getAccountManager().getUser().isRegistered())
+                return;
             KES.shared().getFeedManager().report(p.getID(getFeedType()));
         }
 
@@ -262,13 +264,14 @@ public abstract class FeedBaseFragment extends Fragment {
         return tag;
     }
 
+    /*
     //Test visible answers
     long lastTested = 0;
     private boolean hasUnread = false;
 
     private void testVisibleAnswers(boolean force) {
-        if (getFeedType() != FeedManager.FeedType.My)
-            return;
+        //if (getFeedType() != FeedManager.FeedType.My)
+        //    return;
         if (list.size() == 0)
             return;
         if (force)
@@ -330,26 +333,32 @@ public abstract class FeedBaseFragment extends Fragment {
     int firstUncoveredItem = -1;
     int lastUncoveredItem = -1;
 
+    private PhotoComment findByID(int id)
+    {
+        for (int i = 0; i < list.size(); i++)
+            if (list.get(i).getID(getFeedType()) == id)
+                return list.get(i);
+        return null;
+    }
+
     private void findUncoveredItems()
     {
         if (list.size() == 0)
             return;
         firstUncoveredItem = -1;
-        firstUncoveredItem = -1;
         lastUncoveredItem = -1;
         boolean firstUnset = true;
+
         firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
         int lastVisibleItem = mLayoutManager.findLastVisibleItemPosition();
-
-        if (firstVisibleItem >= 0) {
-            int lastItem = mLayoutManager.findLastVisibleItemPosition() + 1;
+        if (firstVisibleItem != RecyclerView.NO_POSITION) {
             for (int i = firstVisibleItem; i < lastVisibleItem; i++) {
                 FeedAdapter.ItemHolder itemHolder = (FeedAdapter.ItemHolder)rvFeed.getChildViewHolder(mLayoutManager.findViewByPosition(i));
                 if (itemHolder.answerBackground == null ||
                         !itemHolder.answerBackground.getLocalVisibleRect(scrollBounds) ||
                         itemHolder.answerBackground.getHeight() != scrollBounds.height())
                     continue;
-                PhotoComment p = list.get(i);
+                PhotoComment p = findByID(itemHolder.itemID);
                 if (p == null || !p.isUnread())
                     continue;
                 if (firstUnset) {
@@ -360,7 +369,7 @@ public abstract class FeedBaseFragment extends Fragment {
             }
         }
     }
-
+    */
 
     RecyclerView.OnScrollListener endlessRecyclerOnScrollListener = new RecyclerView.OnScrollListener() {
 
@@ -370,18 +379,29 @@ public abstract class FeedBaseFragment extends Fragment {
         int visibleItemCount, totalItemCount;
         private int current_page = 1;
 
+        /*
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                int tfirst = firstUncoveredItem;
+                int tlast = lastUncoveredItem;
+                findUncoveredItems();
+                Log.d("TAGXXXXXXXXXXXXXXX","ONSCROLLED");
+                if (tfirst != firstUncoveredItem || tlast != lastUncoveredItem)
+                    testVisibleAnswers(true);
+            }
+        }
+        */
+
+        int firstVisibleItem;
+
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
             visibleItemCount = recyclerView.getChildCount();
             totalItemCount = mLayoutManager.getItemCount();
-
-            int tfirst = firstUncoveredItem;
-            int tlast = lastUncoveredItem;
-            findUncoveredItems();
-
-            if (tfirst != firstUncoveredItem || tlast != lastUncoveredItem)
-                testVisibleAnswers(true);
+            firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
             /*
             if (loading) {
@@ -622,7 +642,7 @@ public abstract class FeedBaseFragment extends Fragment {
             else
                 accessViewHolder.setVisibility(View.GONE);
 
-            testVisibleAnswers(true);
+            //testVisibleAnswers(true);
             /*
             NavigationBar.Attached attached = ((MainActivity) getActivity()).getNavigationBar().getAttached();
             if ((attached == NavigationBar.Attached.Feed && getFeedType() == FeedManager.FeedType.Public) ||
@@ -673,8 +693,23 @@ public abstract class FeedBaseFragment extends Fragment {
         }
 
         @Override
-        public void onMarkAsPrivateResult(PhotoComment photoComment, Exception error) {
-
+        public void onMarkAsPrivateResult(PhotoComment p, Exception error) {
+            if (getFeedType() == FeedManager.FeedType.Public)
+            {
+                int id = p.getID(FeedManager.FeedType.Public);
+                int idx = -1;
+                for (int i = 0; i < list.size(); i++)
+                    if (list.get(i).getID(FeedManager.FeedType.Public) == id)
+                    {
+                        idx = i;
+                        break;
+                    }
+                if (p.is_private && idx >= 0)
+                {
+                    list.remove(idx);
+                    adapter.notifyItemRemoved(idx);
+                }
+            }
         }
 
         @Override
@@ -735,6 +770,11 @@ public abstract class FeedBaseFragment extends Fragment {
                 adapter.notifyItemMoved(first,newPosition);
             }
             adapter.notifyItemChanged(newPosition);
+        }
+
+        @Override
+        public void onInsufficientCredit() {
+
         }
 
     };
@@ -812,19 +852,19 @@ public abstract class FeedBaseFragment extends Fragment {
                 attached = NavigationBar.Attached.MyFeed;
             isVisibleToUser =
                     ((MainActivity) getActivity()).getNavigationBar().getAttached() == attached;
-            lastTested = 0;
-            testVisibleAnswers(true);
+            //lastTested = 0;
+            //testVisibleAnswers(true);
         }
     };
 
-
+/*
     Runnable rTestViewed = new Runnable() {
         @Override
         public void run() {
             testVisibleAnswers(false);
         }
     };
-
+*/
     @Override
     public void onDestroyView() {
         super.onDestroyView();

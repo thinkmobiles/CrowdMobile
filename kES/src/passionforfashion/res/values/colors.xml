@@ -10,11 +10,14 @@
     <item name="appTitleColor" type="color">#0000</item>
     <item name="colorPrimary" type="color">#0000</item>
 
-    <item name="questionFont" type="color">#555</item>
-    <item name="answerBackground" type="color">#0000</item>
-    <item name="answerFont" type="color">#555</item>
+    <item name="questionFont" type="color">#fff</item>
+    <item name="answerLayer" type="color">#4444</item>
+    <item name="questionHeaderBackground" type="color">#6111</item>
+    <item name="questionTextBackground" type="color">#8222</item>
+    <item name="answerHeaderBackground" type="color">#6111</item>
+    <item name="answerTextBackground" type="color">#8222</item>
+    <item name="answerFont" type="color">#fff</item>
 
-    <item name="appbackground" type="color">#0f0</item>
     <item name="apptextcolor" type="color">#444</item>
     <item name="apptextcolorhint" type="color">#ccc</item>
 
@@ -25,18 +28,18 @@
     <item name="bubblecolor" type="color">#000</item>
     <item name="bubbletextcolor" type="color">#fff</item>
 
-    <item name="unreadcountbackground" type="color">#fff</item>
-    <item name="unreadcounttext" type="color">#000</item>
+    <item name="unreadcountbackground" type="color">#ff004e</item>
+    <item name="unreadcounttext" type="color">#fff</item>
 
     <!-- Compose -->
     <item name="compose_background" type="color">#e3f1f5</item>
 
     <!-- Login -->
-    <item name="login_background" type="color">#e3f1f5</item>
+    <item name="login_background" type="color">#000</item>
     <item name="login_button_text" type="color">#fff</item>
     <item name="login_button_facebook" type="color">#3b5998</item>
     <item name="login_button_twitter" type="color">#33ccff</item>
-    <item name="login_skip_text" type="color">#517cb1</item>
+    <item name="login_skip_text" type="color">#fff</item>
 
     <!-- Not registered -->
     <item name="access_font" type="color">#000</item>
@@ -49,7 +52,6 @@
     <!-- Feed item -->
 
     <item name="item_unread" type="color">#800880de</item>
-    <item name="item_stripe" type="color">#0880de</item>
     <item name="item_separator" type="color">#eee</item>
     <item name="item_background" type="color">#fff</item>
     <item name="item_background_disabled" type="color">#aaa</item>
@@ -60,7 +62,7 @@
     <item name="gallery_item_background" type="color">#d8d8d8</item>
 
     <!-- Credit -->
-    <item name="credit_background" type="color">#e3f1f5</item>
+    <item name="credit_background" type="color">#0000</item>
     <item name="credit_card_background" type="color">#fff</item>
     <item name="credit_pricetextcolor" type="color">#bbb</item>
     <item name="credittextcolor" type="color">#555</item>

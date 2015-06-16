@@ -170,6 +170,8 @@ public class AccountManager {
     {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
+        if (user == null || !user.isRegistered())
+            return;
         mKES.getFeedManager().feed(FeedManager.FeedType.My).clear();
         mKES.getFeedManager().clearPendingDB();
         PreferenceUtil.clearUser(mKES.getContext());

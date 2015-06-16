@@ -9,20 +9,15 @@
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/itemCard"
-        android:layout_margin="@dimen/item_padding"
+        card_view:cardBackgroundColor="#0000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardElevation="4dp"
-        card_view:cardCornerRadius="@dimen/item_corner_radius">
+        card_view:cardElevation="0dp">
         <LinearLayout
             android:id="@+id/holderBackground"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/item_stripe_height"
-                android:background="@drawable/itemline"/>
             <include
                 android:id="@+id/itemTitle"
                 layout="@layout/item_title"/>
@@ -31,16 +26,12 @@
                 android:scaleType="centerCrop"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/item_separator_height"
-                android:background="@color/item_separator"/>
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <View
                     android:id="@+id/answerBackground"
-                    android:background="@drawable/item_answerbck"
+                    android:background="@color/answerLayer"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
                 <LinearLayout
@@ -49,13 +40,13 @@
                     android:layout_height="wrap_content">
                     <RelativeLayout
                         android:padding="@dimen/item_header_sidepadding"
-                        android:background="@color/answerBackground"
-                        android:layout_marginTop="@dimen/share_closed_height"
+                        android:background="@color/answerHeaderBackground"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <ImageView
                             android:id="@+id/imgAnswerLeft"
-                            android:src="@drawable/ic_feed_item_footer_icon"
+                            android:src="@drawable/ic_tabbar_myfeed"
+                            android:padding="3dp"
                             android:layout_width="@dimen/item_header_icon_height"
                             android:layout_height="@dimen/item_header_icon_height"/>
                         <TextView
@@ -74,7 +65,6 @@
                             android:id="@+id/imgAnswerCenter"
                             android:scaleType="fitXY"
                             android:adjustViewBounds="true"
-                            android:src="@drawable/ic_feed_item_footer_icon"
                             android:layout_width="@dimen/item_header_icon_height"
                             android:layout_height="wrap_content" />
                         <ImageView
@@ -82,16 +72,13 @@
                             android:id="@+id/imgAnswerRight"
                             android:scaleType="fitXY"
                             android:adjustViewBounds="true"
-                            android:src="@drawable/ic_feed_item_footer_icon"
                             android:layout_width="@dimen/item_header_icon_height"
                             android:layout_height="wrap_content" />
                     </RelativeLayout>
                     <TextView
                         android:id="@+id/tvAnswer"
-                        android:paddingLeft="@dimen/item_header_sidepadding"
-                        android:paddingRight="@dimen/item_header_sidepadding"
-                        android:paddingBottom="@dimen/item_header_sidepadding"
-                        android:background="@color/answerBackground"
+                        android:padding="@dimen/item_answer_text_padding"
+                        android:background="@color/answerTextBackground"
                         android:textColor="@color/answerFont"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />

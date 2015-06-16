@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -35,11 +36,20 @@ public class LandingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
         tvVersion = (TextView)findViewById(R.id.tvVersion);
+        boolean ds = false;
         String s = "";
         s = "Version " + BuildConfig.VERSION_NAME;
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
+            s += "\r\nDebug signature";
+            ds = true;
+        }
+        if (AppCfg.isStaging()) {
             s += "\r\nDEMO / Staging";
+            ds = true;
+        }
         tvVersion.setText(s);
+        if (ds)
+            tvVersion.setTextColor(Color.RED);
         mHandler = new Handler();
     }
 
@@ -47,7 +57,10 @@ public class LandingActivity extends Activity {
     protected void onStart() {
         super.onStart();
         Analytics.activityStarted(this);
-        mHandler.postDelayed(startSystem, 1500);
+        if (BuildConfig.DEBUG)
+            mHandler.postDelayed(startSystem, 500);
+        else
+            mHandler.postDelayed(startSystem, 1500);
     }
 
     @Override

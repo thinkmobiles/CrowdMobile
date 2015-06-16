@@ -278,6 +278,7 @@ public class BillingService extends Service {
         return creditItems;
     }
 
+    /*
     public void refundAll(final IabHelper.OnConsumeMultiFinishedListener l){
         iabHelper.queryInventoryAsync(new IabHelper.QueryInventoryFinishedListener() {
             @Override
@@ -299,7 +300,7 @@ public class BillingService extends Service {
             }
         });
     }
-
+    */
     public void buyCredits(Activity activity, String productId){
         if (status != BillingManager.BillingStatus.Idle)
             return;

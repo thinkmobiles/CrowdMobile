@@ -1,9 +1,11 @@
 package com.crowdmobile.kesapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -12,6 +14,7 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,6 +61,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     ViewPager viewPager;
     ReaderViewPagerTransformer pagerTransformer;
     NotificationManager notificationManager;
+    AlertDialog noCreditDialog = null;
 
 	public static void open(Context context)
 	{
@@ -72,6 +76,11 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         @Override
         public void onUserChanged(User user) {
             if (user != null) {
+                if (!user.isRegistered())
+                {
+                    AccountActivity.logout(MainActivity.this);
+                    return;
+                }
                 if (mCredit != null)
                     mCredit.setTitle(Integer.toString(user.balance));
                 navigationBar.setUnreadCount(user.unread_count);
@@ -271,7 +280,41 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 
         @Override
         public void onPostResult(PhotoComment photoComment, Exception error) {
+        }
 
+        @Override
+        public void onInsufficientCredit() {
+            if (noCreditDialog != null)
+                return;
+            LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_nocredit,null);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+
+            // set title
+            alertDialogBuilder.setTitle(R.string.credit_info);
+
+            // set dialog message
+            alertDialogBuilder
+                    .setView(dialogView)
+                    .setCancelable(false)
+                    .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            navigationBar.navigateTo(NavigationBar.Attached.Checkout);
+                            noCreditDialog = null;
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            noCreditDialog = null;
+                        }
+                    });
+
+            // create alert dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+
+            // show it
+            alertDialog.show();
         }
 
     };
@@ -299,10 +342,11 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
         if (id == R.id.action_crediticon) {
+            /*
             Intent intent = new Intent(this,MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-
+            */
             //MainActivity.open(this);
             /*
             if (facebookUtil == null)

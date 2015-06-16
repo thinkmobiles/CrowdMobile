@@ -16,7 +16,7 @@
             <ImageView
                 android:id="@+id/imgTimeQuestion"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_feed_item_header_timestamp"
+                android:src="@drawable/ic_feed_item_header_icon"
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 android:layout_width="@dimen/item_header_icon_height"

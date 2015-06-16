@@ -4,7 +4,12 @@ package com.crowdmobile.kesapp;
 
 public class AppCfg {
 
-//    private static final String BASE_URL_STAGING = "http://kes-middletier-staging.elasticbeanstalk.com/api/bongothinks/v1/";
+    public static boolean isStaging()
+    {
+        return BASE_URL != BASE_URL_PROD;
+    }
+
+    //    private static final String BASE_URL_STAGING = "http://kes-middletier-staging.elasticbeanstalk.com/api/bongothinks/v1/";
     private static final String BASE_URL_PROD = "https://middletier.globalaqa.com/api/passionforfashion/v1.1";
 
     public static final String BASE_URL = BASE_URL_PROD;

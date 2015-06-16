@@ -17,7 +17,7 @@ public class CreditItem implements Comparable<CreditItem> {
             this.quantity = 1;
         else
             this.quantity = Integer.valueOf(productId.substring(7));
-        this.price = details.getPriceMicros() / 1000000;
+        this.price = (double)details.getPriceMicros() / 1000000;
         this.currency = details.getCurrency();
     }
 

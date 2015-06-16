@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.kes.model.PhotoComment;
+import com.kes.net.DataFetcher;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ public class FeedManager {
         public void onMarkAsPrivateResult(PhotoComment photoComment, Exception error);
         public void onPosting(PhotoComment photoComment);
         public void onPostResult(com.kes.model.PhotoComment photoComment, Exception error);
+        public void onInsufficientCredit();
     }
 
 
@@ -237,9 +239,10 @@ public class FeedManager {
 
         //If there is anything in the cache with higher ID than top of the feed, remove it
         if (feedWrapper.max_id == null && commentsLength > 0 && cache.size() > 0) {
-            int highestID = feedWrapper.photoComments[0].getID(feedWrapper.feedType);
+
+            int lowestID = feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType);
             for (int l = cache.size() -1; l >= 0; l--)
-                if (cache.valueAt(l).photoComment.getID(feedWrapper.feedType) > highestID)
+                if (cache.valueAt(l).photoComment.getID(feedWrapper.feedType) > lowestID)
                     cache.removeAt(l);
         }
 
@@ -293,7 +296,7 @@ public class FeedManager {
         //Safety feature : mark all public feed items as read to prevent UI from taking care of it
         if (feedWrapper.feedType == FeedType.Public)
             for (int i = 0; i < commentsLength; i++)
-                feedWrapper.photoComments[i].setAsRead();
+                feedWrapper.photoComments[i].setAsRead(true);
 
         addToCache(feedWrapper);
 
@@ -508,10 +511,19 @@ public class FeedManager {
                 mSession.getDB().updatePendingQuestion(holder.internalid, false);
             }
 
+            boolean noCredit = false;
+            if (holder.exception != null && holder.exception instanceof DataFetcher.KESNetworkException)
+            {
+                DataFetcher.KESNetworkException ne = (DataFetcher.KESNetworkException)holder.exception;
+                if (ne.error != null && ne.error.code == 3)
+                    noCredit = true;
+            }
             Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
             while (iterator.hasNext()) {
                 tmp = iterator.next();
                 tmp.onPostResult(p,holder.exception);
+                if (noCredit)
+                    tmp.onInsufficientCredit();
             }
             tmp = null; //don't change, GC bug
             return;

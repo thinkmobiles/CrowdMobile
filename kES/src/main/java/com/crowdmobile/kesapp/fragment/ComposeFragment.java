@@ -323,7 +323,7 @@ public class ComposeFragment extends Fragment {
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
             if (resultCode != Activity.RESULT_OK)
             {
-                previewClose(true);
+                //previewClose(true);
                 return;
             }
             /*

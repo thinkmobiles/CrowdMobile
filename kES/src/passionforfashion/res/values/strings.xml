@@ -18,11 +18,11 @@
 
     <!-- No account -->
     <string name="noaccount_title">Ops!</string>
-    <string name="noaccount_message">You have no Google account registered! Bongo can\'t address you without Google Cloud Messaging.</string>
+    <string name="noaccount_message">You have no Google account registered! P4F can\'t address you without Google Cloud Messaging.</string>
     <string name="noaccount_btquit">Quit</string>
 
     <!-- Notification bar -->
-    <string name="notification_title">Bongo</string>
+    <string name="notification_title">P4F</string>
     <string name="notification_text">You have new answered questions</string>
 
     <!-- Login -->
@@ -30,13 +30,13 @@
     <string name="login_twitter">Log in with Twitter</string>
     <string name="login_skip">Skip</string>
 
-    <string name="welcome">Welcome to Bongo</string>
+    <string name="welcome">Welcome to P4F</string>
     <string name="error">Error</string>
     <string name="ok">OK</string>
     <string name="fb_login">Connecting to Facebook</string>
     <string name="twitter_login">Connecting to Twitter</string>
     <string name="connecting">Connecting</string>
-    <string name="error_fb_session">Error initializing facebook session</string>
+    <string name="error_fb_login">Facebook connection error</string>
     <string name="error_kes_login">Login to KES failed</string>
     <string name="error_fb_nouserinfo">Could not retrieve user info</string>
     
@@ -59,13 +59,13 @@
     <string name="title_activity_profile">ProfileActivity</string>
 
     <!-- Not registered -->
-    <string name="not_registered_title">See what bongo knows about you</string>
+    <string name="not_registered_title">Become a fashionista</string>
     <string name="not_registered_message">This page is inaccessible for users without an account. Sign up NOW!</string>
     <string name="not_registered_btstart">Get started</string>
     <string name="not_registered_dialog_message">This feature is inaccessible for users without an account. Get started and make an account now!</string>
 
     <string name="myfeed_noposts_title">Uh oh, You have no posts</string>
-    <string name="myfeed_noposts_message">You don\'t have any questions for bongo yet.Ask him a question now!</string>
+    <string name="myfeed_noposts_message">You don\'t have any questions for P4F yet.Ask a question now!</string>
     <string name="myfeed_noposts_btn">Ask question</string>
 
     <string name="feed_error_title">Uh oh, network error</string>
@@ -73,26 +73,27 @@
     <string name="feed_error_btn">Retry</string>
 
     <!-- Feed -->
+    <string name="feed_question">Question:</string>
     <string name="feed_answer">Answer:</string>
     <string name="feed_posting">Posting question...</string>
     <string name="share_title">Share question</string>
     <string name="share_unavailable">Share is not available</string>
-    <string name="share_subject">Check out Bongo!</string>
+    <string name="share_subject">Check out P4F!</string>
 
-    <string name="newsfeed">Newsfeed</string>
-    <string name="myfeed">My questions</string>
+    <string name="newsfeed">Fashion feed</string>
+    <string name="myfeed">Passion feed</string>
     <string name="item_share">SHARE</string>
     <string name="loremipsum">Bacon ipsum dolor amet rump spare ribs t-bone swine, fatback pork belly meatball drumstick porchetta. Salami chuck porchetta meatloaf, beef picanha ball tip venison alcatra pancetta meatball tongue turkey. Picanha frankfurter chicken, biltong tongue corned beef pork belly chuck. T-bone pancetta tail ball tip biltong salami.</string>
     <string name="item_retry">Retry</string>
-    <string name="item_noanswer">Bongo will answer your question as soon as possible</string>
+    <string name="item_noanswer">P4F will answer your question as soon as possible</string>
     <string name="timeformat_day" formatted="false">%d days ago</string>
     <string name="timeformat_hour_min" formatted="false">%d hour %d mins ago</string>
     <string name="timeformat_min" formatted="false">%d mins ago</string>
-    <string name="clipboard_label">Bongo Question</string>
+    <string name="clipboard_label">P4F Question</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
+    <string name="refund_email">support@p4f.com</string>
     <string name="refund_email_title">refund request</string>
     <string name="refund_email_message">Please cancel the following orders:</string>
     <string name="refund_email_dialog_title">Refund</string>
@@ -103,20 +104,22 @@
     <string name="credit_status_inventoryfail">Failed to retrieve products</string>
     <string name="credit_status_request_products">Loading</string>
     <string name="credit_status_processing">Processing payment</string>
-    <string name="credit_status_processing_fail">Bongo could not get the bananas you have purchased.</string>
+    <string name="credit_status_processing_fail">P4F could not process the credits you have purchased.</string>
     <string name="credit_status_disconnected">Disconnected</string>
     <string name="credit_price_format" formatted="false">%s %.2f</string>
-    <string name="fragment_credit_title">Get bananas</string>
-    <string name="credit_info">Bongo\'s hungry!</string>
-    <string name="credit_message">Hurry up and feed him bananas so he can answer more questions!</string>
-    <string name="credit_itemname">\u0020/ Banana</string>
+    <string name="fragment_credit_title">Shop</string>
+    <string name="credit_info">Become a Fashionista!</string>
+    <string name="credit_message">Go and get some fashion credits so you can ask questions about latest trends!</string>
+    <string name="credit_itemname">\u0020/ Credit</string>
     <string name="btn_buy">BUY</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Would you like to feed him bananas so he can answer more questions?</string>
 
     <!-- Compose -->
     <string name="compose_invalidchar">Unsupported character</string>
-    <string name="compose_title">Ask Bongo</string>
-    <string name="compose_hint">Ask your question to Bongo</string>
-    <string name="bubble_text">Add a photo or a question to submit to Bongo, or both!</string>
+    <string name="compose_title">Ask your question</string>
+    <string name="compose_hint">Ask your question to P4F</string>
+    <string name="bubble_text">Add a photo or a question to submit to P4F, or both!</string>
     <string name="error_nocamera">Sorry, camera isn\'t available.</string>
     <string name="error_storagewrite">Error writing to external storage.</string>
     <!-- Gallery -->
