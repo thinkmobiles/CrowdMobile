@@ -33,16 +33,12 @@ import com.kes.FeedManager;
 import com.kes.KES;
 import com.kes.model.PhotoComment;
 import com.kes.model.User;
-import com.kes.net.DataFetcher;
 import com.urbanairship.UAirship;
 import com.urbanairship.analytics.Analytics;
 import com.urbanairship.google.PlayServicesUtils;
 
 import net.hockeyapp.android.UpdateManager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity implements NavigationBar.NavigationCallback {
@@ -55,7 +51,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
     private MenuItem mCredit;
     ArrayAdapter<String> networkAdapter;
     ArrayList<String> networkComm = new ArrayList<String>();
-    LogCatThread logCatThread;
+    //LogCatThread logCatThread;
     ListView lvLogcat;
     boolean networkVisible = false;
     ViewPager viewPager;
@@ -203,8 +199,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         Analytics.activityStarted(this);
         UAirship.shared().getPushManager().setUserNotificationsEnabled(false);
         KES.shared().getFeedManager().registerOnChangeListener(onFeedChange);
-        logCatThread = new LogCatThread();
-        logCatThread.start();
+        //logCatThread = new LogCatThread();
+        //logCatThread.start();
         navigate(getIntent());
         // Handle any Google Play Services errors
         if (PlayServicesUtils.isGooglePlayStoreAvailable()) {
@@ -224,8 +220,8 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         Analytics.activityStopped(this);
         UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
         KES.shared().getFeedManager().unRegisterOnChangeListener(onFeedChange);
-        logCatThread.interrupt();
-        logCatThread = null;
+        //logCatThread.interrupt();
+        //logCatThread = null;
 
     }
 
@@ -400,6 +396,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
         return navigationBar;
     }
 
+    /*
     class UIUpdate implements Runnable {
         String data[];
         public UIUpdate(String[] data) {
@@ -445,6 +442,7 @@ public class MainActivity extends ActionBarActivity implements NavigationBar.Nav
             }
         }
     }
+    */
 
     public class RotationPageTransformer implements ViewPager.PageTransformer{
         private float minAlpha;

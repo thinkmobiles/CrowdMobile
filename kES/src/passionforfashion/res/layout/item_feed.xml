@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:paddingLeft="@dimen/item_padding"
     android:paddingRight="@dimen/item_padding"
+    android:paddingBottom="@dimen/item_padding"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipToPadding="false">
@@ -63,6 +64,7 @@
                         <ImageView
                             android:layout_centerHorizontal="true"
                             android:id="@+id/imgAnswerCenter"
+                            android:src="@drawable/ic_tabbar_myfeed"
                             android:scaleType="fitXY"
                             android:adjustViewBounds="true"
                             android:layout_width="@dimen/item_header_icon_height"
@@ -93,6 +95,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <Button
+                android:clickable="false"
                 android:layout_centerInParent="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

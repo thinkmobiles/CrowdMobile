@@ -42,15 +42,22 @@
                 android:layout_height="wrap_content" />
 
     </RelativeLayout>
-    <TextView
-        android:background="@color/questionTextBackground"
-        android:padding="@dimen/item_header_icon_margin"
-        android:textColor="@color/questionFont"
-        android:id="@+id/tvMessage"
-        android:maxLines="4"
-        android:ellipsize="end"
-        android:textSize="@dimen/item_text_size"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content">
+        <View
+            android:id="@+id/messagePlaceholder"
+            android:layout_width="match_parent"
+            android:layout_height="1px"/>
+        <TextView
+            android:background="@color/questionTextBackground"
+            android:padding="@dimen/item_header_icon_margin"
+            android:textColor="@color/questionFont"
+            android:id="@+id/tvMessage"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:textSize="@dimen/item_text_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 </LinearLayout>

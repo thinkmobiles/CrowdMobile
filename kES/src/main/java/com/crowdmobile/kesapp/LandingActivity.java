@@ -4,7 +4,6 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -49,7 +48,7 @@ public class LandingActivity extends Activity {
         }
         tvVersion.setText(s);
         if (ds)
-            tvVersion.setTextColor(Color.RED);
+            tvVersion.setTextColor(getResources().getColor(R.color.splash_text_development));
         mHandler = new Handler();
     }
 
@@ -58,7 +57,7 @@ public class LandingActivity extends Activity {
         super.onStart();
         Analytics.activityStarted(this);
         if (BuildConfig.DEBUG)
-            mHandler.postDelayed(startSystem, 500);
+            mHandler.postDelayed(startSystem, 1000);
         else
             mHandler.postDelayed(startSystem, 1500);
     }

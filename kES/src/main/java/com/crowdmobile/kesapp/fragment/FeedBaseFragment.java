@@ -46,7 +46,8 @@ public abstract class FeedBaseFragment extends Fragment {
     private boolean titleVisible = false;
     //    FeedItem.ShareController shareController;
 
-    private FeedManager.QueryParams lastNetworkAction = null;
+    private FeedManager.QueryParams refreshNetworkAction = null;
+    private FeedManager.QueryParams nextPageNetworkAction = null;
 
     private SwipeRefreshLayout swipeContainer;
     private int minID = 0;
@@ -81,9 +82,7 @@ public abstract class FeedBaseFragment extends Fragment {
             super.handleMessage(msg);
             Log.d("Readmessage", "Message read" + msg.what);
         }
-    }
-
-    ;
+    };
 
     FeedAdapter.FeedAdapterListener feedAdapterListener = new FeedAdapter.FeedAdapterListener() {
         /*
@@ -100,12 +99,12 @@ public abstract class FeedBaseFragment extends Fragment {
 
         @Override
         public void retryLoadClick() {
-            if (lastNetworkAction != null) {
+            if (refreshNetworkAction != null) {
                 adapter.setFooterLoading(true);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        lastNetworkAction.load();
+                        refreshNetworkAction.load();
 
                     }
                 },2000);
@@ -240,8 +239,8 @@ public abstract class FeedBaseFragment extends Fragment {
             if (loaded)
                 showNoPost();
             else {
-                lastNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
-                lastNetworkAction./*setMaxID(2).*/load();
+                refreshNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
+                refreshNetworkAction./*setMaxID(2).*/load();
                 showMainProgressbar(true);
             }
         } else {
@@ -433,11 +432,11 @@ public abstract class FeedBaseFragment extends Fragment {
             if (item.status == PhotoComment.PostStatus.Posted && KES.shared().getFeedManager().feed(getFeedType()).isLastItem(item.getID(getFeedType())))
                 return;
             adapter.setFooterLoading(true);
-            lastNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
+            refreshNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
             if (item.status == PhotoComment.PostStatus.Posted)
-                lastNetworkAction.setMaxID(item.getID(getFeedType()) - 1);
-            lastNetworkAction.setAppended(true);
-            lastNetworkAction.load();
+                refreshNetworkAction.setMaxID(item.getID(getFeedType()) - 1);
+            refreshNetworkAction.setAppended(true);
+            refreshNetworkAction.load();
 
         }
     };
@@ -461,8 +460,8 @@ public abstract class FeedBaseFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
             */
-            lastNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
-            lastNetworkAction.load();
+            refreshNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
+            refreshNetworkAction.load();
         }
     };
 
@@ -694,6 +693,8 @@ public abstract class FeedBaseFragment extends Fragment {
 
         @Override
         public void onMarkAsPrivateResult(PhotoComment p, Exception error) {
+            if (p == null)
+                return;
             if (getFeedType() == FeedManager.FeedType.Public)
             {
                 int id = p.getID(FeedManager.FeedType.Public);
@@ -831,6 +832,8 @@ public abstract class FeedBaseFragment extends Fragment {
         isStarted = true;
         LocalBroadcastManager.getInstance(getActivity()).registerReceiver(navigationChange, new IntentFilter(NavigationBar.ACTION_CHANGE));
         navigationChange.onReceive(null, null);
+        refreshNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
+        refreshNetworkAction.load();
     }
 
     @Override

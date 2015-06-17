@@ -113,7 +113,7 @@
     <string name="credit_itemname">\u0020/ Credit</string>
     <string name="btn_buy">BUY</string>
     <!-- Insufficient credit -->
-    <string name="nocredit_message">Would you like to feed him bananas so he can answer more questions?</string>
+    <string name="nocredit_message">Sorry, it seems like you have insufficient credits to ask your question. Would you like to purchase?</string>
 
     <!-- Compose -->
     <string name="compose_invalidchar">Unsupported character</string>

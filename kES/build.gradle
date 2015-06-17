@@ -35,13 +35,13 @@ android {
     productFlavors {
         bongothinks {
             applicationId 'com.crowdmobile.bongothinks'
-            versionCode 8
-            versionName "0.92"
+            versionCode 9
+            versionName "0.93"
         }
         passionforfashion {
             applicationId 'com.crowdmobile.p4f'
-            versionCode 4
-            versionName "0.4"
+            versionCode 5
+            versionName "0.5"
         }
     }
 

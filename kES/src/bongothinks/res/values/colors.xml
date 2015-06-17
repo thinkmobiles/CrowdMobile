@@ -4,6 +4,7 @@
     <!-- Compose -->
     <item name="splash_background" type="color">#fff</item>
     <item name="splash_text" type="color">#000</item>
+    <item name="splash_text_development" type="color">#00f</item>
 
     <item name="white" type="color">#fff</item>
     <item name="appTitleColor" type="color">#0a93ff</item>
@@ -29,6 +30,7 @@
 
     <!-- Compose -->
     <item name="compose_background" type="color">#e3f1f5</item>
+    <item name="crop_rect" type="color">#0a93ff</item>
 
     <!-- Login -->
     <item name="login_background" type="color">#e3f1f5</item>

@@ -5,13 +5,14 @@
     <!-- Compose -->
     <item name="splash_background" type="color">#ff004e</item>
     <item name="splash_text" type="color">#000</item>
+    <item name="splash_text_development" type="color">#0f0</item>
 
     <item name="white" type="color">#fff</item>
     <item name="appTitleColor" type="color">#0000</item>
     <item name="colorPrimary" type="color">#0000</item>
 
     <item name="questionFont" type="color">#fff</item>
-    <item name="answerLayer" type="color">#4444</item>
+    <item name="answerLayer" type="color">#c0ff004e</item>
     <item name="questionHeaderBackground" type="color">#6111</item>
     <item name="questionTextBackground" type="color">#8222</item>
     <item name="answerHeaderBackground" type="color">#6111</item>
@@ -33,6 +34,7 @@
 
     <!-- Compose -->
     <item name="compose_background" type="color">#e3f1f5</item>
+    <item name="crop_rect" type="color">#ff004e</item>
 
     <!-- Login -->
     <item name="login_background" type="color">#000</item>

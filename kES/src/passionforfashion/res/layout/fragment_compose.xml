@@ -30,7 +30,6 @@
                         android:layout_height="match_parent">
                         <ImageView
                             android:id="@+id/imgPreview"
-                            android:background="#0f0"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
                     </RelativeLayout>
@@ -73,7 +72,7 @@
                     <ImageView
                         android:layout_alignParentLeft="true"
                         android:id="@+id/imgCamera"
-                        android:src="@drawable/ic_post_add_image_active"
+                        android:src="@drawable/ic_camera"
                         android:padding="@dimen/compose_buttonpadding"
                         android:layout_width="@dimen/compose_buttonheight"
                         android:layout_height="@dimen/compose_buttonheight" />

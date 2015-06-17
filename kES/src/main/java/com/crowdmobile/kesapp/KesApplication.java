@@ -22,7 +22,7 @@ public class KesApplication extends Application {
         super.onCreate();
         HockeyUtil.init(this);
         AirshipConfigOptions options = AirshipConfigOptions.loadDefaultOptions(this);
-        options.inProduction = false; //determines which app key to use
+        options.inProduction = !BuildConfig.DEBUG; //determines which app key to use
 //        String hash = Settings.getApplicationSignature(this);
 //        Log.w("HASH", hash);    //2BYxpeK18kZzvsdogYqHJiLCK2M
         // Take off initializes the services

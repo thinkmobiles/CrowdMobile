@@ -1,6 +1,7 @@
 package com.kes;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.kes.model.User;
 import com.kes.net.ModelFactory;
@@ -13,6 +14,7 @@ import java.util.WeakHashMap;
  */
 public class AccountManager {
 
+    private static final String TAG = AccountManager.class.getSimpleName();
     private static final String OPERATION_IN_PROGRESS = "network operation is in progress";
     protected static final String TOKEN_NULL = "token can't be null";
 
@@ -122,6 +124,7 @@ public class AccountManager {
 
     public void setUAChannelID(String channelID)
     {
+        Log.d(TAG,"Setting UA channel ID" + channelID);
         ua_token = channelID;
         if (getCachedUser(mKES.getContext()).isRegistered())
             TaskPostToken.updatePushToken(mKES.getContext(), user.auth_token,ua_token);

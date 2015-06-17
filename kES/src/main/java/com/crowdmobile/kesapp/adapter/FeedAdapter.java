@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +77,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         View itemCard;
         TextView tvTimeQuestion;
         TextView tvQuestion;
+        View messagePlaceholder;
         ImageView imgFeedPic;
         View imgOpenShare;
 
@@ -101,6 +103,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 answerBackground = view.findViewById(R.id.answerBackground);
                 tvTimeQuestion = (TextView) view.findViewById(R.id.tvTimeQuestion);
                 tvQuestion = (TextView) view.findViewById(R.id.tvMessage);
+                messagePlaceholder = view.findViewById(R.id.messagePlaceholder);
                 imgFeedPic = (ImageView) view.findViewById(R.id.imgFeedPic);
                 imgOpenShare = view.findViewById(R.id.imgOpenShare);
                 if (imgOpenShare != null) {
@@ -290,7 +293,15 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
         //holder.tvTimeQuestion.setText(Integer.toString(item.id));
 
-        holder.tvQuestion.setText(item.message);
+        if (TextUtils.isEmpty(item.message)) {
+            holder.messagePlaceholder.setVisibility(View.VISIBLE);
+            holder.tvQuestion.setVisibility(View.GONE);
+        }
+        else {
+            holder.tvQuestion.setText(item.message);
+            holder.tvQuestion.setVisibility(View.VISIBLE);
+            holder.messagePlaceholder.setVisibility(View.GONE);
+        }
 
         holder.ivAnswerRight.setTag(item);
         holder.btRetry.setTag(item);

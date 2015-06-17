@@ -232,7 +232,7 @@ public class CropView extends View {
         rectWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getContext().getResources().getDisplayMetrics());
         touchSize = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10.0f, getContext().getResources().getDisplayMetrics());
         blursize = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2.0f, getContext().getResources().getDisplayMetrics());
-        paint.setColor(getResources().getColor(R.color.appTitleColor));
+        paint.setColor(getResources().getColor(R.color.crop_rect));
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(5);
 
