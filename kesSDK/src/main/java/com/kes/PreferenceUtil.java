@@ -97,6 +97,7 @@ class PreferenceUtil {
         result.unread_count = sp.getInt(context.getString(R.string.key_user_unread_count), 0);
         result.login_type = sp.getString(context.getString(R.string.key_user_login_type), null);
         result.auth_token = sp.getString(context.getString(R.string.key_user_authtoken), null); //"23bh1ccd1ktul3uiivsn72u2ul"
+//        result.auth_token="bhskep3kin80g4usk820n0giv7";
         result.upToDate = false;
         return result;
     }

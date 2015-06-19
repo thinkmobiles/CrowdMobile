@@ -110,6 +110,7 @@ public class BillingService extends Service {
             completePurchase.cancel(true);
             completePurchase = null;
         }
+
         iabHelper.dispose();
         setStatus(BillingManager.BillingStatus.Disconnected);
     }

@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
+import com.crowdmobile.kesapp.BuildConfig;
+
 import java.util.List;
 
 public class BadgeUtils {
@@ -28,7 +30,7 @@ public class BadgeUtils {
         }
         Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
         intent.putExtra("badge_count", count);
-        intent.putExtra("badge_count_package_name", context.getPackageName());
+        intent.putExtra("badge_count_package_name", BuildConfig.APPLICATION_ID);
         intent.putExtra("badge_count_class_name", launcherClassName);
         context.sendBroadcast(intent);
     }
@@ -44,7 +46,7 @@ public class BadgeUtils {
         intent.putExtra("com.sonyericsson.home.intent.extra.badge.ACTIVITY_NAME", launcherClassName);
         intent.putExtra("com.sonyericsson.home.intent.extra.badge.SHOW_MESSAGE", true);
         intent.putExtra("com.sonyericsson.home.intent.extra.badge.MESSAGE", String.valueOf(count));
-        intent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", context.getPackageName());
+        intent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", BuildConfig.APPLICATION_ID);
 
         context.sendBroadcast(intent);
     }
@@ -61,7 +63,7 @@ public class BadgeUtils {
         intent.putExtra("com.sonyericsson.home.intent.extra.badge.ACTIVITY_NAME", launcherClassName);
         intent.putExtra("com.sonyericsson.home.intent.extra.badge.SHOW_MESSAGE", false);
         intent.putExtra("com.sonyericsson.home.intent.extra.badge.MESSAGE", String.valueOf(0));
-        intent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", context.getPackageName());
+        intent.putExtra("com.sonyericsson.home.intent.extra.badge.PACKAGE_NAME", BuildConfig.APPLICATION_ID);
 
         context.sendBroadcast(intent);
     }
@@ -76,7 +78,7 @@ public class BadgeUtils {
         List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
         for (ResolveInfo resolveInfo : resolveInfos) {
             String pkgName = resolveInfo.activityInfo.applicationInfo.packageName;
-            if (pkgName.equalsIgnoreCase(context.getPackageName())) {
+            if (pkgName.equalsIgnoreCase(BuildConfig.APPLICATION_ID)) {
                 String className = resolveInfo.activityInfo.name;
                 return className;
             }

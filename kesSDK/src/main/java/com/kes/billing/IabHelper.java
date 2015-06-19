@@ -296,7 +296,6 @@ public class IabHelper {
      * disposed of, it can't be used again.
      */
     public void dispose() {
-        checkSetupDone("dispose");
         checkNotDisposed();
         logDebug("Disposing.");
         synchronized (IabHelper.class) {

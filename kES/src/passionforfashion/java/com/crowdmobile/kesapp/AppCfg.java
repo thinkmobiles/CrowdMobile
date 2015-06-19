@@ -1,4 +1,3 @@
-//APP config
 //Passion 4 Fashion
 package com.crowdmobile.kesapp;
 
