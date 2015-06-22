@@ -70,6 +70,10 @@
     <string name="myfeed_noposts_message">You don\'t have any questions for bongo yet.Ask him a question now!</string>
     <string name="myfeed_noposts_btn">Ask question</string>
 
+    <string name="publicfeed_noposts_title">Uh oh, we have no posts</string>
+    <string name="publicfeed_noposts_message">Please come back later!</string>
+    <string name="publicfeed_noposts_btn">Refresh</string>
+
     <string name="feed_error_title">Uh oh, network error</string>
     <string name="feed_error_message">Could not load feed!</string>
     <string name="feed_error_btn">Retry</string>

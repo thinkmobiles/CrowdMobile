@@ -142,15 +142,30 @@ public abstract class FeedBaseFragment extends Fragment {
     public abstract void onItemViewed(PhotoComment p);
 
     public void showNoPost() {
-        accessViewHolder.tvTitle.setText(R.string.myfeed_noposts_title);
-        accessViewHolder.tvMessage.setText(R.string.myfeed_noposts_message);
-        accessViewHolder.btAccess.setText(R.string.myfeed_noposts_btn);
-        accessViewHolder.btAccess.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.Compose);
-            }
-        });
+        if (getFeedType() == FeedManager.FeedType.My) {
+            accessViewHolder.tvTitle.setText(R.string.myfeed_noposts_title);
+            accessViewHolder.tvMessage.setText(R.string.myfeed_noposts_message);
+            accessViewHolder.btAccess.setText(R.string.myfeed_noposts_btn);
+            accessViewHolder.btAccess.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((MainActivity) getActivity()).getNavigationBar().navigateTo(NavigationBar.Attached.Compose);
+                }
+            });
+        } else
+        {
+            accessViewHolder.tvTitle.setText(R.string.publicfeed_noposts_title);
+            accessViewHolder.tvMessage.setText(R.string.publicfeed_noposts_message);
+            accessViewHolder.btAccess.setText(R.string.publicfeed_noposts_btn);
+            accessViewHolder.btAccess.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showMainProgressbar(true);
+                    accessViewHolder.setVisibility(View.GONE);
+                    onRefreshListener.onRefresh();
+                }
+            });
+        }
         accessViewHolder.setVisibility(View.VISIBLE);
     }
 
@@ -162,6 +177,7 @@ public abstract class FeedBaseFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showMainProgressbar(true);
+                accessViewHolder.setVisibility(View.GONE);
                 onRefreshListener.onRefresh();
             }
         });
