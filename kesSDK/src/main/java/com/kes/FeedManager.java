@@ -320,7 +320,7 @@ public class FeedManager {
                 cacheOf(feedWrapper.feedType).get(feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType)).lastItem = true;
         }
 
-        boolean loaded = (feedWrapper.exception == null && feedWrapper.max_id == null);
+        boolean loaded = (feedWrapper.exception == null && feedWrapper.max_id == null && feedWrapper.unreadItems == false);
         if (feedWrapper.feedType == FeedType.Public)
             publicCacheLoaded = loaded;
         else if (feedWrapper.feedType == FeedType.My)

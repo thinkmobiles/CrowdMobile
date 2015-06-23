@@ -491,7 +491,8 @@ public abstract class FeedBaseFragment extends Fragment {
                 return;
 
             loadingNextPage = false;
-            showMainProgressbar(false);
+            if (!wrapper.unreadItems)
+                showMainProgressbar(false);
 
             if (wrapper.max_id == null)
                 swipeContainer.setRefreshing(false);
@@ -546,8 +547,10 @@ public abstract class FeedBaseFragment extends Fragment {
                 rvFeed.scrollToPosition(0);
                 if (list.size() == 0)
                     showNoPost();
-                else
+                else {
+                    accessViewHolder.setVisibility(View.GONE);
                     swipeContainer.setEnabled(true);
+                }
                 showListAnimation();
                 return;
             }
