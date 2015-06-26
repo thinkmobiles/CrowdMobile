@@ -15,9 +15,6 @@
  	<string name="fb_app_id">760239814072784</string>
 
 
-    <string name="action_settings">Settings</string>
-
-
     <!-- No account -->
     <string name="noaccount_title">Ops!</string>
     <string name="noaccount_message">You have no Google account registered! Bongo can\'t address you without Google Cloud Messaging.</string>
@@ -52,6 +49,7 @@
     
     
     <!-- Menu -->
+    <string name="action_settings">Settings</string>
     <string name="action_privacy">Privacy settings</string>
     <string name="action_about">About</string>
     <string name="action_agreement">Terms of agreement</string>
@@ -122,6 +120,9 @@
     <string name="nocredit_message">Would you like to feed him bananas so he can answer more questions?</string>
 
     <!-- Compose -->
+    <string name="compose_suggested">suggested questions</string>
+    <string name="compose_private">private</string>
+    <string name="compose_public">public</string>
     <string name="compose_invalidchar">Unsupported character</string>
     <string name="compose_title">Ask Bongo</string>
     <string name="compose_hint">Ask your question to Bongo</string>
@@ -152,5 +153,88 @@
     <!-- Twitter -->
     <string name="callback_url_scheme">oauth</string>
     <string name="callback_url_host">twitterlogin</string>
+
+    <!-- Preferences -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="category_general">General</string>
+    <string-array name="Language">
+        <item>System default</item>
+        <item>English (US)</item>
+        <item>English (UK)</item>
+        <item>French (France)</item>
+        <item>Spanish (Spain)</item>
+        <item>Italian</item>
+    </string-array>
+
+    <string-array name="languageAlias">
+        <item>0</item>
+        <item>"en-US"</item>
+        <item>"en-GB"</item>
+        <item>"fr-FR"</item>
+        <item>"es-ES"</item>
+        <item>"it-IT"</item>
+    </string-array>
+
+    <string name="key_language">key_language</string>
+    <string name="title_language">Language</string>
+
+    <string name="key_updateinterval">key_updateinterval</string>
+    <string name="title_updateinterval">News update interval</string>
+
+    <string-array name="updateInterval">
+        <item>daily</item>
+        <item>every 2 days</item>
+        <item>every 3 days</item>
+        <item>every week</item>
+    </string-array>
+
+    <string-array name="updateIntervalAlias">
+        <item>24</item>
+        <item>48</item>
+        <item>72</item>
+        <item>168</item>
+    </string-array>
+
+    <string name="key_gender">key_gender</string>
+    <string name="title_gender">Gender</string>
+
+    <string-array name="genderNames">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="genderAlias">
+        <item>M</item>
+        <item>F</item>
+    </string-array>
+
+
+
+    <string name="key_showsuggestion">key_showsuggestion</string>
+    <string name="title_showsuggestion">Show suggestions</string>
+    <string name="detail_showsuggestion">Show suggested questions at compose screen</string>
+
+    <string name="category_account">Account</string>
+    <string name="key_accountname">key_accountname</string>
+
+    <string name="key_birthdate">key_birthdate</string>
+    <string name="title_birthdate">Birth date</string>
+
+    <string name="key_relationship">key_relationship</string>
+    <string name="title_relationship">Relationship</string>
+
+    <string-array name="relationshipNames">
+        <item>Single</item>
+        <item>In a relationship</item>
+        <item>Common Law</item>
+        <item>Married</item>
+    </string-array>
+
+    <string-array name="relationshipAlias">
+        <item>S</item>
+        <item>R</item>
+        <item>C</item>
+        <item>M</item>
+    </string-array>
 
 </resources>

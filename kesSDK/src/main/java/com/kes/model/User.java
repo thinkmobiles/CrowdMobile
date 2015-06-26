@@ -1,5 +1,7 @@
 package com.kes.model;
 
+import android.text.TextUtils;
+
 public class User {
     public int id;
     public int balance;
@@ -18,6 +20,18 @@ public class User {
 	{
 		return auth_token != null && auth_token.length() > 0;
 	}
-
+    public String getFullName()
+    {
+        String retval = "";
+        if (!TextUtils.isEmpty(first_name))
+            retval = first_name;
+        if (!TextUtils.isEmpty(last_name))
+        {
+            if (!TextUtils.isEmpty(retval))
+                retval += " ";
+            retval += last_name;
+        }
+        return retval;
+    }
 
 }

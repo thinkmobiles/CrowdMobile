@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Compose -->
     <item name="splash_background" type="color">#fff</item>
     <item name="splash_text" type="color">#000</item>
     <item name="splash_text_development" type="color">#00f</item>
+
+    <!-- Compose -->
 
     <item name="white" type="color">#fff</item>
     <item name="appTitleColor" type="color">#0a93ff</item>
@@ -56,7 +57,7 @@
     <item name="item_background_disabled" type="color">#aaa</item>
     <item name="item_retry_background" type="color">#afff</item>
     <item name="item_retry_font" type="color">#096fc2</item>
-d
+
     <!-- Gallery -->
     <item name="gallery_title_font" type="color">#808080</item>
     <item name="gallery_background" type="color">#fff</item>

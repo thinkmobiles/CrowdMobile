@@ -17,11 +17,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crowdmobile.kesapp.R;
+import com.crowdmobile.kesapp.fragment.AccessFragment;
 import com.crowdmobile.kesapp.fragment.ComposeFragment;
 import com.crowdmobile.kesapp.fragment.CreditFragment;
 import com.crowdmobile.kesapp.fragment.MyFeedFragment;
 import com.crowdmobile.kesapp.fragment.NewsFeedFragment;
-import com.crowdmobile.kesapp.fragment.AccessFragment;
 import com.crowdmobile.kesapp.util.PreferenceUtils;
 import com.kes.KES;
 

@@ -1,10 +1,13 @@
 package com.crowdmobile.kesapp.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crowdmobile.kesapp.PictureActivity;
@@ -31,6 +35,7 @@ import com.kes.KES;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
+import java.util.ArrayList;
 
 /**
  * Created by gadza on 2015.03.11..
@@ -42,10 +47,14 @@ public class ComposeFragment extends Fragment {
     boolean hasImage = false;
     EditText edMessage;
     ImageView imgPrivate;
-    View imgCamera;
     ImageView imgPreview;
     ImageView imgPost;
-    View holderImage;
+    View holderSuggestion;
+    View holderPostVisibility;
+    TextView tvSuggestion;
+    TextView tvVisibility;
+
+//    View holderImage;
     View previewClose;
     View tvHint;
     TransitionDrawable transitionPost;
@@ -86,9 +95,7 @@ public class ComposeFragment extends Fragment {
         afterResume = false;
         View result = inflater.inflate(R.layout.fragment_compose,container,false);
         tvHint = result.findViewById(R.id.tvHint);
-        holderImage = result.findViewById(R.id.holderImage);
-        imgCamera = result.findViewById(R.id.imgCamera);
-        imgCamera.setOnClickListener(onClickListener);
+//        holderImage = result.findViewById(R.id.holderImage);
         imgPost = (ImageView)result.findViewById(R.id.imgPost);
         imgPost.setOnClickListener(onClickListener);
         transitionPost = (TransitionDrawable)imgPost.getDrawable();
@@ -97,8 +104,17 @@ public class ComposeFragment extends Fragment {
         edMessage.setOnKeyListener(kl);
         imgPrivate = (ImageView)result.findViewById(R.id.imgPrivate);
         imgPreview = (ImageView)result.findViewById(R.id.imgPreview);
+        imgPreview.setOnClickListener(onClickListener);
         previewClose = result.findViewById(R.id.ivPreviewClose);
         previewClose.setOnClickListener(onClickListener);
+        holderSuggestion = result.findViewById(R.id.holderPostSuggestion);
+        holderPostVisibility = result.findViewById(R.id.holderPostVisibility);
+        holderSuggestion.setOnClickListener(onClickListener);
+        holderPostVisibility.setOnClickListener(onClickListener);
+        tvSuggestion = (TextView)result.findViewById(R.id.tvSuggestion);
+        tvSuggestion.setPaintFlags(tvSuggestion.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        tvVisibility = (TextView)result.findViewById(R.id.tvVisibility);
+        tvVisibility.setPaintFlags(tvVisibility.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         imgPrivate.setOnClickListener(onClickListener);
         edMessage.setText(PreferenceUtils.getComposeText(getActivity()));
         InputFilter filter = new InputFilter() {
@@ -123,10 +139,14 @@ public class ComposeFragment extends Fragment {
 
     private void updatePrivate()
     {
-        if (isPrivate)
+        if (isPrivate) {
             imgPrivate.setImageResource(R.drawable.ic_private);
-        else
+            tvVisibility.setText(R.string.compose_private);
+        }
+        else {
             imgPrivate.setImageResource(R.drawable.ic_public);
+            tvVisibility.setText(R.string.compose_public);
+        }
     }
 
     /*
@@ -146,19 +166,44 @@ public class ComposeFragment extends Fragment {
         //PreferenceUtils.setComposePicture(getActivity(), mCurrentPhoto != null ? mCurrentPhoto.getAbsolutePath() : null);
     }
 
+    private void showSuggestions()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final ArrayList<String> suggestions = new ArrayList<String>();
+        suggestions.add("Question 1");
+        suggestions.add("Question 2");
+        suggestions.add("Question 3");
+        suggestions.add("Question 4");
+        suggestions.add("Question 5");
+        CharSequence ss[] = new CharSequence[suggestions.size()];
+        suggestions.toArray(ss);
+        builder.setItems(ss, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                edMessage.setText(suggestions.get(which));
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (v == imgPrivate)
+            if (v == holderPostVisibility)
             {
                 isPrivate = !isPrivate;
                 updatePrivate();
+            }
+            else if (v == holderSuggestion)
+            {
+                showSuggestions();
             }
             else if (v == imgPost)
             {
                 postQuestion();
             }
-            else if (v == imgCamera)
+            else if (v == imgPreview)
                 takePicture();
             else if (v == previewClose)
                 previewClose(true);
@@ -172,10 +217,16 @@ public class ComposeFragment extends Fragment {
             PreferenceUtils.setComposedPicture(getActivity(), null);
             if (deleteFile)
                 new File(filePath).delete();
-            holderImage.setVisibility(View.GONE);
+            clearPicture();
         }
         hasImage = false;
         checkPostEnabled();
+    }
+
+    private void clearPicture()
+    {
+        imgPreview.setImageResource(R.drawable.ic_takephoto);
+        previewClose.setVisibility(View.GONE);
     }
 
     private void takePicture()
@@ -204,7 +255,7 @@ public class ComposeFragment extends Fragment {
         if (photoPath == null) {
             hasImage = false;
             checkPostEnabled();
-            holderImage.setVisibility(View.GONE);
+            clearPicture();
             return;
         }
 
@@ -233,18 +284,21 @@ public class ComposeFragment extends Fragment {
         imgPreview.setImageBitmap(bitmap);
         hasImage = true;
         checkPostEnabled();
-        holderImage.setVisibility(View.VISIBLE);
+        previewClose.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onDestroyView() {
-        holderImage = null;
         edMessage.removeTextChangedListener(tv);
         edMessage = null;
-        imgCamera = null;
+        imgPreview = null;
         imgPost = null;
         imgPrivate = null;
         imgPreview = null;
+        holderPostVisibility = null;
+        tvVisibility = null;
+        holderSuggestion = null;
+        tvSuggestion = null;
         previewClose = null;
         tvHint = null;
         super.onDestroyView();

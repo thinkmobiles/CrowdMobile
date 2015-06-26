@@ -14,6 +14,11 @@
         android:orderInCategory="10" app:showAsAction="always|withText"
         android:title="" />
     <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        kes:showAsAction="never"
+        android:title="@string/action_settings"/>
+    <item
         android:id="@+id/action_privacy"
         android:orderInCategory="100"
         kes:showAsAction="never"
