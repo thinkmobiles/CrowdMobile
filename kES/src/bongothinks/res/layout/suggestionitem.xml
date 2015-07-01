@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="@dimen/suggestion_padding"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_weight="1"
+        android:id="@+id/tvSuggestion"
+        android:paddingRight="@dimen/suggestion_padding"
+        android:textColor="@color/suggestion_textcolor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <View
+        android:background="@color/suggestion_marker"
+        android:layout_width="1dp"
+        android:layout_height="match_parent"/>
+</LinearLayout>

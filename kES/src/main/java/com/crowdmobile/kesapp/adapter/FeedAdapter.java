@@ -45,6 +45,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         public void report(PhotoComment p);
         public void markAsPrivate(PhotoComment p);
         public void onItemViewed(PhotoComment p);
+        public void onImageClick(ImageView v);
     }
 
     public void hideFooter()
@@ -93,7 +94,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         public View answerBackground;
         public ValueAnimator backgroundAnimator;
 
-        public ItemHolder(View view, int viewType, View.OnClickListener itemClick, View.OnClickListener report_privateClick, View.OnClickListener retryClick,View.OnClickListener retryPostClick) {
+        public ItemHolder(View view, int viewType, View.OnClickListener itemClick, View.OnClickListener report_privateClick, View.OnClickListener retryClick,View.OnClickListener retryPostClick,View.OnClickListener imgClick) {
             super(view);
             this.viewType = viewType;
             if (viewType == TYPE_ITEM) {
@@ -105,6 +106,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 tvQuestion = (TextView) view.findViewById(R.id.tvMessage);
                 messagePlaceholder = view.findViewById(R.id.messagePlaceholder);
                 imgFeedPic = (ImageView) view.findViewById(R.id.imgFeedPic);
+                imgFeedPic.setOnClickListener(imgClick);
                 imgOpenShare = view.findViewById(R.id.imgOpenShare);
                 if (imgOpenShare != null) {
                     imgOpenShare.setOnClickListener(new View.OnClickListener() {
@@ -220,7 +222,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                     from(viewGroup.getContext()).
                     inflate(R.layout.footer_feed, viewGroup, false);
         Log.d("TAG","OnCreateViewHolder");
-        return new ItemHolder(result, viewType, itemClick, report_privateClick, retryClick, retryPostClick);
+        return new ItemHolder(result, viewType, itemClick, report_privateClick, retryClick, retryPostClick, imgClick);
     }
 
     @Override
@@ -362,6 +364,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     public int getItemCount() {
         return list.size();
     }
+
+    View.OnClickListener imgClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            listener.onImageClick((ImageView)v);
+
+        }
+    };
 
     View.OnClickListener retryClick = new View.OnClickListener() {
         @Override

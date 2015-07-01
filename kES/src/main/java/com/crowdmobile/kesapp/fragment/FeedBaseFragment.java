@@ -1,5 +1,6 @@
 package com.crowdmobile.kesapp.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,9 +19,11 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.crowdmobile.kesapp.MainActivity;
+import com.crowdmobile.kesapp.MainActivityInterface;
 import com.crowdmobile.kesapp.R;
 import com.crowdmobile.kesapp.adapter.FeedAdapter;
 import com.crowdmobile.kesapp.widget.NavigationBar;
@@ -61,10 +64,23 @@ public abstract class FeedBaseFragment extends Fragment {
     private Rect scrollBounds;
     private boolean firstShow;
     private boolean loadingNextPage;
+    private MainActivityInterface mainActivityInterface;
 
     class ReadTag {
         public long oldShownAt;
         public long shownAt;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mainActivityInterface = (MainActivityInterface)activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mainActivityInterface = null;
     }
 
     @Override
@@ -134,6 +150,11 @@ public abstract class FeedBaseFragment extends Fragment {
         @Override
         public void onItemViewed(PhotoComment p) {
             FeedBaseFragment.this.onItemViewed(p);
+        }
+
+        @Override
+        public void onImageClick(ImageView v) {
+            mainActivityInterface.zoomImageFromThumb(v);
         }
     };
 
@@ -218,6 +239,7 @@ public abstract class FeedBaseFragment extends Fragment {
             return DEFAULT_EXTRA_LAYOUT_SPACE;
         }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -907,5 +929,6 @@ public abstract class FeedBaseFragment extends Fragment {
         mHandler = null;
         super.onDestroy();
     }
+
 
 }

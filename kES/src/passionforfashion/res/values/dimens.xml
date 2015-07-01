@@ -79,8 +79,11 @@
     <!-- Compose -->
     <dimen name="compose_editor_height">150dp</dimen>
     <dimen name="compose_shader">25dp</dimen>
-    <dimen name="compose_buttonheight">40dp</dimen>
-    <dimen name="compose_buttonpadding">10dp</dimen>
+    <dimen name="compose_menutext">15dp</dimen>
+    <dimen name="compose_buttonheight">30dp</dimen>
+    <dimen name="compose_smallbuttonpadding">5dp</dimen>
+    <dimen name="compose_buttonpadding">5dp</dimen>
+    <dimen name="compose_editmargintop">80dp</dimen>
     <dimen name="compose_editpadding">10dp</dimen>
 
     <dimen name="compose_imagewidth">60dp</dimen>
@@ -95,6 +98,7 @@
     <dimen name="bubbletextpadding">7dp</dimen>
     <dimen name="bubbleclose">40dp</dimen>
     <dimen name="imgclose">25dp</dimen>
+    <dimen name="suggestion_padding">10dp</dimen>
 
     <!-- Gallery -->
     <dimen name="gallery_margin">15dp</dimen>

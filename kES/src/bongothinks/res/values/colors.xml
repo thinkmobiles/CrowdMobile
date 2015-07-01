@@ -29,6 +29,11 @@
     <item name="unreadcountbackground" type="color">#fff</item>
     <item name="unreadcounttext" type="color">#000</item>
 
+    <item name="suggestion_marker" type="color">#096fc2</item>
+    <item name="suggestion_textcolor" type="color">#000</item>
+    <item name="suggestion_background1" type="color">#ccc</item>
+    <item name="suggestion_background2" type="color">#fff</item>
+
     <!-- Compose -->
     <item name="compose_background" type="color">#e3f1f5</item>
     <item name="crop_rect" type="color">#0a93ff</item>

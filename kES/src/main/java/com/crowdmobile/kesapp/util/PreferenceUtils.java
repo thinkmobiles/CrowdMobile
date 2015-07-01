@@ -80,5 +80,16 @@ public class PreferenceUtils {
                 .getString(context.getString(R.string.key_composed_picture), null);
     }
 
+    public static void setSkipNoPic(Context context, boolean value) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putBoolean(context.getString(R.string.key_skip_nopic),value)
+                .commit();
+    }
+
+    public static boolean getSkipNoPic(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(context.getString(R.string.key_skip_nopic), false);
+    }
+
 
 }

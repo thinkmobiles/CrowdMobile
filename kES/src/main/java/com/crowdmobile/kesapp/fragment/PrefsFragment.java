@@ -1,6 +1,9 @@
 package com.crowdmobile.kesapp.fragment;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -8,12 +11,15 @@ import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 
 import com.crowdmobile.kesapp.R;
+import com.crowdmobile.kesapp.SettingsActivity;
 import com.crowdmobile.kesapp.widget.DatePreference;
 import com.kes.KES;
 import com.kes.model.User;
 
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -84,8 +90,40 @@ public class PrefsFragment extends PreferenceFragment {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             updateValue(key);
+            if (getString(R.string.key_language).equals(key)) {
+                setLocale(getActivity(), true);
+                ((SettingsActivity)getActivity()).notifyLanguageChanged();
+                //getActivity().recreate();
+            }
         }
     };
+
+
+    public static void setLocale(Context context,boolean force) {
+        String language = PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.key_language), "0");
+        boolean defaultLang = language.equals("0") && !force;
+        if (defaultLang && !force)
+            return;
+        Resources res = context.getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        if (defaultLang)
+        conf.locale = Locale.getDefault();
+        else {
+            String[] locales = language.split("_");
+            if (locales.length == 1)
+                conf.locale = new Locale(language);
+            else
+                conf.locale = new Locale(locales[0],locales[1]);
+        }
+        res.updateConfiguration(conf, dm);
+        KES.shared().getAccountManager().setLocale(conf.locale);
+        /*
+        Intent refresh = new Intent(this, AndroidLocalize.class);
+        startActivity(refresh);
+        */
+    }
 
 
 }

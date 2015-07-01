@@ -68,8 +68,8 @@
                             android:layout_gravity="right"
                             android:src="@drawable/ic_edit"
                             android:padding="@dimen/compose_smallbuttonpadding"
-                            android:layout_width="@dimen/compose_buttonheight"
-                            android:layout_height="@dimen/compose_buttonheight" />
+                            android:layout_width="@dimen/compose_smallbuttonheight"
+                            android:layout_height="@dimen/compose_smallbuttonheight" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -91,8 +91,8 @@
                             android:layout_gravity="right"
                             android:src="@drawable/ic_private"
                             android:padding="@dimen/compose_smallbuttonpadding"
-                            android:layout_width="@dimen/compose_buttonheight"
-                            android:layout_height="@dimen/compose_buttonheight" />
+                            android:layout_width="@dimen/compose_smallbuttonheight"
+                            android:layout_height="@dimen/compose_smallbuttonheight"/>
                     </LinearLayout>
                 </LinearLayout>
 

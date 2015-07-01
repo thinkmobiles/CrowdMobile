@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -36,13 +36,13 @@ public class NavigationBar {
 
 	public enum Attached {Empty, Feed, MyFeed, Compose, Checkout};
 	private ImageView btFeed,btMyFeed,btCompose,btCheckout;
-	private ActionBarActivity mActivity;
+	private AppCompatActivity mActivity;
 	private Attached attached = Attached.Empty;
 	private ViewPager mViewPager;
     private NavbarAdapter adapter;
     private TextView tvUnreadCount;
 
-	public NavigationBar(ActionBarActivity activity, View v,ViewPager viewPager)
+	public NavigationBar(AppCompatActivity activity, View v,ViewPager viewPager)
 	{
 		mActivity = activity;
         mViewPager = viewPager;

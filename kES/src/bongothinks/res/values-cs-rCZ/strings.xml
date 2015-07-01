@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bongo myslí</string>
+
+    <plurals name="credits_purchase_messgae_plurals">
+        <item quantity="one">CHCEŠ SI KOUPIT %1$d KREDIT ZA %2$s?</item>
+        <item quantity="other">CHCEŠ SI KOUPIT %1$d KREDITY ZA %2$s?</item>
+    </plurals>
+
+    <plurals name="credits_plurals">
+        <item quantity="one">kredit</item>
+        <item quantity="other">kredity</item>
+    </plurals>
+
+ 	<string name="fb_app_id">760239814072784</string>
+
+
+    <!-- No account -->
+    <string name="noaccount_title">Ups!</string>
+    <string name="noaccount_message">Nemáte registovaný Google účet! Bongo Vás nemůže najít bez Google Cloud Messaging.</string>
+    <string name="noaccount_btquit">skončit</string>
+
+    <!-- Notification bar -->
+    <string name="notification_title">Bongo</string>
+    <string name="notification_text">Máte novou zodpovězenou otázku</string>
+
+    <!-- Login -->
+    <string name="login_facebook">Přihlášení cez Facebook</string>
+    <string name="login_twitter">Přihlášení cez Twitter</string>
+    <string name="login_skip">Přeskočit</string>
+
+    <string name="welcome">Vítejte v Bongo</string>
+    <string name="error">Chyba</string>
+    <string name="ok">OK</string>
+    <string name="fb_login">Připojení cez Facebook</string>
+    <string name="twitter_login">Připojení cez Twitter</string>
+    <string name="connecting">připojuji</string>
+    <string name="error_fb_login">Facebook chyba připojení</string>
+    <string name="error_kes_login">Připojení do KES neúspěšné</string>
+    <string name="error_fb_nouserinfo">Není možné získat informace o uživateli</string>
+    
+
+    
+    <!-- Menu -->
+    <string name="action_settings">Nastavení</string>
+    <string name="action_privacy">Nastavení ochrany osobních údajů</string>
+    <string name="action_about">O</string>
+    <string name="action_agreement">Podmínky smlouvy</string>
+    <string name="action_support">Podpora</string>
+    <string name="action_terms">Podmínky</string>
+    <string name="action_logout">Odhlásit se</string>
+    <string name="title_activity_profile">Profil činnosti</string>
+
+    <!-- Not registered -->
+    <string name="not_registered_title">Podívej se, co ví Bongo o tobě</string>
+    <string name="not_registered_message">Tahle stránka je nepřístupná pro uživatele bez registrace. Zaregistrujte se teď!</string>
+    <string name="not_registered_btstart">začít</string>
+    <string name="not_registered_dialog_message">Tahle funkce je nepřístupná pro uživatele bez účtu. Začněte a udělejte si svůj účet nyní!</string>
+
+    <string name="myfeed_noposts_title">Ach jaj, nemáte žádný příspěvek</string>
+    <string name="myfeed_noposts_message">Nemáte žádnou otázku pro Bonga? Zeptejte se teď!</string>
+    <string name="myfeed_noposts_btn">Zeptejte se</string>
+
+    <string name="publicfeed_noposts_title">Ach jaj, nemáme žádný post</string>
+    <string name="publicfeed_noposts_message">Prosím, vraťte se zpět později!</string>
+    <string name="publicfeed_noposts_btn">Refresh</string>
+
+    <string name="feed_error_title">Uh oh, chyba sítě</string>
+    <string name="feed_error_message">Nelze načíst zdroj!</string>
+    <string name="feed_error_btn">Opakovat</string>
+
+    <!-- Feed -->
+    <string name="feed_question">Otázka:</string>
+    <string name="feed_answer">Odpověď:</string>
+    <string name="feed_posting">zveřejňuji otázku...</string>
+    <string name="share_title">Sdílet otázku</string>
+    <string name="share_unavailable">Sdílení nelze</string>
+    <string name="share_subject">Zkontroluj Bongo!</string>
+
+    <string name="newsfeed">Newsfeed</string>
+    <string name="myfeed">Moje otázky</string>
+    <string name="item_share">SDÍLET</string>
+    <string name="item_retry">Zopakovat</string>
+    <string name="item_noanswer">Bongo odpoví na vaši otázku, jakmile to bude možné</string>
+    <string name="timeformat_day" formatted="false">%d dní dozadu</string>
+    <string name="timeformat_hour_min" formatted="false">%d hodín %d minút dozadu</string>
+    <string name="timeformat_min" formatted="false">%d minút dozadu</string>
+    <string name="clipboard_label">Bongo otázka</string>
+    <string name="copied_to_clipboard">Kopia do clipboard</string>
+
+    <!-- Credit -->
+    <string name="refund_email">support@bongo.com</string>
+    <string name="refund_email_title">Požadavek na vrácení peněz</string>
+    <string name="refund_email_message">Prosim zrušte následující objednávku:</string>
+    <string name="refund_email_dialog_title">Vrácení peněz</string>
+    <string name="purchase_retry">Zopakovat</string>
+    <string name="purchase_refund">Vrácení peněz</string>
+    <string name="credit_status_init">Inicializace Google Play</string>
+    <string name="credit_status_initfail">Inicializace Google Play neúspěšná</string>
+    <string name="credit_status_inventoryfail">Nepodařilo se získat výrobky</string>
+    <string name="credit_status_request_products">Načítání</string>
+    <string name="credit_status_processing">Zpracování platby</string>
+    <string name="credit_status_processing_fail">Bongo nemohl dostat banány, ktere jste zakoupili.</string>
+    <string name="credit_status_disconnected">Odpojené</string>
+    <string name="credit_price_format" formatted="false">%s %.2f</string>
+    <string name="fragment_credit_title">Dostat banány</string>
+    <string name="credit_info">Bongo je hladový!</string>
+    <string name="credit_message">Rychle, nakrm ho banány, ať vládze zodpovědět co nejvíce otázek!</string>
+    <string name="credit_itemname">\u0020/ Banán</string>
+    <string name="btn_buy">KÚP</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Chtěli byste ho nakrmit, aby zvládl zodpovědět více otázek?</string>
+
+    <!-- Compose -->
+    <string name="compose_suggested">navrhované otázky</string>
+    <string name="compose_private">soukromí</string>
+    <string name="compose_public">veřejní</string>
+    <string name="compose_invalidchar">nepodporované znaky</string>
+    <string name="compose_title">Zeptej se Bonga</string>
+    <string name="compose_hint">Zeptej se Bonga svůj dotaz</string>
+    <string name="bubble_text">Přidej fotku nebo dej Bongovi otázku, nebo obojí!</string>
+    <string name="error_nocamera">Promiňte, kamera není dostupná.</string>
+    <string name="error_storagewrite">Chyba při zápisu do externího úložiště.</string>
+    <!-- Gallery -->
+    <string name="gallery_title">Vyberte obrázek</string>
+    <!-- Crop -->
+    <string name="crop_title">oříznout obrázek</string>
+
+
+    <!-- Preferences -->
+    <string name="title_activity_settings">Nastavení</string>
+    <string name="category_general">obecne</string>
+
+    <string name="title_language">jazyk</string>
+
+    <string name="title_updateinterval">aktualizace intervalu novinek</string>
+
+    <string-array name="updateInterval">
+        <item>denně</item>
+        <item>každý 2 den</item>
+        <item>každý 3 den</item>
+        <item>každý týden</item>
+    </string-array>
+
+    <string name="title_gender">Pohlaví</string>
+
+    <string-array name="genderNames">
+        <item>Muž</item>
+        <item>Žena</item>
+    </string-array>
+
+
+    <string name="title_showsuggestion">Ukázat návrh</string>
+    <string name="detail_showsuggestion">Zobrazit navrhované otázky na vytvořené obrazovce</string>
+
+    <string name="category_account">Účet</string>
+
+    <string name="title_birthdate">Datum narození</string>
+
+    <string name="title_relationship">Stav</string>
+
+    <string-array name="relationshipNames">
+        <item>Svobodný/á</item>
+        <item>Ve vztahu</item>
+        <item>Žiju s někým</item>
+        <item>Ženatý/Vydaná</item>
+    </string-array>
+
+
+</resources>

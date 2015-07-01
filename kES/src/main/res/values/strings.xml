@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="updateIntervalAlias" translatable="false">
+        <item>24</item>
+        <item>48</item>
+        <item>72</item>
+        <item>168</item>
+    </string-array>
+
+
+    <string-array name="genderAlias" translatable="false">
+        <item>M</item>
+        <item>F</item>
+    </string-array>
+
+    <string-array name="relationshipAlias" translatable="false">
+        <item>S</item>
+        <item>R</item>
+        <item>C</item>
+        <item>M</item>
+    </string-array>
+
+    <!-- Preferences -->
+    <string name="key_logout" translatable="false">key_logout</string>
+    <string name="key_user_id" translatable="false">key_userid</string>
+    <string name="key_user_firstname" translatable="false">key_userfirstname</string>
+    <string name="key_user_lastname" translatable="false">key_userlastname</string>
+    <string name="key_user_email" translatable="false">key_useremail</string>
+    <string name="key_user_authtoken" translatable="false">key_userauthtoken</string>
+
+    <string name="key_skip_login" translatable="false">skip_login</string>
+    <string name="key_active_fragment" translatable="false">active_fragment</string>
+    <string name="key_compose_text" translatable="false">compose_text</string>
+    <string name="key_compose_private" translatable="false">compose_private</string>
+    <string name="key_camera_picture" translatable="false">camera_picture</string>
+    <string name="key_composed_picture" translatable="false">composed_picture</string>
+
+    <string name="key_language" translatable="false">key_language</string>
+    <string name="key_updateinterval" translatable="false">key_updateinterval</string>
+    <string name="key_gender" translatable="false">key_gender</string>
+    <string name="key_showsuggestion" translatable="false">key_showsuggestion</string>
+    <string name="key_accountname" translatable="false">key_accountname</string>
+    <string name="key_birthdate" translatable="false">key_birthdate</string>
+    <string name="key_relationship" translatable="false">key_relationship</string>
+    <string name="key_skip_nopic" translatable="false">key_skip_nopic</string>
+
+</resources>

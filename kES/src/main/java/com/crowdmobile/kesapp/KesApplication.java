@@ -3,6 +3,7 @@ package com.crowdmobile.kesapp;
 import android.app.Application;
 import android.support.v4.app.NotificationCompat;
 
+import com.crowdmobile.kesapp.fragment.PrefsFragment;
 import com.crowdmobile.kesapp.util.HockeyUtil;
 import com.kes.KES;
 import com.kes.KesConfigOptions;
@@ -44,5 +45,6 @@ public class KesApplication extends Application {
 
         KES.initialize(this, kesConfigOptions);
         KES.shared().getAccountManager().setUAChannelID(UAirship.shared().getPushManager().getChannelId());
+        PrefsFragment.setLocale(this, false);
     }
 }

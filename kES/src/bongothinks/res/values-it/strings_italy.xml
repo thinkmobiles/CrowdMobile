@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bongo Thinks</string>
+
+    <plurals name="credits_purchase_messgae_plurals">
+        <item quantity="one">VUOI COMPRARE %1$d CREDITO PER %2$s?</item>
+        <item quantity="other">VUOI COMPRARE %1$d CREDITI PER %2$s?</item>
+    </plurals>
+
+    <plurals name="credits_plurals">
+        <item quantity="one">credito</item>
+        <item quantity="other">crediti</item>
+    </plurals>
+
+ 	<string name="fb_app_id">760239814072784</string>
+
+
+    <!-- No account -->
+    <string name="noaccount_title">Ops!</string>
+    <string name="noaccount_message">Non hai un account Google! Bongo non può raggiungerti senza Google Cloud Messaging.</string>
+    <string name="noaccount_btquit">Esci</string>
+
+    <!-- Notification bar -->
+    <string name="notification_title">Bongo</string>
+    <string name="notification_text">Hai una nuova risposta alla tua domanda</string>
+
+    <!-- Login -->
+    <string name="login_facebook">Log in tramite Facebook</string>
+    <string name="login_twitter">Log in tramite Twitter</string>
+    <string name="login_skip">Skip</string>
+
+    <string name="welcome">Welcome to Bongo</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
+    <string name="fb_login">Connecting to Facebook</string>
+    <string name="twitter_login">Connecting to Twitter</string>
+    <string name="connecting">Connecting</string>
+    <string name="error_fb_login">Facebook connection error</string>
+    <string name="error_kes_login">Login to KES failed</string>
+    <string name="error_fb_nouserinfo">Could not retrieve user info</string>
+    
+
+    
+    <!-- Menu -->
+    <string name="action_settings">Impostazioni</string>
+    <string name="action_privacy">Privacy</string>
+    <string name="action_about">About</string>
+    <string name="action_agreement">Termini del contratto</string>
+    <string name="action_support">Supporto</string>
+    <string name="action_terms">Termini</string>
+    <string name="action_logout">Log out</string>
+    <string name="title_activity_profile">Attività</string>
+
+    <!-- Not registered -->
+    <string name="not_registered_title">Vedi cosa Bongo sa su di te</string>
+    <string name="not_registered_message">Questa pagina è inacessibile agli utenti che non hanno un account. Registrati ORA!</string>
+    <string name="not_registered_btstart">Iniziare</string>
+    <string name="not_registered_dialog_message">Questa pagina è inacessibile agli utenti che non hanno un account. Inizia e crea un account adesso!</string>
+
+    <string name="myfeed_noposts_title">Uh oh, non hai nessun post</string>
+    <string name="myfeed_noposts_message">Non hai ancora chiesto nulla a Bongo. Fagli una domanda ORA!</string>
+    <string name="myfeed_noposts_btn">Fai una domanda</string>
+
+    <string name="publicfeed_noposts_title">Uh oh, non abbiamo nessun post</string>
+    <string name="publicfeed_noposts_message">Torna più tardi per favore!</string>
+    <string name="publicfeed_noposts_btn">Aggiorna</string>
+
+    <string name="feed_error_title">Uh oh, network error</string>
+    <string name="feed_error_message">Impossibile aggiornare le notizie</string>
+    <string name="feed_error_btn">Rirpova</string>
+
+    <!-- Feed -->
+    <string name="feed_question">Domanda:</string>
+    <string name="feed_answer">Risposta:</string>
+    <string name="feed_posting">posting question...</string>
+    <string name="share_title">Condividi domanda</string>
+    <string name="share_unavailable">Condivisione non disponibile</string>
+    <string name="share_subject">Dai uno sguardo a Bongo!</string>
+
+    <string name="newsfeed">Notizie</string>
+    <string name="myfeed">Le mie domande</string>
+    <string name="item_share">CONDIVIDI</string>
+    <string name="item_retry">Riprova</string>
+    <string name="item_noanswer">Bongo risponderà alla tua domanda al più presto</string>
+    <string name="timeformat_day" formatted="false">%d giorni fa</string>
+    <string name="timeformat_hour_min" formatted="false">%d ora %d minuti fa</string>
+    <string name="timeformat_min" formatted="false">%d minuti fa</string>
+    <string name="clipboard_label">Bongo Domanda</string>
+    <string name="copied_to_clipboard">Copiato su clipboard</string>
+
+    <!-- Credit -->
+    <string name="refund_email">support@bongo.com</string>
+    <string name="refund_email_title">richiesta di rimborso</string>
+    <string name="refund_email_message">Per favore cancella i seguenti ordini:</string>
+    <string name="refund_email_dialog_title">Rimborso</string>
+    <string name="purchase_retry">Riprova</string>
+    <string name="purchase_refund">Rimborso</string>
+    <string name="credit_status_init">Initializing google play</string>
+    <string name="credit_status_initfail">Failed initialize google play</string>
+    <string name="credit_status_inventoryfail">Failed to retrieve products</string>
+    <string name="credit_status_request_products">Caricamente</string>
+    <string name="credit_status_processing">Processing payment</string>
+    <string name="credit_status_processing_fail">Bongo non può ricevere le banane cha hai comprato.</string>
+    <string name="credit_status_disconnected">Disconnesso</string>
+    <string name="credit_price_format" formatted="false">%s %.2f</string>
+    <string name="fragment_credit_title">Prendi le banane</string>
+    <string name="credit_info">Bongo è affamato!</string>
+    <string name="credit_message">Su forza...dagli qualche banana così può rispondere alle tue domande!</string>
+    <string name="credit_itemname">\u0020/ Banana</string>
+    <string name="btn_buy">COMPRA</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Vorresti dargli qualche banana così può rispondere alle tue domande?</string>
+
+    <!-- Compose -->
+    <string name="compose_suggested">domande consigliate</string>
+    <string name="compose_private">privato</string>
+    <string name="compose_public">pubblico</string>
+    <string name="compose_invalidchar">Carattere non supportato</string>
+    <string name="compose_title">Chiedi a Bongo</string>
+    <string name="compose_hint">Fai la tua domanda a Bongo</string>
+    <string name="bubble_text">Aggiungi una foto o scrivi una domanda da mandare a Bongo, o entrambe le cose!</string>
+    <string name="error_nocamera">Ci dispiace, la camera non è disponibile.</string>
+    <string name="error_storagewrite">Error writing to external storage.</string>
+    <!-- Gallery -->
+    <string name="gallery_title">Scegli una foto</string>
+    <!-- Crop -->
+    <string name="crop_title">Ritaglia la tua foto</string>
+
+
+    <!-- Preferences -->
+    <string name="title_activity_settings">Impostazioni</string>
+    <string name="category_general">Generale</string>
+    <string name="title_language">Language</string>
+
+    <string name="title_updateinterval">Frequenza di sincronizzazione</string>
+
+    <string-array name="updateInterval">
+        <item>Giornalmente</item>
+        <item>ogni 2 giorni</item>
+        <item>ogni 3 giorni</item>
+        <item>ogni settimana</item>
+    </string-array>
+
+    <string name="title_gender">Genere</string>
+
+    <string-array name="genderNames">
+        <item>Maschio</item>
+        <item>Femmina</item>
+    </string-array>
+
+    <string name="title_showsuggestion">Mostra consigli</string>
+    <string name="detail_showsuggestion">Mostra domande consigliate lateralmente</string>
+
+    <string name="category_account">Account</string>
+
+    <string name="title_birthdate">Data di nascita</string>
+
+    <string name="title_relationship">Situazione sentimentale</string>
+
+    <string-array name="relationshipNames">
+        <item>Single</item>
+        <item>In una relazione</item>
+        <item>Convivente</item>
+        <item>Sposato</item>
+    </string-array>
+
+</resources>

@@ -152,7 +152,7 @@ public class DataFetcher {
 
     }
 
-	static String locale = Locale.getDefault().toString();
+	public static String locale = Locale.getDefault().toString();
 
 	public static DefaultHttpClient getHttpClient()
 	{
@@ -177,15 +177,16 @@ public class DataFetcher {
 		return result;
 	}
 
+	/*
 	public static HttpGet getRequest(String url)
 	{
 		HttpGet retval = new HttpGet(url);
-		retval.setHeader("Accept","text/html,application/json,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
 		retval.setHeader("Accept-Encoding", "gzip,deflate");
 		retval.setHeader("Accept-Language",locale);
 		return retval;
 	}
-	
+	*/
+
 	protected void ensureDelay(long ms) throws InterruptedException
 	{
 		long now = System.currentTimeMillis();

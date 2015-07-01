@@ -143,8 +143,10 @@ public class GalleryFragment extends Fragment {
                 holder = (ViewHolder) convertView.getTag();
 
             holder.imgPhoto.setTag(Integer.valueOf(position));
-            if (position != 0)
-                Picasso.with(context).load("file://" + data.thumbnail).fit().centerCrop().into(holder.imgPhoto);
+            if (position != 0) {
+                String fileName = data.thumbnail != null ? data.thumbnail : data.image;
+                Picasso.with(context).load("file://" + fileName).fit().centerCrop().into(holder.imgPhoto);
+            }
             else
                 holder.imgPhoto.setImageResource(R.drawable.ic_camera_gallery);
             return convertView;
@@ -160,48 +162,53 @@ public class GalleryFragment extends Fragment {
         protected ArrayList<ImageData> doInBackground(Void... params) {
             SparseArray<ImageData> slist = new SparseArray<ImageData>();
             ArrayList<ImageData> retval = new ArrayList<ImageData>();
-            String[] projectiont = {MediaStore.Images.Thumbnails.IMAGE_ID, MediaStore.Images.Thumbnails.DATA};
-            String[] projectiond = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
+            String[] thumbnails = {MediaStore.Images.Thumbnails.IMAGE_ID, MediaStore.Images.Thumbnails.DATA};
+            String[] images = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
 
-            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, projectiont, null, null, null);
+            int col_id, col_data;
+
+            Cursor cursor = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, images, null, null, null);
             if (cursor != null) {
-                int col_id, col_data;
-                col_id = cursor.getColumnIndex(MediaStore.Images.Thumbnails.IMAGE_ID);
-                col_data = cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
+                col_id = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                col_data = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
 
                 if (cursor.moveToFirst())
                     do {
                         ImageData data = new ImageData();
                         int id = cursor.getInt(col_id);
-                        data.thumbnail = cursor.getString(col_data);
+                        data.image = cursor.getString(col_data);
                         retval.add(data);
-                        slist.put(id,data);
+                        slist.put(id, data);
                     } while (cursor.moveToNext());
                 cursor.close();
-
-                cursor = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projectiond, null, null, null);
-                if (cursor != null) {
-                    col_id = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-                    col_data = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-
-                    if (cursor.moveToFirst())
-                        do {
-                            int id = cursor.getInt(col_id);
-                            ImageData data = slist.get(id);
-                            if (data == null)
-                            {
-                                data = new ImageData();
-                                data.thumbnail = cursor.getString(col_data);
-                                retval.add(data);
-                                slist.put(id,data);
-
-                            }
-                            data.image = cursor.getString(col_data);
-                        } while (cursor.moveToNext());
-                    cursor.close();
-                }
-
             }
+
+            cursor = getActivity().getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI, thumbnails, null, null, null);
+            if (cursor != null) {
+                col_id = cursor.getColumnIndex(MediaStore.Images.Thumbnails.IMAGE_ID);
+                col_data = cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA);
+
+                if (cursor.moveToFirst())
+                    do {
+                        int id = cursor.getInt(col_id);
+                        ImageData data = slist.get(id);
+                        /*
+                        if (data == null)
+                        {
+                            data = new ImageData();
+                            data.thumbnail = cursor.getString(col_data);
+                            retval.add(data);
+                            slist.put(id,data);
+
+                        }
+                        */
+                        if (data != null)
+                            data.thumbnail = cursor.getString(col_data);
+                    } while (cursor.moveToNext());
+                cursor.close();
+            }
+
+
 
             return retval;
         }

@@ -15,19 +15,25 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crowdmobile.kesapp.MainActivityInterface;
 import com.crowdmobile.kesapp.PictureActivity;
 import com.crowdmobile.kesapp.R;
+import com.crowdmobile.kesapp.SuggestionDialog;
 import com.crowdmobile.kesapp.util.PreferenceUtils;
 import com.crowdmobile.kesapp.widget.NavigationBar;
 import com.kes.KES;
@@ -63,6 +69,9 @@ public class ComposeFragment extends Fragment {
     boolean isPrivate;
     Handler mHandler;
     CharsetEncoder latinEncoder;
+    SuggestionDialog suggestionDialog;
+    MainActivityInterface mainActivityInterface;
+    LayoutInflater inflater;
 
     @Override
     public void onResume() {
@@ -73,6 +82,13 @@ public class ComposeFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        mainActivityInterface = (MainActivityInterface)activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mainActivityInterface = null;
     }
 
     @Override
@@ -91,6 +107,8 @@ public class ComposeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        this.inflater = inflater;
+
         setHasOptionsMenu(true);
         afterResume = false;
         View result = inflater.inflate(R.layout.fragment_compose,container,false);
@@ -115,7 +133,6 @@ public class ComposeFragment extends Fragment {
         tvSuggestion.setPaintFlags(tvSuggestion.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         tvVisibility = (TextView)result.findViewById(R.id.tvVisibility);
         tvVisibility.setPaintFlags(tvVisibility.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        imgPrivate.setOnClickListener(onClickListener);
         edMessage.setText(PreferenceUtils.getComposeText(getActivity()));
         InputFilter filter = new InputFilter() {
             public CharSequence filter(CharSequence source, int start, int end,
@@ -168,23 +185,27 @@ public class ComposeFragment extends Fragment {
 
     private void showSuggestions()
     {
+        if (suggestionDialog == null)
+            suggestionDialog = new SuggestionDialog(getActivity());
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final ArrayList<String> suggestions = new ArrayList<String>();
-        suggestions.add("Question 1");
-        suggestions.add("Question 2");
-        suggestions.add("Question 3");
-        suggestions.add("Question 4");
-        suggestions.add("Question 5");
-        CharSequence ss[] = new CharSequence[suggestions.size()];
-        suggestions.toArray(ss);
-        builder.setItems(ss, new DialogInterface.OnClickListener() {
+        suggestions.add("Here we can place some predefined questions from Bongo for users to choose from.This will make it easier to ask Bongo a question");
+        suggestions.add("Another question to ask Bongo. Predefined like the previous one and the next.");
+        suggestions.add("Bongo knows a lot.And when people select a question here they save themselved of the hassle of typing a question themselves.");
+        suggestions.add("Bongo knows a lot.And when people select a question here they save themselved of the hassle of typing a question themselves.");
+        suggestionDialog.setItems(suggestions);
+        suggestionDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                edMessage.setText(suggestions.get(which));
-                dialog.dismiss();
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String s = suggestions.get(position);
+                edMessage.setText(s);
+                if (!TextUtils.isEmpty(s))
+                    edMessage.setSelection(s.length());
+                suggestionDialog.hide();
             }
         });
-        builder.create().show();
+        suggestionDialog.show();
     }
 
     View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -201,7 +222,7 @@ public class ComposeFragment extends Fragment {
             }
             else if (v == imgPost)
             {
-                postQuestion();
+                preparePost();
             }
             else if (v == imgPreview)
                 takePicture();
@@ -389,15 +410,32 @@ public class ComposeFragment extends Fragment {
         }
     }
 
-    private void postQuestion()
+    private void preparePost()
     {
         final String question = edMessage.getText().toString();
         final String picturePath = PreferenceUtils.getComposedPicture(getActivity());
         if (question == null || question.length() == 0 && picturePath == null)
             return;
-
         InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edMessage.getWindowToken(), 0);
+
+        if (TextUtils.isEmpty(picturePath)) {
+            pictureWarning();
+            return;
+        }
+        postQuestion();
+    }
+
+    private void postQuestion()
+    {
+        final String question = edMessage.getText().toString();
+        final String picturePath = PreferenceUtils.getComposedPicture(getActivity());
+
+        if (KES.shared().getAccountManager().getUser().balance < 1) {
+            mainActivityInterface.showNoCreditDialog();
+            return;
+        }
+
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -409,5 +447,53 @@ public class ComposeFragment extends Fragment {
             }
         },250);
     }
+
+    void pictureWarning()
+    {
+        //PreferenceUtils.setSkipNoPic(getActivity(),false);
+        if (PreferenceUtils.getSkipNoPic(getActivity()))
+        {
+            postQuestion();
+            return;
+        }
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        View dialogView = inflater.inflate(R.layout.dialog_nopicture,null);
+
+        CheckBox cb = (CheckBox)dialogView.findViewById(R.id.cbDontShowAgain);
+        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               if (isChecked)
+                   PreferenceUtils.setSkipNoPic(buttonView.getContext(),true);
+            }
+        });
+
+        alertDialogBuilder.setTitle(R.string.compose_nopic_title);
+        alertDialogBuilder.setMessage(R.string.compose_nopic_message);
+
+        // set dialog message
+        alertDialogBuilder
+                .setView(dialogView)
+                .setCancelable(false)
+                .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        postQuestion();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
 
 }

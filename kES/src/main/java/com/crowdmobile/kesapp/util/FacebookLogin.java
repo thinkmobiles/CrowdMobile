@@ -38,6 +38,7 @@ public class FacebookLogin {
     private Activity mActivity;
 	private FacebookCallback callback;
 	private Session session;
+	private boolean userInfoCalled;
 
 	public void logout(Context context)
 	{
@@ -81,6 +82,7 @@ public class FacebookLogin {
 			throw new IllegalStateException();
 		//if (!isFBInstalled(callback.getActivity()))
 		//	return;
+		userInfoCalled = false;
         boolean success = false;
 		try {
 			session = new Session(mActivity);
@@ -130,9 +132,9 @@ public class FacebookLogin {
 				request.executeAsync();
 				return;
 			}
-			if (exception != null || state == SessionState.CLOSED_LOGIN_FAILED) {
+			if (exception != null || state.isClosed()) {
 				closeSession();
-                if (callback != null)
+                if (!userInfoCalled && callback != null)
 					callback.onFail(Fail.Login);
 					return;
 			}
@@ -173,6 +175,7 @@ public class FacebookLogin {
 							*/
             if (callback != null)
                 callback.onUserInfo(retval);
+			userInfoCalled = true;
 			closeSession();
 		}
 	};

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -71,6 +72,9 @@ public class NetworkService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null)
             return START_NOT_STICKY;
+        if (TextUtils.isEmpty(intent.getAction()))
+            return START_NOT_STICKY;
+
         Log.d(TAG, "OnStart()");
 
         NetworkExecutable networkExecutable = null;

@@ -4,9 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.kes.model.User;
+import com.kes.net.DataFetcher;
 import com.kes.net.ModelFactory;
 
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.WeakHashMap;
 
 /**
@@ -34,6 +36,11 @@ public class AccountManager {
     private User user;
     private WeakHashMap<AccountListener, Void> userCallbacks = new WeakHashMap<AccountListener, Void>();
     private String ua_token;
+
+    public void setLocale(Locale locale)
+    {
+        DataFetcher.locale = locale.toString();
+    }
 
     public void unRegisterListener(Object object)
     {
