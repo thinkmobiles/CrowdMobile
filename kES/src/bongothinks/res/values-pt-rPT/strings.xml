@@ -12,9 +12,6 @@
         <item quantity="other">créditos</item>
     </plurals>
 
- 	<string name="fb_app_id">760239814072784</string>
-
-
     <!-- No account -->
     <string name="noaccount_title">Ops!</string>
     <string name="noaccount_message">Não tem nenhuma conta google registada! O Bongo não consegue falar contigo sem Google Cloud Messaging.</string>

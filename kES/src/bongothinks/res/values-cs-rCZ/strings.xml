@@ -12,9 +12,6 @@
         <item quantity="other">kredity</item>
     </plurals>
 
- 	<string name="fb_app_id">760239814072784</string>
-
-
     <!-- No account -->
     <string name="noaccount_title">Ups!</string>
     <string name="noaccount_message">Nemáte registovaný Google účet! Bongo Vás nemůže najít bez Google Cloud Messaging.</string>

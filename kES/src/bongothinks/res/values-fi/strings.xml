@@ -12,9 +12,6 @@
         <item quantity="other">krediittejä</item>
     </plurals>
 
- 	<string name="fb_app_id">760239814072784</string>
-
-
     <!-- No account -->
     <string name="noaccount_title">Hups!</string>
     <string name="noaccount_message">Et ole kirjautunut Google-tilillä! Bongo ei voi tavoittaa sinua ilman Google Cloudia.</string>

@@ -12,7 +12,7 @@
         <item quantity="other">credits</item>
     </plurals>
 
- 	<string name="fb_app_id">760239814072784</string>
+ 	<string name="fb_app_id" translatable="false">760239814072784</string>
 
 
     <!-- No account -->
@@ -89,7 +89,7 @@
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
+    <string name="refund_email" translatable="false">support@bongo.com</string>
     <string name="refund_email_title">refund request</string>
     <string name="refund_email_message">Please cancel the following orders:</string>
     <string name="refund_email_dialog_title">Refund</string>
@@ -102,7 +102,7 @@
     <string name="credit_status_processing">Processing payment</string>
     <string name="credit_status_processing_fail">Bongo could not get the bananas you have purchased.</string>
     <string name="credit_status_disconnected">Disconnected</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
+    <string name="credit_price_format" formatted="false" translatable="false">%s %.2f</string>
     <string name="fragment_credit_title">Get bananas</string>
     <string name="credit_info">Bongo\'s hungry!</string>
     <string name="credit_message">Hurry up and feed him bananas so he can answer more questions!</string>
@@ -194,10 +194,14 @@
         <item>Suomi</item>
         <item>Português</item>
         <item>Hrvatski</item>
+        <item>Hrvatski Bosnia</item>
         <item>Italiano</item>
         <item>Polski</item>
         <item>Čeština</item>
         <item>Slovenčina</item>
+        <item>Srpski</item>
+        <item>Srpski (Montenegro)</item>
+        <item>Magyar</item>
     </string-array>
 
     <string-array name="languageAlias" translatable="false">
@@ -206,11 +210,15 @@
         <item>sv</item>
         <item>fi</item>
         <item>pt_PT</item>
-        <item>hr</item>
+        <item>hr_HR</item>
+        <item>hr_BA</item>
         <item>it</item>
         <item>pl</item>
         <item>cs_CZ</item>
         <item>sk</item>
+        <item>sr_RS</item>
+        <item>sr_ME</item>
+        <item>hu</item>
     </string-array>
 
 </resources>

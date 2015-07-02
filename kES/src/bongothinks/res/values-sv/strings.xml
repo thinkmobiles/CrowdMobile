@@ -12,9 +12,6 @@
         <item quantity="other">kostnader</item>
     </plurals>
 
- 	<string name="fb_app_id">760239814072784</string>
-
-
     <!-- No account -->
     <string name="noaccount_title">Ops!</string>
     <string name="noaccount_message">Du har inget google konto registrerat! Bongo kan inte kontakta dig utan Google Cloud Messaging.</string>
