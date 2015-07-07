@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crowdmobile.kesapp.R;
+import com.crowdmobile.kesapp.widget.ImgSpannableString;
 import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
 import com.squareup.picasso.Picasso;
@@ -37,6 +40,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     private FeedAdapterListener listener = null;
     private Activity activity;
     private Handler mHandler = new Handler();
+    private Bitmap placeHolder;
 
     public interface FeedAdapterListener {
 //        public void onLastItemReached();
@@ -91,6 +95,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         View btRetry;
         View progress;
         View holderBackground;
+        TextView tvLikeCount;
+        View detailHolder;
+
         public View answerBackground;
         public ValueAnimator backgroundAnimator;
 
@@ -122,6 +129,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 ivAnswerLeft = (ImageView) view.findViewById(R.id.imgAnswerLeft);
                 ivAnswerCenter = (ImageView) view.findViewById(R.id.imgAnswerCenter);
                 ivAnswerRight = (ImageView) view.findViewById(R.id.imgAnswerRight);
+
+                detailHolder = view.findViewById(R.id.detailHolder);
+                tvLikeCount = (TextView) view.findViewById(R.id.tvLikeCount);
 
                 btRetry = view.findViewById(R.id.btRetry);
                 btRetry.setOnClickListener(retryPostClick);
@@ -178,6 +188,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         this.activity = activity;
         this.list = list;
         this.listener = listener;
+        this.placeHolder = BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_youtube);
     }
 
     View.OnClickListener itemClick = new View.OnClickListener() {
@@ -300,7 +311,18 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             holder.tvQuestion.setVisibility(View.GONE);
         }
         else {
-            holder.tvQuestion.setText(item.message);
+            //holder.tvQuestion.setText(item.message);
+            /*
+            SpannableString ss = new SpannableString(item.message);
+            Drawable d = holder.tvQuestion.getResources().getDrawable(R.drawable.ic_camera);
+            d.setBounds(0, 0, 20, 20);
+            ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+            ss.setSpan(span, 2, 3, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            holder.tvQuestion.setTransformationMethod(null);
+            holder.tvQuestion.setText(ss);
+            */
+            String tmp = "this is a video1 https://www.youtube.com/watch?v=-eH_4TMDuqw and a video2 https://www.youtube.com/watch?v=sZq87CNwY3w link in this feed and any https://www.youtube.com/watch?v=i3ZZkX1LYbc";
+            new ImgSpannableString(holder.tvQuestion,placeHolder, tmp);
             holder.tvQuestion.setVisibility(View.VISIBLE);
             holder.messagePlaceholder.setVisibility(View.GONE);
         }
@@ -328,6 +350,25 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 //            holder.holderBackground.setBackgroundColor(R.color.item_background);
 //            holder.fadeLayer.setVisibility(View.INVISIBLE);
 //            holder.layout.setMaskColor(0);
+
+
+            if (holder.detailHolder != null) {
+                int likeCount = item.responses[0].likes_count;
+                if (likeCount == 0)
+                    holder.detailHolder.setVisibility(View.GONE);
+                else {
+                    holder.detailHolder.setVisibility(View.VISIBLE);
+                    if (holder.tvLikeCount != null) {
+                        if (likeCount == 0)
+                            holder.tvLikeCount.setVisibility(View.GONE);
+                        else {
+                            holder.tvLikeCount.setVisibility(View.VISIBLE);
+                            holder.tvLikeCount.setText(holder.tvLikeCount.getContext().getResources().getQuantityString(R.plurals.like, likeCount, likeCount));
+                        }
+                    }
+                }
+            }
+
             holder.tvAnswerLabel.setVisibility(View.VISIBLE);
             holder.ivAnswerLeft.setVisibility(View.VISIBLE);
             holder.ivAnswerCenter.setVisibility(View.INVISIBLE);

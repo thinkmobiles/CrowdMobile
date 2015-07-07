@@ -7,6 +7,11 @@
         <item quantity="other">DO YOU WANT TO BUY %1$d CREDITS FOR %2$s?</item>
     </plurals>
 
+    <plurals name="like">
+        <item quantity="one">%d like</item>
+        <item quantity="other">%d likes</item>
+    </plurals>
+
     <plurals name="credits_plurals">
         <item quantity="one">credit</item>
         <item quantity="other">credits</item>
@@ -89,9 +94,9 @@
     <string name="copied_to_clipboard">Copied to clipboard</string>
 
     <!-- Credit -->
-    <string name="refund_email" translatable="false">support@bongo.com</string>
-    <string name="refund_email_title">refund request</string>
-    <string name="refund_email_message">Please cancel the following orders:</string>
+    <string name="refund_email" translatable="false">bongo@199bongo.com</string>
+    <string name="refund_email_title" translatable="false">refund request</string>
+    <string name="refund_email_message" translatable="false">Please cancel the following BongoThinks for Android orders:</string>
     <string name="refund_email_dialog_title">Refund</string>
     <string name="purchase_retry">Retry</string>
     <string name="purchase_refund">Refund</string>

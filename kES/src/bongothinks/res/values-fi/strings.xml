@@ -118,6 +118,11 @@
     <string name="bubble_text">Lisää kuva tai kysymys lähetettäväksi Bongolle, tai molemmat!</string>
     <string name="error_nocamera">Anteeksi, kamera ei ole saatavilla.</string>
     <string name="error_storagewrite">Virhe kirjoittaessa ulkoiseen muistiin.</string>
+
+    <string name="compose_nopic_title">vahvistus</string>
+    <string name="compose_nopic_message">Oletko varma että haluat kysyä kysymyksesi ilman kuvaa?</string>
+    <string name="dontshowagain">Älä näytä uudestaan</string>
+
     <!-- Gallery -->
     <string name="gallery_title">Valitse kuva</string>
     <!-- Crop -->

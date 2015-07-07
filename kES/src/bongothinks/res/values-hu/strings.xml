@@ -120,8 +120,8 @@
     <string name="error_storagewrite">Adat írási hiba.</string>
 
     <string name="compose_nopic_title">Megerősítés</string>
-    <string name="compose_nopic_message">Biztos kép nélkül szeretnél kérdezni?</string>
-    <string name="dontshowagain">Ne mutasd ezt újra</string>
+    <string name="compose_nopic_message">Biztos el akarod küldeni a kérdést kép nélkül?</string>
+    <string name="dontshowagain">Ne mutasd többször</string>
 
     <!-- Gallery -->
     <string name="gallery_title">Válassz képet</string>

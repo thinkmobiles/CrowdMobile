@@ -118,6 +118,11 @@
     <string name="bubble_text">Aggiungi una foto o scrivi una domanda da mandare a Bongo, o entrambe le cose!</string>
     <string name="error_nocamera">Ci dispiace, la camera non è disponibile.</string>
     <string name="error_storagewrite">Error writing to external storage.</string>
+
+    <string name="compose_nopic_title">Conferma</string>
+    <string name="compose_nopic_message">Sei sicuro di voler inviare la tua domanda senza una foto?</string>
+    <string name="dontshowagain">Non mostrare più questo avviso</string>
+
     <!-- Gallery -->
     <string name="gallery_title">Scegli una foto</string>
     <!-- Crop -->
