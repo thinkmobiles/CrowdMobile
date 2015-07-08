@@ -8,6 +8,7 @@ import com.kes.net.DataFetcher;
 import com.kes.net.ServerNavigator;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by gadza on 2015.03.02..
@@ -134,6 +135,14 @@ public class KES {
             feedManager = new FeedManager(KES.this);
         return feedManager;
     }
+
+    protected void setLocale(Locale locale)
+    {
+        DataFetcher.locale = locale.toString();
+        if (feedManager != null)
+            feedManager.localeChanged();
+    }
+
 
     private KESShared kesShared = new KESShared() {
         @Override

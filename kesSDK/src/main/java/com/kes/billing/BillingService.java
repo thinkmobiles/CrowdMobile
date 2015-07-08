@@ -305,6 +305,7 @@ public class BillingService extends Service {
     public void buyCredits(Activity activity, String productId){
         if (status != BillingManager.BillingStatus.Idle)
             return;
+        setStatus(BillingManager.BillingStatus.PaymentGoogle);
         //if (TESTMODE) productId = "android.test.purchased";
         iabHelper.launchPurchaseFlow(activity,productId, RC_REQUEST, new PurchaseListener());
     }

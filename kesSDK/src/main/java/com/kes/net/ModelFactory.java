@@ -90,6 +90,17 @@ public class ModelFactory {
     }
 
     //--------------------------------------------------------------------------------------------------
+    public static class SuggestionsWrapper {
+        public String[] suggestions;
+    }
+
+    //--------------------------------------------------------------------------------------------------
+    public static SuggestionsWrapper getSuggestions(String json) {
+        return gson.fromJson(json, SuggestionsWrapper.class);
+    }
+
+
+    //--------------------------------------------------------------------------------------------------
     public enum LoginType {Facebook, Twitter};
 
 	public static String getLoginWrapper(

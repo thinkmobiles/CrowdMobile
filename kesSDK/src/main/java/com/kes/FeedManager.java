@@ -2,7 +2,6 @@ package com.kes;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.kes.model.PhotoComment;
@@ -20,6 +19,7 @@ public class FeedManager {
 
     public interface OnChangeListener {
         public void onPageLoaded(FeedWrapper wrapper);
+        public void onSuggestedQuestions(String[] questions, Exception error);
         public void onMarkAsReadResult(PhotoComment photoComment, Exception error);
         public void onLikeResult(int questionID, int commentID, Exception error);
         public void onReportResult(int questionID, Exception error);
@@ -356,6 +356,11 @@ public class FeedManager {
 
     //http://kes-middletier-staging.elasticbeanstalk.com/api/wwjd/v1/photo_comments/?filter=feed&page=1&tags=word1%20word2
 
+    protected void localeChanged()
+    {
+        feed(FeedType.Public).clear();
+    }
+
     public QueryParams feed(FeedType feedType) {
         QueryParams result = new QueryParams(this);
         result.feedWrapper.feedType = feedType;
@@ -453,6 +458,18 @@ public class FeedManager {
         tmp = null; //don't change, GC bug
     }
 
+    protected void updateSuggestions(SuggestionsHolder wrapper, boolean set)
+    {
+        if (set)
+            suggestedQuestions = wrapper;
+        Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
+        while (iterator.hasNext()) {
+            tmp = iterator.next();
+            tmp.onSuggestedQuestions(wrapper.response,wrapper.exception);
+        }
+        tmp = null; //don't change, GC bug
+    }
+
     public void delete(int questionID,int commentID)
     {
         TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.Delete, questionID, commentID);
@@ -475,8 +492,22 @@ public class FeedManager {
 
     public void markAsRead(int questionID, int commentID)
     {
-        Log.d("FeedManager", "Marking as read" + questionID + "/" + commentID);
+        //Log.d("FeedManager", "Marking as read" + questionID + "/" + commentID);
         TaskOther.execute(mSession.getContext(), mSession.getAccountManager().getToken(), ResultWrapper.ActionType.MarkAsRead, questionID, commentID);
+    }
+
+    public static class SuggestionsHolder extends ResultWrapper {
+        public String[] response;
+    }
+
+    SuggestionsHolder suggestedQuestions;
+
+    public void getSuggestedQuestions()
+    {
+        if (suggestedQuestions != null)
+            updateSuggestions(suggestedQuestions, false);
+        else
+            TaskSuggestion.execute(mSession.getContext(), mSession.getAccountManager().getToken());
     }
 
     protected void updatePendingQuestion(PhotoCommentResponseHolder holder) {

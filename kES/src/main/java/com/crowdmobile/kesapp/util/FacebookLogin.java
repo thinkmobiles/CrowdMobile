@@ -146,16 +146,16 @@ public class FacebookLogin {
 
 		@Override
 		public void onCompleted(GraphUser user, Response response) {
-			UserInfo retval = null;
+			UserInfo result = null;
 			Session session = response.getRequest().getSession();
 			String token = session.getAccessToken();
 			if (token != null && token.length() > 0 && user != null)
 			{
-                retval = new UserInfo();
-                retval.uid = user.getId();
-                retval.firstName = user.getFirstName();
-                retval.lastName = user.getLastName();
-                retval.token = token;
+                result = new UserInfo();
+                result.uid = user.getId();
+                result.firstName = user.getFirstName();
+                result.lastName = user.getLastName();
+                result.token = token;
 			};
 
 /*
@@ -173,9 +173,10 @@ public class FacebookLogin {
 					RegisterUser.register(activity, firstName,
 							lastName, "facebook", uid, token);
 							*/
-            if (callback != null)
-                callback.onUserInfo(retval);
-			userInfoCalled = true;
+            if (callback != null && result != null) {
+                callback.onUserInfo(result);
+                userInfoCalled = true;
+            }
 			closeSession();
 		}
 	};

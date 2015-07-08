@@ -20,7 +20,7 @@ import java.util.ArrayList;
  */
 public class BillingManager {
 
-    public enum BillingStatus {Idle, Init, InitFailed, InventoryRequest, InventoryFail, PaymentProcess,PaymentFail, Disconnected};
+    public enum BillingStatus {Idle, Init, InitFailed, InventoryRequest, InventoryFail, PaymentGoogle, PaymentProcess,PaymentFail, Disconnected};
 
     public interface BillingListener {
         public void onPurchased(int quantity);
@@ -38,7 +38,7 @@ public class BillingManager {
     private String mSignature;
     private BillingService billingService;
     private KES mKES;
-    private BillingStatus mBillingStatus = BillingStatus.Idle;
+    //private BillingStatus mBillingStatus = BillingStatus.Idle;
     ArrayList<ContextWrapper> bondList = new ArrayList<ContextWrapper>();
     ArrayList<CreditItem> mCreditList = null;
 
@@ -52,8 +52,9 @@ public class BillingManager {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            bondList.clear();
             billingService = null;
+            for (int i = 0; i < bondList.size(); i++)
+                bondList.get(i).listener.onStatus(BillingStatus.Disconnected);
         }
     };
 

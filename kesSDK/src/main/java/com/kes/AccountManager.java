@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.kes.model.User;
-import com.kes.net.DataFetcher;
 import com.kes.net.ModelFactory;
 
 import java.util.Iterator;
@@ -39,7 +38,7 @@ public class AccountManager {
 
     public void setLocale(Locale locale)
     {
-        DataFetcher.locale = locale.toString();
+        mKES.setLocale(locale);
     }
 
     public void unRegisterListener(Object object)

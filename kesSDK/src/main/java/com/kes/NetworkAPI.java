@@ -159,4 +159,11 @@ public class NetworkAPI {
         return ModelFactory.getPhotoComment(result);
     }
 
+    protected static ModelFactory.SuggestionsWrapper getSuggestions(String token) throws DataFetcher.KESNetworkException, InterruptedException
+    {
+        String url = com.kes.net.ServerNavigator.getSuggestions();
+        String result = DataFetcher.requestAction(url, RequestType.GET, null,null, null);
+        return ModelFactory.getSuggestions(result);
+    }
+
 }

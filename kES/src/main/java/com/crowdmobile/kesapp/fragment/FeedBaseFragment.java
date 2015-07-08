@@ -696,6 +696,11 @@ public abstract class FeedBaseFragment extends Fragment {
             //    testVisibleAnswers(true);
         }
 
+        @Override
+        public void onSuggestedQuestions(String[] questions, Exception error) {
+
+        }
+
         private void showListAnimation()
         {
             if (!firstShow)

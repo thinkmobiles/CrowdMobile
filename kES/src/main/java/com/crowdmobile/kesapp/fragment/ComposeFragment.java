@@ -22,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -36,12 +35,13 @@ import com.crowdmobile.kesapp.R;
 import com.crowdmobile.kesapp.SuggestionDialog;
 import com.crowdmobile.kesapp.util.PreferenceUtils;
 import com.crowdmobile.kesapp.widget.NavigationBar;
+import com.kes.FeedManager;
 import com.kes.KES;
+import com.kes.model.PhotoComment;
 
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
-import java.util.ArrayList;
 
 /**
  * Created by gadza on 2015.03.11..
@@ -72,6 +72,7 @@ public class ComposeFragment extends Fragment {
     SuggestionDialog suggestionDialog;
     MainActivityInterface mainActivityInterface;
     LayoutInflater inflater;
+    String[] suggestions;
 
     @Override
     public void onResume() {
@@ -128,6 +129,7 @@ public class ComposeFragment extends Fragment {
         holderSuggestion = result.findViewById(R.id.holderPostSuggestion);
         holderPostVisibility = result.findViewById(R.id.holderPostVisibility);
         holderSuggestion.setOnClickListener(onClickListener);
+        holderSuggestion.setVisibility(suggestions != null ? View.VISIBLE : View.GONE);
         holderPostVisibility.setOnClickListener(onClickListener);
         tvSuggestion = (TextView)result.findViewById(R.id.tvSuggestion);
         tvSuggestion.setPaintFlags(tvSuggestion.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -150,6 +152,8 @@ public class ComposeFragment extends Fragment {
         isPrivate = PreferenceUtils.getComposePrivate(getActivity());
         updatePrivate();
         loadPic();
+        KES.shared().getFeedManager().registerOnChangeListener(onFeedChange);
+        KES.shared().getFeedManager().getSuggestedQuestions();
         return result;
     }
 
@@ -185,24 +189,29 @@ public class ComposeFragment extends Fragment {
 
     private void showSuggestions()
     {
+        if (suggestions == null)
+            return;
+
         if (suggestionDialog == null)
             suggestionDialog = new SuggestionDialog(getActivity());
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        /*
         final ArrayList<String> suggestions = new ArrayList<String>();
         suggestions.add("Here we can place some predefined questions from Bongo for users to choose from.This will make it easier to ask Bongo a question");
         suggestions.add("Another question to ask Bongo. Predefined like the previous one and the next.");
         suggestions.add("Bongo knows a lot.And when people select a question here they save themselved of the hassle of typing a question themselves.");
         suggestions.add("Bongo knows a lot.And when people select a question here they save themselved of the hassle of typing a question themselves.");
+        */
         suggestionDialog.setItems(suggestions);
-        suggestionDialog.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        suggestionDialog.setOnItemSelectedListener(new SuggestionDialog.ItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String s = suggestions.get(position);
-                edMessage.setText(s);
-                if (!TextUtils.isEmpty(s))
-                    edMessage.setSelection(s.length());
+            public void onItemSelected(String item) {
+                edMessage.setText(item);
+                if (!TextUtils.isEmpty(item))
+                    edMessage.setSelection(item.length());
                 suggestionDialog.hide();
+
             }
         });
         suggestionDialog.show();
@@ -322,6 +331,7 @@ public class ComposeFragment extends Fragment {
         tvSuggestion = null;
         previewClose = null;
         tvHint = null;
+        KES.shared().getFeedManager().unRegisterOnChangeListener(onFeedChange);
         super.onDestroyView();
     }
 
@@ -495,5 +505,57 @@ public class ComposeFragment extends Fragment {
         alertDialog.show();
     }
 
+    FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener() {
+        @Override
+        public void onPageLoaded(FeedManager.FeedWrapper wrapper) {
+
+        }
+
+        @Override
+        public void onSuggestedQuestions(String[] questions, Exception error) {
+            suggestions = questions;
+            holderSuggestion.setVisibility(suggestions != null ? View.VISIBLE : View.GONE);
+        }
+
+        @Override
+        public void onMarkAsReadResult(PhotoComment photoComment, Exception error) {
+
+        }
+
+        @Override
+        public void onLikeResult(int questionID, int commentID, Exception error) {
+
+        }
+
+        @Override
+        public void onReportResult(int questionID, Exception error) {
+
+        }
+
+        @Override
+        public void onDeleteResult(int questionID, int commentID, Exception error) {
+
+        }
+
+        @Override
+        public void onMarkAsPrivateResult(PhotoComment photoComment, Exception error) {
+
+        }
+
+        @Override
+        public void onPosting(PhotoComment photoComment) {
+
+        }
+
+        @Override
+        public void onPostResult(PhotoComment photoComment, Exception error) {
+
+        }
+
+        @Override
+        public void onInsufficientCredit() {
+
+        }
+    };
 
 }

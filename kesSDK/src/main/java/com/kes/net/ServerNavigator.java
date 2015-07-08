@@ -29,6 +29,10 @@ public class ServerNavigator {
         return BASE_URL + "push_token/";
     }
 
+    public static String getSuggestions() {
+        return BASE_URL + "suggestions";
+    }
+
     public static String report(int id) {
         return BASE_URL + "photo_comments/" + Integer.toString(id) + "/report";
     }
@@ -40,6 +44,7 @@ public class ServerNavigator {
     public static String like(int photocommentid, int responseid) {
         return BASE_URL + "photo_comments/" + Integer.toString(photocommentid) + "/responses/" + Integer.toString(responseid) + "/like";
     }
+
 
     public static String delete(int photocommentid, int responseid) {
         return BASE_URL + "photo_comments/" + Integer.toString(photocommentid) + "/responses/" + Integer.toString(responseid);

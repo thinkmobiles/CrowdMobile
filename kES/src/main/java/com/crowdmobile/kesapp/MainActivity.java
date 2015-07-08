@@ -269,6 +269,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         }
 
         @Override
+        public void onSuggestedQuestions(String[] questions, Exception error) {
+
+        }
+
+        @Override
         public void onMarkAsReadResult(PhotoComment photoComment, Exception error) {
 
         }

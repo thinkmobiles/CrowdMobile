@@ -23,6 +23,11 @@ public class SuggestionDialog extends Dialog {
     private ListView lvQuestions;
     private ArrayList<String> questions;
     private QuestionsAdapter adapter;
+    private ItemSelectedListener listener;
+
+    public interface ItemSelectedListener {
+      public void onItemSelected(String item);
+    };
 
     public SuggestionDialog(Context context)
     {
@@ -35,6 +40,7 @@ public class SuggestionDialog extends Dialog {
         lvQuestions = (ListView)findViewById(R.id.lvQuestions);
         adapter = new QuestionsAdapter(context,0);
         lvQuestions.setAdapter(adapter);
+        lvQuestions.setOnItemClickListener(itemClick);
     }
 
     public void setItems(ArrayList<String>list)
@@ -43,9 +49,31 @@ public class SuggestionDialog extends Dialog {
         adapter.notifyDataSetChanged();
     }
 
-    public void setOnItemClickListener(AdapterView.OnItemClickListener listener)
+    public String getItem(int idx)    {
+        return questions.get(idx);
+    }
+
+    public void setItems(String[] list)
     {
-        lvQuestions.setOnItemClickListener(listener);
+        if (questions == null)
+            questions = new ArrayList<String>();
+        questions.clear();
+        for (int i = 0; i < list.length; i++)
+            questions.add(list[i]);
+        adapter.notifyDataSetChanged();
+    }
+
+    AdapterView.OnItemClickListener itemClick = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (listener != null)
+                listener.onItemSelected(questions.get(position));
+        }
+    };
+
+    public void setOnItemSelectedListener(ItemSelectedListener listener)
+    {
+        this.listener = listener;
     }
 
     class QuestionsAdapter extends ArrayAdapter<String> {

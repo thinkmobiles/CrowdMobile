@@ -21,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crowdmobile.kesapp.R;
-import com.crowdmobile.kesapp.widget.ImgSpannableString;
 import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
 import com.squareup.picasso.Picasso;
@@ -311,7 +310,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             holder.tvQuestion.setVisibility(View.GONE);
         }
         else {
-            //holder.tvQuestion.setText(item.message);
+            holder.tvQuestion.setText(item.message);
             /*
             SpannableString ss = new SpannableString(item.message);
             Drawable d = holder.tvQuestion.getResources().getDrawable(R.drawable.ic_camera);
@@ -321,8 +320,8 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             holder.tvQuestion.setTransformationMethod(null);
             holder.tvQuestion.setText(ss);
             */
-            String tmp = "this is a video1 https://www.youtube.com/watch?v=-eH_4TMDuqw and a video2 https://www.youtube.com/watch?v=sZq87CNwY3w link in this feed and any https://www.youtube.com/watch?v=i3ZZkX1LYbc";
-            new ImgSpannableString(holder.tvQuestion,placeHolder, tmp);
+            //String tmp = "this is a video1 https://www.youtube.com/watch?v=-eH_4TMDuqw and a video2 https://www.youtube.com/watch?v=sZq87CNwY3w link in this feed and any https://www.youtube.com/watch?v=i3ZZkX1LYbc";
+            //new ImgSpannableString(holder.tvQuestion,placeHolder, tmp);
             holder.tvQuestion.setVisibility(View.VISIBLE);
             holder.messagePlaceholder.setVisibility(View.GONE);
         }
