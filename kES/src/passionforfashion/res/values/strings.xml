@@ -7,6 +7,11 @@
         <item quantity="other">DO YOU WANT TO BUY %1$d CREDITS FOR %2$s?</item>
     </plurals>
 
+    <plurals name="like">
+        <item quantity="one">%d like</item>
+        <item quantity="other">%d likes</item>
+    </plurals>
+
     <plurals name="credits_plurals">
         <item quantity="one">credit</item>
         <item quantity="other">credits</item>
@@ -129,6 +134,11 @@
     <string name="bubble_text">Add a photo or a question to submit to P4F, or both!</string>
     <string name="error_nocamera">Sorry, camera isn\'t available.</string>
     <string name="error_storagewrite">Error writing to external storage.</string>
+
+    <string name="compose_nopic_title">Confirmation</string>
+    <string name="compose_nopic_message">Are you sure you want to post your question without a picture?</string>
+    <string name="dontshowagain">Don\'t show this again</string>
+
     <!-- Gallery -->
     <string name="gallery_title">Choose a picture</string>
     <!-- Crop -->

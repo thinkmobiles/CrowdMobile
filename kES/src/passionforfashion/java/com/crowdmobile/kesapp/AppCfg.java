@@ -9,6 +9,7 @@ public class AppCfg {
     }
 
     //    private static final String BASE_URL_STAGING = "http://kes-middletier-staging.elasticbeanstalk.com/api/bongothinks/v1/";
+    public static final String ApiKey = "AIzaSyAXzZDflSBsnD7xmW3CvHhFuu-sCtvrJgc";
     private static final String BASE_URL_PROD = "https://middletier.globalaqa.com/api/passionforfashion/v1.1";
 
     public static final String BASE_URL = BASE_URL_PROD;
