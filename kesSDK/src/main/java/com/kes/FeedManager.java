@@ -237,20 +237,21 @@ public class FeedManager {
         //Check if we have received data
         int commentsLength = feedWrapper.photoComments != null ? feedWrapper.photoComments.length : 0;
 
-        //If there is anything in the cache with higher ID than top of the feed, remove it
-        if (feedWrapper.max_id == null && commentsLength > 0 && cache.size() > 0) {
+        if (!feedWrapper.unreadItems) {
+            //If there is anything in the cache with higher ID than top of the feed, remove it
+            if (feedWrapper.max_id == null && commentsLength > 0 && cache.size() > 0) {
 
-            int lowestID = feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType);
-            for (int l = cache.size() -1; l >= 0; l--)
-                if (cache.valueAt(l).photoComment.getID(feedWrapper.feedType) > lowestID)
-                    cache.removeAt(l);
+                int lowestID = feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType);
+                for (int l = cache.size() - 1; l >= 0; l--)
+                    if (cache.valueAt(l).photoComment.getID(feedWrapper.feedType) > lowestID)
+                        cache.removeAt(l);
+            }
+
+            //When feed top is received, mark cached top item as "not connected"
+            //If cached and received will overlap, they will be reconnected again few lines below
+            if (feedWrapper.max_id == null && cache.size() > 0)
+                cache.valueAt(cache.size() - 1).cacheConnected = false;
         }
-
-        //When feed top is received, mark cached top item as "not connected"
-        //If cached and received will overlap, they will be reconnected again few lines below
-        if (feedWrapper.max_id == null && cache.size() > 0)
-            cache.valueAt(cache.size() - 1).cacheConnected = false;
-
         if (commentsLength < 1)
             return;
 

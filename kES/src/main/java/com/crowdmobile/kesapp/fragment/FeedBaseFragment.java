@@ -618,10 +618,10 @@ public abstract class FeedBaseFragment extends Fragment {
             //Insert posted items
             boolean insertedToTop = false;
             int startSearch = 0;
-            boolean found;
+            int newPosition;
             for (int j = indexedPosted.size() - 1; j >= 0; j--)
             {
-                found = false;
+                newPosition = list.size();
                 PhotoComment newItem = indexedPosted.valueAt(j);
                 int newID = newItem.getID(getFeedType());
                 for (int i = startSearch; i < list.size(); i++)
@@ -632,15 +632,13 @@ public abstract class FeedBaseFragment extends Fragment {
                         continue;
                     int oldID = oldItem.getID(getFeedType());
                     if (oldID < newID) {
-                        found = true;
+                        newPosition = startSearch;
                         break;
                     }
                 }
-                if (!found)
-                    startSearch ++;
-                if (startSearch == 0)
+                if (newPosition == 0)
                     insertedToTop = true;
-                list.add(startSearch, newItem);
+                list.add(newPosition, newItem);
                 adapter.notifyItemInserted(startSearch);
             }
 
