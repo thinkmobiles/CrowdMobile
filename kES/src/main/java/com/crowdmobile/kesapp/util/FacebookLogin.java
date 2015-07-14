@@ -57,7 +57,9 @@ public class FacebookLogin {
 	public FacebookLogin(Activity activity, FacebookCallback callback)
 	{
         mActivity = activity;
-		this.callback = callback;
+		if (callback == null)
+            throw new IllegalStateException("callback can't be null");
+        this.callback = callback;
 	}
 
 	private void closeSession()
@@ -83,21 +85,16 @@ public class FacebookLogin {
 		//if (!isFBInstalled(callback.getActivity()))
 		//	return;
 		userInfoCalled = false;
-        boolean success = false;
 		try {
 			session = new Session(mActivity);
 			Session.setActiveSession(session);
 			session.openForRead(new Session.OpenRequest(mActivity)
 					.setPermissions(Arrays.asList("basic_info", "user_about_me", "user_birthday"))
 					.setCallback(new FBStatusCallback()));
-            success = true;
 		} catch (FacebookException | NullPointerException e) {
-//			e.printStackTrace();
-		}
-		if (session == null)
+			closeSession();
 			callback.onFail(Fail.SessionOpen);
-        if (!success)
-            closeSession();
+		}
 	}
 
     /*
@@ -127,14 +124,13 @@ public class FacebookLogin {
 		public void call(Session session, SessionState state, Exception exception) {
 			if (state == SessionState.OPENED)
 			{
-				GraphUserCallback callback = new GraphUserCallback();
-				Request request = Request.newMeRequest(session,callback);
+				Request request = Request.newMeRequest(session,new GraphUserCallback());
 				request.executeAsync();
 				return;
 			}
 			if (exception != null || state.isClosed()) {
 				closeSession();
-                if (!userInfoCalled && callback != null)
+                if (!userInfoCalled)
 					callback.onFail(Fail.Login);
 					return;
 			}
@@ -173,7 +169,8 @@ public class FacebookLogin {
 					RegisterUser.register(activity, firstName,
 							lastName, "facebook", uid, token);
 							*/
-            if (callback != null && result != null) {
+
+            if (result != null) {
                 callback.onUserInfo(result);
                 userInfoCalled = true;
             }

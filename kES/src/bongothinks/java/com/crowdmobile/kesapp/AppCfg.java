@@ -13,6 +13,8 @@ public class AppCfg {
     private static final String BASE_URL_LOCAL = "http://middletier.globalaqa.com:8080/api/bongothinks/v1.1/";
     private static final String BASE_URL_PROD = "https://middletier.globalaqa.com/api/bongothinks/v1.1/";
 
+    private static final String BASE_URL_V2 = "http://kes-middle-staging.elasticbeanstalk.com/api/bongothinks/v1.1/";
+
 
     public static final String BASE_URL = BASE_URL_PROD;
 

@@ -102,14 +102,14 @@ public class PrefsFragment extends PreferenceFragment {
     public static void setLocale(Context context,boolean force) {
         String language = PreferenceManager.getDefaultSharedPreferences(context)
                 .getString(context.getString(R.string.key_language), "0");
-        boolean defaultLang = language.equals("0") && !force;
+        boolean defaultLang = language.equals("0");
         if (defaultLang && !force)
             return;
         Resources res = context.getResources();
         DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
         if (defaultLang)
-        conf.locale = Locale.getDefault();
+            conf.locale = Locale.getDefault();
         else {
             String[] locales = language.split("_");
             if (locales.length == 1)

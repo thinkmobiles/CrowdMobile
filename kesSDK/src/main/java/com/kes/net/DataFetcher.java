@@ -366,7 +366,7 @@ public class DataFetcher {
             }
             setHeaders(request, headers);
 			request.setHeader("Accept-Language", locale);
-			request.setHeader("Accept", "application/json");
+			request.setHeader("Accept", "application/json; charset=utf-8");
 			request.setHeader("Accept-Encoding", "gzip,deflate");
 
 			DefaultHttpClient client = getHttpClient();

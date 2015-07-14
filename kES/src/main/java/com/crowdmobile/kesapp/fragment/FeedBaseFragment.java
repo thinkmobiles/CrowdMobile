@@ -639,7 +639,7 @@ public abstract class FeedBaseFragment extends Fragment {
                 if (newPosition == 0)
                     insertedToTop = true;
                 list.add(newPosition, newItem);
-                adapter.notifyItemInserted(startSearch);
+                adapter.notifyItemInserted(newPosition);
             }
 
             /*

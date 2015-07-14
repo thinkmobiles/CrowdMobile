@@ -33,7 +33,6 @@ public class TwitterUtil {
     private final int REQUESTCODE = 902673646;
 
     public interface TwitterLoginCallback {
-        void onLogin();
 
         void onSuccess(String token, String secret, long uid);
 

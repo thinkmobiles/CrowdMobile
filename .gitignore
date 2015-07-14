@@ -3,5 +3,6 @@
 .idea
 .navigation
 build/
-
+local.properties
+kES/kES.iml
 

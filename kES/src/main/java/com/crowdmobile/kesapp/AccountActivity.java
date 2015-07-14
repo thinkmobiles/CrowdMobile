@@ -32,6 +32,7 @@ public class AccountActivity extends Activity {
     private FacebookLogin facebookLogin;
     private boolean openingMainActivity = false;
     private boolean isForeground = false;
+    private boolean loginInProgress = false;
 
     public static void logout(Context context)
     {
@@ -154,16 +155,20 @@ public class AccountActivity extends Activity {
 		@Override
 		public void onClick(View v) {
             progressDialog.show();
-
 			if (v == btFacebook) {
+                if (loginInProgress)
+                    return;
+                loginInProgress = true;
                 progressDialog.setMessage(getString(R.string.fb_login));
                 facebookLogin.execute();
             }
             else if (v == btTwitter) {
                 {
+                    if (loginInProgress)
+                        return;
                     //startActivity(
                     //        new Intent(Intent.ACTION_VIEW, Uri.parse("oauth://twitterlogin")));
-
+                    loginInProgress = true;
                     progressDialog.setMessage(getString(R.string.twitter_login));
                     twitterLogin.login(AccountActivity.this);
                 }
@@ -191,7 +196,8 @@ public class AccountActivity extends Activity {
     FacebookLogin.FacebookCallback fbCallback = new FacebookLogin.FacebookCallback() {
         @Override
         public void onFail(FacebookLogin.Fail fail) {
-            Log.d(TAG,"Facebook fail");
+            //Log.d(TAG,"Facebook fail");
+            loginInProgress = false;
             progressDialog.hide();
             //if (fail == FacebookLogin.Fail.SessionOpen)
             showError(R.string.error_fb_login);
@@ -205,27 +211,6 @@ public class AccountActivity extends Activity {
     };
 
     TwitterUtil.TwitterLoginCallback twitterCallback = new TwitterUtil.TwitterLoginCallback() {
-        /*
-        @Override
-        public void onAuthUrl(String url) {
-            if (url != null)
-            {
-                twitterLogin.loadUrl(url);
-                twitterLogin.setVisibility(View.VISIBLE);
-                progressDialog.show();
-            } else
-            {
-                twitterLogin.loadUrl("about:blank");
-                twitterLogin.setVisibility(View.GONE);
-                progressDialog.hide();
-            }
-        }
-        */
-
-        @Override
-        public void onLogin() {
-            progressDialog.hide();
-        }
 
         @Override
         public void onSuccess(String token, String secret, long uid) {
@@ -235,6 +220,7 @@ public class AccountActivity extends Activity {
         @Override
         public void onFailed(String message) {
             //twitterLogin.loadUrl("about:blank");
+            loginInProgress = false;
             progressDialog.hide();
             alertDialog.setMessage(message);
             alertDialog.show();
@@ -242,6 +228,7 @@ public class AccountActivity extends Activity {
 
         @Override
         public void onCanceled() {
+            loginInProgress = false;
             progressDialog.hide();
         }
     };
@@ -249,11 +236,13 @@ public class AccountActivity extends Activity {
     AccountManager.AccountListener accountListener = new AccountManager.AccountListener() {
         @Override
         public void onUserChanged(User user) {
-            Log.d(TAG,"onUserChanged");
-            Log.d(TAG,user.first_name);
-            Log.d(TAG,user.auth_token);
-            Log.d(TAG,user.toString());
-
+            {
+                Log.d(TAG, "onUserChanged");
+                Log.d(TAG, user.first_name);
+                Log.d(TAG, user.auth_token);
+                Log.d(TAG, user.toString());
+            }
+            loginInProgress = false;
             if (user != null && user.isRegistered() && isForeground)
             {
                 progressDialog.hide();
@@ -269,6 +258,7 @@ public class AccountActivity extends Activity {
 
         @Override
         public void onLoginFail(Exception e) {
+            loginInProgress = false;
             progressDialog.hide();
             if (e instanceof DataFetcher.KESNetworkException)
                 alertDialog.setMessage(((DataFetcher.KESNetworkException)e).getError());
@@ -291,6 +281,7 @@ public class AccountActivity extends Activity {
 	@Override
 	public void onDestroy()
 	{
+        loginInProgress = false;
         facebookLogin.release();
 		progressDialog.dismiss();
 		alertDialog.dismiss();
@@ -300,10 +291,10 @@ public class AccountActivity extends Activity {
 
 	
 	
-	private void showError(int resid)
+	private void showError(int resID)
 	{
 		progressDialog.hide();
-		alertDialog.setMessage(getString(resid));
+		alertDialog.setMessage(getString(resID));
 		alertDialog.show();
 	}
 
