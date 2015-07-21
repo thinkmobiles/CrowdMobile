@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="@string/key_preferenceScreen">
     <PreferenceCategory
         android:title="@string/category_general">
         <ListPreference
@@ -21,6 +22,7 @@
             android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory
+        android:key="@string/key_account"
         android:title="@string/category_account">
 
         <Preference

@@ -49,6 +49,7 @@
     <dimen name="item_share_holder_padding">15dp</dimen>
     <dimen name="item_answer_text_padding">5dp</dimen>
     <dimen name="item_text_size">15sp</dimen>
+    <dimen name="item_bg_menu">40dp</dimen>
 
     <!-- Checkout -->
     <dimen name="credit_title_padding">15dp</dimen>

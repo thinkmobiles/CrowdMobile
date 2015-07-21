@@ -30,16 +30,6 @@
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <ImageView
-                android:layout_alignParentRight="true"
-                android:id="@+id/imgOpenShare"
-                android:layout_centerVertical="true"
-                android:scaleType="fitXY"
-                android:adjustViewBounds="true"
-                android:padding="3dp"
-                android:src="@drawable/ic_feed_item_header_share"
-                android:layout_width="@dimen/item_header_icon_height"
-                android:layout_height="wrap_content" />
 
     </RelativeLayout>
     <RelativeLayout

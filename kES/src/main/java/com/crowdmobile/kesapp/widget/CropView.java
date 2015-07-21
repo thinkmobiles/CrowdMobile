@@ -335,6 +335,8 @@ public class CropView extends View {
     }
 
     public Bitmap getCroppedImage() {
+        if (bitmap == null)
+            return null;
         int h = bitmap.getHeight() * (rightBottom.y - leftTop.y) / imageScaledHeight;
         int w = bitmap.getWidth() * (rightBottom.x - leftTop.x) / imageScaledWidth;
         Rect tmp = new Rect();

@@ -21,6 +21,7 @@
     </string-array>
 
     <!-- Preferences -->
+    <string name="key_preferenceScreen" translatable="false">key_preference_screen</string>
     <string name="key_logout" translatable="false">key_logout</string>
     <string name="key_user_id" translatable="false">key_userid</string>
     <string name="key_user_firstname" translatable="false">key_userfirstname</string>
@@ -37,6 +38,8 @@
 
     <string name="key_language" translatable="false">key_language</string>
     <string name="key_updateinterval" translatable="false">key_updateinterval</string>
+
+    <string name="key_account" translatable="false">key_account</string>
     <string name="key_gender" translatable="false">key_gender</string>
     <string name="key_showsuggestion" translatable="false">key_showsuggestion</string>
     <string name="key_accountname" translatable="false">key_accountname</string>

@@ -21,6 +21,7 @@ public class FacebookLogin {
 		public String uid;
 		public String firstName;
 		public String lastName;
+		public String gender;
 	}
 
     public enum Fail {SessionOpen, Login};
@@ -147,11 +148,16 @@ public class FacebookLogin {
 			String token = session.getAccessToken();
 			if (token != null && token.length() > 0 && user != null)
 			{
-                result = new UserInfo();
+				result = new UserInfo();
                 result.uid = user.getId();
                 result.firstName = user.getFirstName();
                 result.lastName = user.getLastName();
                 result.token = token;
+                try {
+                    result.gender = user.asMap().get("gender").toString();
+                } catch (NullPointerException ignored) {}
+				callback.onUserInfo(result);
+				userInfoCalled = true;
 			};
 
 /*
@@ -170,10 +176,6 @@ public class FacebookLogin {
 							lastName, "facebook", uid, token);
 							*/
 
-            if (result != null) {
-                callback.onUserInfo(result);
-                userInfoCalled = true;
-            }
 			closeSession();
 		}
 	};

@@ -134,11 +134,26 @@ public abstract class FeedBaseFragment extends Fragment {
         }
 
         @Override
-        public void report(PhotoComment p) {
+        public boolean like(PhotoComment p) {
+            if (p.liked)
+                return false;
+            if (!KES.shared().getAccountManager().getUser().isRegistered())
+                return false;
+            p.liked = true;
+            p.responses[0].likes_count ++;
+           // KES.shared().getFeedManager().like(p.getID(),p.responses[0].id);
+            return true;
+        }
+
+        @Override
+        public boolean report(PhotoComment p) {
+            if (p.reported)
+                return false;
             p.reported = true;
             if (!KES.shared().getAccountManager().getUser().isRegistered())
-                return;
+                return false;
             KES.shared().getFeedManager().report(p.getID(getFeedType()));
+            return true;
         }
 
         @Override
@@ -271,7 +286,7 @@ public abstract class FeedBaseFragment extends Fragment {
     }
 
     private void initFeed() {
-        list.clear();
+        adapter.removeAllItems();
         boolean loaded = KES.shared().getFeedManager().feed(getFeedType()).getCache(list);
         if (list.size() == 0) {
             if (loaded)
@@ -282,9 +297,15 @@ public abstract class FeedBaseFragment extends Fragment {
                 showMainProgressbar(true);
             }
         } else {
-            adapter.notifyDataSetChanged();
+            addAllItems();
         }
         swipeContainer.setEnabled(list.size() > 0);
+    }
+
+    private void addAllItems()
+    {
+        for (int i = 0; i < list.size(); i++)
+            adapter.notifyItemInserted(i);
     }
 
     private void showMainProgressbar(boolean enabled) {
@@ -494,8 +515,7 @@ public abstract class FeedBaseFragment extends Fragment {
             if (getFeedType() == FeedManager.FeedType.My)
             {
                 session.getFeedManager().feed(getFeedType()).clear();
-                list.clear();
-                adapter.notifyDataSetChanged();
+                removeAllItems();
             }
             */
             refreshNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
@@ -562,10 +582,11 @@ public abstract class FeedBaseFragment extends Fragment {
             if (cacheTmp.size() == 0 || (firstPostedID < 0 && indexedPosted.size() > 0) || firstPostedID + 1 < indexedPosted.keyAt(0))
             {
                 bottomReached = false;
-                list.clear();
-                for (int i = 0; i < cacheTmp.size(); i++)
+                adapter.removeAllItems();
+                for (int i = 0; i < cacheTmp.size(); i++) {
                     list.add(cacheTmp.get(i));
-                adapter.notifyDataSetChanged();
+                    adapter.notifyItemInserted(i);
+                }
                 rvFeed.scrollToPosition(0);
                 if (list.size() == 0)
                     showNoPost();
@@ -709,7 +730,7 @@ public abstract class FeedBaseFragment extends Fragment {
             if (list.size() == 0)
                 return;
             /*
-            Animation animation = AnimationUtils.loadAnimation(getActivity(),R.anim.feedanimation);
+            Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.feedanimation);
             animation.setFillAfter(false);
             rvFeed.startAnimation(animation);
             */

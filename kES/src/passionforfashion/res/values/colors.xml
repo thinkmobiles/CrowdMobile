@@ -59,10 +59,12 @@
 
     <!-- Feed item -->
 
+    <item name="feed_item_like_font" type="color">#fff</item>
     <item name="item_unread" type="color">#800880de</item>
     <item name="item_separator" type="color">#eee</item>
     <item name="item_background" type="color">#fff</item>
     <item name="item_background_disabled" type="color">#aaa</item>
+    <item name="feedbgcolor" type="color">#9222</item>
 
     <!-- Gallery -->
     <item name="gallery_title_font" type="color">#808080</item>

@@ -10,7 +10,9 @@ import android.preference.ListPreference;
 import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.util.DisplayMetrics;
 
 import com.crowdmobile.kesapp.R;
@@ -27,7 +29,6 @@ import java.util.Map;
  */
 public class PrefsFragment extends PreferenceFragment {
 
-    Preference accountName;
     SharedPreferences sp;
 
     @Override
@@ -36,12 +37,26 @@ public class PrefsFragment extends PreferenceFragment {
         sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
+        PreferenceScreen preferenceScreen = (PreferenceScreen)findPreference(getString(R.string.key_preferenceScreen));
+
         Map<String, ?> map = sp.getAll();
         for (Map.Entry<String, ?> entry : map.entrySet())
         updateValue(entry.getKey());
-        accountName = findPreference(getString(R.string.key_accountname));
-        User u  = KES.shared().getAccountManager().getUser();
-        accountName.setTitle(u.getFullName());
+
+        //Account group
+        PreferenceGroup preferenceGroup = (PreferenceGroup)findPreference(getString(R.string.key_account));
+        if (preferenceGroup != null)
+        {
+            User u  = KES.shared().getAccountManager().getUser();
+            if (u != null && u.isRegistered()) {
+                Preference account = findPreference(getString(R.string.key_accountname));
+                if (account != null)
+                    account.setTitle(u.getFullName());
+            }
+            else
+                preferenceScreen.removePreference(preferenceGroup);
+        }
+
     }
 
     @Override

@@ -54,6 +54,8 @@
     <item name="feed_background" type="color">#e3f1f5</item>
 
     <!-- Feed item -->
+    <item name="feed_item_like_font" type="color">#fff</item>
+    <item name="feedbgcolor" type="color">#9222</item>
 
     <item name="item_unread" type="color">#800880de</item>
     <item name="item_stripe" type="color">#0880de</item>

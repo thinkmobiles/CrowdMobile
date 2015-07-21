@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crowdmobile.kesapp.R;
+import com.crowdmobile.kesapp.util.Compat;
 import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
 import com.squareup.picasso.Picasso;
@@ -40,12 +42,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     private Activity activity;
     private Handler mHandler = new Handler();
     private Bitmap placeHolder;
+    private Drawable feedBgMenu;
+    private int feedBgColor;
+
+    private Bitmap btLike,btLiked;
 
     public interface FeedAdapterListener {
 //        public void onLastItemReached();
         public void retryLoadClick();
         public void retryPostClick(PhotoComment p);
-        public void report(PhotoComment p);
+        public boolean like(PhotoComment p);
+        public boolean report(PhotoComment p);
         public void markAsPrivate(PhotoComment p);
         public void onItemViewed(PhotoComment p);
         public void onImageClick(ImageView v);
@@ -95,12 +102,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         View progress;
         View holderBackground;
         TextView tvLikeCount;
-        View detailHolder;
+        View holderLike;
+        View holderFeedMenu;
+        ImageView imgLike;
 
         public View answerBackground;
         public ValueAnimator backgroundAnimator;
 
-        public ItemHolder(View view, int viewType, View.OnClickListener itemClick, View.OnClickListener report_privateClick, View.OnClickListener retryClick,View.OnClickListener retryPostClick,View.OnClickListener imgClick) {
+        public ItemHolder(View view, int viewType, View.OnClickListener itemClick, View.OnClickListener likeClick, View.OnClickListener report_privateClick, View.OnClickListener retryClick,View.OnClickListener retryPostClick,View.OnClickListener imgClick) {
             super(view);
             this.viewType = viewType;
             if (viewType == TYPE_ITEM) {
@@ -111,9 +120,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 tvTimeQuestion = (TextView) view.findViewById(R.id.tvTimeQuestion);
                 tvQuestion = (TextView) view.findViewById(R.id.tvMessage);
                 messagePlaceholder = view.findViewById(R.id.messagePlaceholder);
+                imgLike = (ImageView) view.findViewById(R.id.imgLike);
                 imgFeedPic = (ImageView) view.findViewById(R.id.imgFeedPic);
                 imgFeedPic.setOnClickListener(imgClick);
                 imgOpenShare = view.findViewById(R.id.imgOpenShare);
+
                 if (imgOpenShare != null) {
                     imgOpenShare.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -129,12 +140,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 ivAnswerCenter = (ImageView) view.findViewById(R.id.imgAnswerCenter);
                 ivAnswerRight = (ImageView) view.findViewById(R.id.imgAnswerRight);
 
-                detailHolder = view.findViewById(R.id.detailHolder);
+                holderFeedMenu = view.findViewById(R.id.holder_feedmenu);
+                holderLike = view.findViewById(R.id.holderLike);
                 tvLikeCount = (TextView) view.findViewById(R.id.tvLikeCount);
 
                 btRetry = view.findViewById(R.id.btRetry);
                 btRetry.setOnClickListener(retryPostClick);
                 ivAnswerRight.setOnClickListener(report_privateClick);
+                holderLike.setOnClickListener(likeClick);
                 backgroundAnimator = new ValueAnimator();
                 backgroundAnimator.setDuration(500);
                 backgroundAnimator.setFloatValues(1, 0);
@@ -188,6 +201,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         this.list = list;
         this.listener = listener;
         this.placeHolder = BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_youtube);
+        this.feedBgMenu = activity.getResources().getDrawable(R.drawable.feed_bg_menu);
+        this.btLiked = BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_feed_like);
+        this.btLike = BitmapFactory.decodeResource(activity.getResources(), R.drawable.ic_feed_like_off);
+        this.feedBgColor = activity.getResources().getColor(R.color.feedbgcolor);
     }
 
     View.OnClickListener itemClick = new View.OnClickListener() {
@@ -232,7 +249,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                     from(viewGroup.getContext()).
                     inflate(R.layout.footer_feed, viewGroup, false);
         Log.d("TAG","OnCreateViewHolder");
-        return new ItemHolder(result, viewType, itemClick, report_privateClick, retryClick, retryPostClick, imgClick);
+        return new ItemHolder(result, viewType, itemClick, likeClick, report_privateClick, retryClick, retryPostClick, imgClick);
     }
 
     @Override
@@ -333,8 +350,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         if (item.photo_url != null && item.photo_url.length() > 0) {
             holder.imgFeedPic.setVisibility(View.VISIBLE);
             Picasso.with(holder.imgFeedPic.getContext()).load(item.photo_url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
-        } else
+            holder.holderFeedMenu.setBackgroundColor(feedBgColor);
+        } else {
+            Compat.setDrawable(holder.holderFeedMenu,feedBgMenu);
             holder.imgFeedPic.setVisibility(View.GONE);
+        }
 
         if (item.responses == null || item.responses.length == 0) {
 //            holder.fadeLayer.setVisibility(View.VISIBLE);
@@ -351,12 +371,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 //            holder.layout.setMaskColor(0);
 
 
-            if (holder.detailHolder != null) {
+            if (holder.holderLike != null) {
+                holder.holderLike.setTag(item);
                 int likeCount = item.responses[0].likes_count;
-                if (likeCount == 0)
-                    holder.detailHolder.setVisibility(View.GONE);
-                else {
-                    holder.detailHolder.setVisibility(View.VISIBLE);
                     if (holder.tvLikeCount != null) {
                         if (likeCount == 0)
                             holder.tvLikeCount.setVisibility(View.GONE);
@@ -364,14 +381,19 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                             holder.tvLikeCount.setVisibility(View.VISIBLE);
                             holder.tvLikeCount.setText(holder.tvLikeCount.getContext().getResources().getQuantityString(R.plurals.like, likeCount, likeCount));
                         }
-                    }
                 }
+                if (item.liked)
+                    holder.imgLike.setImageBitmap(btLiked);
+                else
+                    holder.imgLike.setImageBitmap(btLike);
             }
 
             holder.tvAnswerLabel.setVisibility(View.VISIBLE);
             holder.ivAnswerLeft.setVisibility(View.VISIBLE);
             holder.ivAnswerCenter.setVisibility(View.INVISIBLE);
             holder.ivAnswerRight.setVisibility(View.VISIBLE);
+
+
             if (feedType == FeedManager.FeedType.My) {
                 if (item.is_private)
                     holder.ivAnswerRight.setImageResource(R.drawable.ic_private);
@@ -408,10 +430,17 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     View.OnClickListener imgClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            listener.onImageClick((ImageView)v);
+            listener.onImageClick((ImageView) v);
 
         }
     };
+
+    public void removeAllItems()
+    {
+        for (int i = list.size(); i > 0; i--)
+            notifyItemRemoved(i - 1);
+        list.clear();
+    }
 
     View.OnClickListener retryClick = new View.OnClickListener() {
         @Override
@@ -421,26 +450,56 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             PhotoComment p = (PhotoComment) v.getTag();
             Session.getInstance(v.getContext()).getFeedManager().postQuestion(p);
             */
-            notifyDataSetChanged();
+            for (int i = 0; i < list.size(); i++)
+                notifyItemChanged(i);
         }
     };
+
+    private void updateItem(int id)
+    {
+        for (int i = 0; i < list.size(); i++) {
+            PhotoComment p = list.get(i);
+            if (p == null)
+                continue;
+            if (p.getID(feedType) == id)
+                notifyItemChanged(i);
+        }
+    }
 
     View.OnClickListener retryPostClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            listener.retryPostClick((PhotoComment) v.getTag());
-            notifyDataSetChanged();
+            PhotoComment p = (PhotoComment) v.getTag();
+            listener.retryPostClick(p);
+            updateItem(p.getID(feedType));
         }
     };
 
     View.OnClickListener report_privateClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (feedType == FeedManager.FeedType.My)
-                listener.markAsPrivate((PhotoComment) v.getTag());
-            else
-                listener.report((PhotoComment) v.getTag());
-            notifyDataSetChanged();
+            PhotoComment p = (PhotoComment) v.getTag();
+            if (feedType == FeedManager.FeedType.My) {
+                listener.markAsPrivate(p);
+                updateItem(p.getID(feedType));
+            }
+            else {
+                if (listener.report(p))
+                    updateItem(p.getID(feedType));
+            }
+        }
+    };
+
+    View.OnClickListener likeClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            PhotoComment p = (PhotoComment) v.getTag();
+            if (feedType != FeedManager.FeedType.My) {
+                if (listener.like(p)) {
+                    int id = p.getID(feedType);
+                    updateItem(id);
+                }
+            }
         }
     };
 
