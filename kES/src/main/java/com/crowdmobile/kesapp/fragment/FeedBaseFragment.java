@@ -135,13 +135,15 @@ public abstract class FeedBaseFragment extends Fragment {
 
         @Override
         public boolean like(PhotoComment p) {
-            if (p.liked)
+            if (p.responses == null || p.responses.length == 0)
+                return false;
+            if (p.responses[0].liked)
                 return false;
             if (!KES.shared().getAccountManager().getUser().isRegistered())
                 return false;
-            p.liked = true;
+            p.responses[0].liked = true;
             p.responses[0].likes_count ++;
-           // KES.shared().getFeedManager().like(p.getID(),p.responses[0].id);
+            KES.shared().getFeedManager().like(p.getID(),p.responses[0].id);
             return true;
         }
 

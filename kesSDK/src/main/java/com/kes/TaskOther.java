@@ -58,6 +58,8 @@ class TaskOther extends NetworkExecutable<ResultWrapper> {
         }
         else if (wrapper.actionType == ResultWrapper.ActionType.MarkAsPrivate)
             wrapper.photoComment = NetworkAPI.markAsPrivate(token, wrapper.questionID,wrapper.isPrivate);
+        else if (wrapper.actionType == ResultWrapper.ActionType.Like)
+            wrapper.photoComment = NetworkAPI.like(token, wrapper.questionID,wrapper.commentID);
 	}
 	
 }

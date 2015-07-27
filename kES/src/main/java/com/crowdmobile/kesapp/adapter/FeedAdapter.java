@@ -138,7 +138,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 tvAnswerLabel = (TextView) view.findViewById(R.id.tvAnswerLabel);
                 ivAnswerLeft = (ImageView) view.findViewById(R.id.imgAnswerLeft);
                 ivAnswerCenter = (ImageView) view.findViewById(R.id.imgAnswerCenter);
-                ivAnswerRight = (ImageView) view.findViewById(R.id.imgAnswerRight);
+                ivAnswerRight = (ImageView) view.findViewById(R.id.imgQuestionRight);
 
                 holderFeedMenu = view.findViewById(R.id.holder_feedmenu);
                 holderLike = view.findViewById(R.id.holderLike);
@@ -382,7 +382,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                             holder.tvLikeCount.setText(holder.tvLikeCount.getContext().getResources().getQuantityString(R.plurals.like, likeCount, likeCount));
                         }
                 }
-                if (item.liked)
+                if (item.responses[0].liked)
                     holder.imgLike.setImageBitmap(btLiked);
                 else
                     holder.imgLike.setImageBitmap(btLike);
@@ -494,11 +494,9 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         @Override
         public void onClick(View v) {
             PhotoComment p = (PhotoComment) v.getTag();
-            if (feedType != FeedManager.FeedType.My) {
-                if (listener.like(p)) {
-                    int id = p.getID(feedType);
-                    updateItem(id);
-                }
+            if (listener.like(p)) {
+                int id = p.getID(feedType);
+                updateItem(id);
             }
         }
     };

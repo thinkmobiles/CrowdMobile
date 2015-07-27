@@ -59,7 +59,6 @@ public class PhotoComment {
 
     //Temporary variables
     public boolean reported = false;
-    public boolean liked;
 
     private void setAsRead(FeedManager feedManager,boolean value)
     {

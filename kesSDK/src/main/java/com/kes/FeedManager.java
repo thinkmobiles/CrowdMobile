@@ -180,9 +180,7 @@ public class FeedManager {
                 }
             }
 
-            if (feedWrapper.feedType != FeedType.Public) {
-                token = manager.mSession.getAccountManager().getToken();
-            }
+            token = manager.mSession.getAccountManager().getToken(feedWrapper.feedType == FeedType.Public);
 
             if (feedWrapper.feedType == FeedType.Public)
                 feedWrapper.transactionid = manager.transactionIDPublicFeed;

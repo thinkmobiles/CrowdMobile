@@ -20,7 +20,7 @@
     <item name="apptextcolorhint" type="color">#ccc</item>
 
     <item name="navbarbackground" type="color">#0a93ff</item>
-    <item name="navbarseparator" type="color">#46a7f2</item>
+    <item name="navbarseparator" type="color">#80096fc2</item>
 
 
     <item name="bubblecolor" type="color">#000</item>

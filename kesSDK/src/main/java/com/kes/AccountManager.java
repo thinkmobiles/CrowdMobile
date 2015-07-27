@@ -130,7 +130,7 @@ public class AccountManager {
 
     public void setUAChannelID(String channelID)
     {
-        Log.d(TAG,"Setting UA channel ID" + channelID);
+        Log.d(TAG, "Setting UA channel ID" + channelID);
         ua_token = channelID;
         if (getCachedUser(mKES.getContext()).isRegistered())
             TaskPostToken.updatePushToken(mKES.getContext(), user.auth_token,ua_token);
@@ -151,12 +151,17 @@ public class AccountManager {
         return user;
     }
 
-    protected String getToken()
+    protected String getToken(boolean allowNull)
     {
         getUser();
-        if (user.auth_token == null)
+        if (user.auth_token == null && !allowNull)
             throw new IllegalStateException(TOKEN_NULL);
         return user.auth_token;
+    }
+
+    protected String getToken()
+    {
+        return getToken(false);
     }
 
     public void loginFacebook(String facebook_token, String facebook_uid)

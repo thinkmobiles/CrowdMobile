@@ -137,11 +137,12 @@ public class NetworkAPI {
         return ModelFactory.getPhotoComment(result);
     }
 
-    protected static void like(String token, int photocommentid, int responseid) throws DataFetcher.KESNetworkException, InterruptedException
+    protected static PhotoComment like(String token, int photocommentid, int responseid) throws DataFetcher.KESNetworkException, InterruptedException
     {
         String url = com.kes.net.ServerNavigator.like(photocommentid, responseid);
         String postData = ModelFactory.getTokenJson(token);
-        DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
+        String result = DataFetcher.requestAction(url, RequestType.PUT, null,null, postData);
+        return ModelFactory.getPhotoComment(result);
     }
 
     protected static void delete(String token, int photocommentid, int responseid) throws DataFetcher.KESNetworkException, InterruptedException

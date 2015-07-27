@@ -135,14 +135,6 @@
                             android:src="@drawable/ic_feed_item_footer_icon"
                             android:layout_width="@dimen/item_header_icon_height"
                             android:layout_height="wrap_content" />
-                        <ImageView
-                            android:layout_alignParentRight="true"
-                            android:id="@+id/imgAnswerRight"
-                            android:scaleType="fitXY"
-                            android:adjustViewBounds="true"
-                            android:src="@drawable/ic_feed_item_footer_icon"
-                            android:layout_width="@dimen/item_header_icon_height"
-                            android:layout_height="wrap_content" />
                     </RelativeLayout>
                     <TextView
                         android:id="@+id/tvAnswer"
