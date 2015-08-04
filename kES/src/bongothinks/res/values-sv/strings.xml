@@ -86,7 +86,6 @@
     <string name="copied_to_clipboard">kopiera till clipboard</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
     <string name="refund_email_title">refund förfrågan</string>
     <string name="refund_email_message">Vänligen avbryt följande order:</string>
     <string name="refund_email_dialog_title">Refundera</string>
@@ -99,7 +98,6 @@
     <string name="credit_status_processing">Bearbetar betalning</string>
     <string name="credit_status_processing_fail">Bongo kunde inte få bananerna som du köpte.</string>
     <string name="credit_status_disconnected">Frånkopplad</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
     <string name="fragment_credit_title">Få bananer</string>
     <string name="credit_info">Bongo\'s hungrig!</string>
     <string name="credit_message">Skynda dig och mata honom med bananer så att han kan svara på fler frågor!</string>

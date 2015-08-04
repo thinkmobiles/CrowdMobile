@@ -15,7 +15,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,11 +26,11 @@ import com.crowdmobile.kesapp.MainActivityInterface;
 import com.crowdmobile.kesapp.R;
 import com.crowdmobile.kesapp.adapter.FeedAdapter;
 import com.crowdmobile.kesapp.widget.NavigationBar;
+import com.kes.FeedCache;
 import com.kes.FeedManager;
 import com.kes.KES;
 import com.kes.model.PhotoComment;
 
-import java.util.ArrayList;
 
 public abstract class FeedBaseFragment extends Fragment {
 
@@ -42,7 +41,7 @@ public abstract class FeedBaseFragment extends Fragment {
     protected RecyclerView rvFeed;
     private LinearLayoutManager mLayoutManager;
     private FeedAdapter adapter;
-    private ArrayList<PhotoComment> list;
+    private FeedCache.FeedArray list;
     //    View itemTitle;
 //    View itemShare;
     private boolean scrollInitialized;
@@ -87,8 +86,6 @@ public abstract class FeedBaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         scrollBounds = new Rect();
-        list = new ArrayList<PhotoComment>();
-        adapter = new FeedAdapter(getActivity(), getFeedType(), list, feedAdapterListener);
         mHandler = new ReadHandler();
     }
 
@@ -277,21 +274,45 @@ public abstract class FeedBaseFragment extends Fragment {
         rvFeed.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getActivity());
         rvFeed.setLayoutManager(mLayoutManager);
-        rvFeed.setAdapter(adapter);
-        rvFeed.setOnScrollListener(endlessRecyclerOnScrollListener);
+        rvFeed.addOnScrollListener(endlessRecyclerOnScrollListener);
         KES.shared().getFeedManager().registerOnChangeListener(onFeedChange);
+        KES.shared().getFeedManager().cacheOf(getFeedType()).registerOnUpdateListener(onUpdateListener);
         scrollInitialized = false;
         titleVisible = false;
         showMainProgressbar(false);
         initFeed();
+        rvFeed.setAdapter(adapter);
         return result;
     }
 
+    FeedCache.OnUpdateListener onUpdateListener = new FeedCache.OnUpdateListener() {
+        @Override
+        public void onItemInserted(int position) {
+            adapter.notifyItemInserted(position);
+        }
+
+        @Override
+        public void onItemRemoved(int position) {
+            adapter.notifyItemRemoved(position);
+        }
+
+        @Override
+        public void onItemMoved(int fromPosition, int toPosition) {
+            adapter.notifyItemMoved(fromPosition,toPosition);
+        }
+
+        @Override
+        public void onItemUpdated(int position) {
+            adapter.notifyItemChanged(position);
+        }
+    };
+
     private void initFeed() {
-        adapter.removeAllItems();
-        boolean loaded = KES.shared().getFeedManager().feed(getFeedType()).getCache(list);
+        FeedCache cache = KES.shared().getFeedManager().cacheOf(getFeedType());
+        list = cache.getCache();
+        adapter = new FeedAdapter(getActivity(), getFeedType(), list, feedAdapterListener);
         if (list.size() == 0) {
-            if (loaded)
+            if (cache.isLoaded())
                 showNoPost();
             else {
                 refreshNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
@@ -490,7 +511,7 @@ public abstract class FeedBaseFragment extends Fragment {
                 return;
             if (item.status != PhotoComment.PostStatus.Posted)
                 return;
-            if (item.status == PhotoComment.PostStatus.Posted && KES.shared().getFeedManager().feed(getFeedType()).isLastItem(item.getID(getFeedType())))
+            if (item.status == PhotoComment.PostStatus.Posted && KES.shared().getFeedManager().cacheOf(getFeedType()).isEOF(item.getID(getFeedType())))
                 return;
             adapter.setFooterLoading(true);
             refreshNetworkAction = KES.shared().getFeedManager().feed(getFeedType());
@@ -556,165 +577,6 @@ public abstract class FeedBaseFragment extends Fragment {
             if (wrapper.flag_feedBottomReached)
                 bottomReached = true;
 
-            SparseArray<PhotoComment> indexedPosted = new SparseArray<PhotoComment>();
-            SparseArray<PhotoComment> indexedLocal = new SparseArray<PhotoComment>();
-
-            //Get all items to a temporary cache
-            //Index and separate them by type
-            ArrayList<PhotoComment> cacheTmp = new ArrayList<PhotoComment>();
-            KES.shared().getFeedManager().feed(getFeedType()).getCache(cacheTmp);
-            for (int i = 0; i < cacheTmp.size(); i++) {
-                PhotoComment pc = cacheTmp.get(i);
-                if (pc.status == PhotoComment.PostStatus.Posted)
-                    indexedPosted.put(pc.getID(getFeedType()), pc);
-                else
-                    indexedLocal.put(pc.getID(), pc);
-            }
-
-            //Find first posted item ID
-            int firstPostedID = -1;
-            for (int i = 0; i < list.size(); i++)
-                if (list.get(i).status == PhotoComment.PostStatus.Posted)
-                {
-                    firstPostedID = list.get(i).getID(getFeedType());
-                    break;
-                }
-
-            //New data is valid but empty or new data can't be connected to the list
-            if (cacheTmp.size() == 0 || (firstPostedID < 0 && indexedPosted.size() > 0) || firstPostedID + 1 < indexedPosted.keyAt(0))
-            {
-                bottomReached = false;
-                adapter.removeAllItems();
-                for (int i = 0; i < cacheTmp.size(); i++) {
-                    list.add(cacheTmp.get(i));
-                    adapter.notifyItemInserted(i);
-                }
-                rvFeed.scrollToPosition(0);
-                if (list.size() == 0)
-                    showNoPost();
-                else {
-                    accessViewHolder.setVisibility(View.GONE);
-                    swipeContainer.setEnabled(true);
-                }
-                showListAnimation();
-                return;
-            }
-
-
-            //first remove missing items and update changed items
-            for (int i = list.size() - 1; i >= 0; i --)
-            {
-                PhotoComment oldItem = list.get(i);
-                int oldID = oldItem.getID(getFeedType());
-                PhotoComment newItem = null;
-
-                if (oldItem.status == PhotoComment.PostStatus.Posted) {
-                    newItem = indexedPosted.get(oldID);
-                    if (newItem != null)
-                        indexedPosted.delete(oldID);
-                }
-                else {
-                    newItem = indexedLocal.get(oldID);
-                    if (newItem != null)
-                        indexedLocal.remove(oldID);
-                }
-
-                if (newItem == null)
-                {
-                    list.remove(i);
-                    adapter.notifyItemRemoved(i);
-                } else
-                {
-                    if (oldItem != newItem) {
-                        list.set(i, newItem);
-                        adapter.notifyItemChanged(i);
-                    }
-                }
-            }
-
-            //Insert pending items
-            for (int j = 0; j < indexedLocal.size(); j++)
-            {
-                list.add(0,indexedLocal.valueAt(j));
-                adapter.notifyItemInserted(0);
-            }
-            //Insert posted items
-            boolean insertedToTop = false;
-            int startSearch = 0;
-            int newPosition;
-            for (int j = indexedPosted.size() - 1; j >= 0; j--)
-            {
-                newPosition = list.size();
-                PhotoComment newItem = indexedPosted.valueAt(j);
-                int newID = newItem.getID(getFeedType());
-                for (int i = startSearch; i < list.size(); i++)
-                {
-                    startSearch = i;
-                    PhotoComment oldItem = list.get(i);
-                    if (oldItem.status != PhotoComment.PostStatus.Posted)
-                        continue;
-                    int oldID = oldItem.getID(getFeedType());
-                    if (oldID < newID) {
-                        newPosition = startSearch;
-                        break;
-                    }
-                }
-                if (newPosition == 0)
-                    insertedToTop = true;
-                list.add(newPosition, newItem);
-                adapter.notifyItemInserted(newPosition);
-            }
-
-            /*
-            //first insert higher id items
-            int highID = Integer.MIN_VALUE;
-            if (list.size() > 0)
-                highID = list.get(0).getID(getFeedType());
-
-            for (int i = 0; i < tmp.size(); i++) {
-                PhotoComment p = tmp.valueAt(i);
-                if (p.getID(getFeedType()) > highID) {
-                    list.add(0,p);
-                    adapter.notifyItemInserted(0);
-                    inserted = true;
-                }
-            }
-            */
-            if (insertedToTop)
-                rvFeed.scrollToPosition(0);
-            /*
-            //add lower id items
-            int lowID = Integer.MAX_VALUE;
-            if (list.size() > 0)
-                lowID = list.get(list.size() - 1).getID(getFeedType());
-
-            for (int i = tmp.size(); i > 0; i--) {
-                PhotoComment p = tmp.valueAt(i - 1);
-                if (p.getID(getFeedType()) < lowID) {
-                    list.add(p);
-                    adapter.notifyItemInserted(list.size() - 1);
-                }
-            }
-            */
-            swipeContainer.setEnabled(list.size() > 0);
-
-            if (list.size() == 0)
-                showNoPost();
-            else
-                accessViewHolder.setVisibility(View.GONE);
-
-            //testVisibleAnswers(true);
-            /*
-            NavigationBar.Attached attached = ((MainActivity) getActivity()).getNavigationBar().getAttached();
-            if ((attached == NavigationBar.Attached.Feed && getFeedType() == FeedManager.FeedType.Public) ||
-                (attached == NavigationBar.Attached.MyFeed && getFeedType() == FeedManager.FeedType.My))
-            */
-
-
-            showListAnimation();
-
-            //if (wrapper.unreadItems)
-            //    testVisibleAnswers(true);
         }
 
         @Override
@@ -938,20 +800,22 @@ public abstract class FeedBaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        KES.shared().getFeedManager().cacheOf(getFeedType()).unRegisterOnUpdateListener(onUpdateListener);
+        rvFeed.removeOnScrollListener(endlessRecyclerOnScrollListener);
+
         progressBar = null;
         swipeContainer = null;
         rvFeed = null;
         mLayoutManager = null;
         accessViewHolder = null;
         KES.shared().getFeedManager().unRegisterOnChangeListener(onFeedChange);
-        list.clear();
+        list = null;
+        adapter = null;
     }
 
     @Override
     public void onDestroy() {
         scrollBounds = null;
-        list = null;
-        adapter = null;
         mHandler = null;
         super.onDestroy();
     }

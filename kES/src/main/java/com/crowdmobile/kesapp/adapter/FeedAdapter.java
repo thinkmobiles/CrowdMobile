@@ -23,11 +23,10 @@ import android.widget.Toast;
 
 import com.crowdmobile.kesapp.R;
 import com.crowdmobile.kesapp.util.Compat;
+import com.kes.FeedCache;
 import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
 import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 /**
  * Created by gadza on 2015.04.01..
@@ -60,26 +59,13 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
     public void hideFooter()
     {
-        int s = list.size();
-        if (s == 0)
-            return;
-        s--;
-        if (list.get(s) != null)
-            return;
-        list.remove(s);
-        notifyItemRemoved(s);
+        list.removeFooter();
     }
 
     public void setFooterLoading(boolean enabled)
     {
         footerLoading = enabled;
-        int s = list.size();
-        if (s > 0 && list.get(s - 1) == null) {
-            notifyItemChanged(s - 1);
-            return;
-        }
-        list.add(null);
-        notifyItemInserted(s);
+        list.insertFooter();
     }
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
@@ -190,10 +176,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
     private LayoutInflater inflater;
     private Resources resources;
-    private List<PhotoComment> list;
+    private FeedCache.FeedArray list;
     FeedManager.FeedType feedType;
 
-    public FeedAdapter(Activity activity, FeedManager.FeedType feedType, List<PhotoComment> list,FeedAdapterListener listener) {
+    public FeedAdapter(Activity activity, FeedManager.FeedType feedType, FeedCache.FeedArray list,FeedAdapterListener listener) {
         inflater = activity.getLayoutInflater();
         resources = activity.getResources();
         this.feedType = feedType;
@@ -349,7 +335,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 
         if (item.photo_url != null && item.photo_url.length() > 0) {
             holder.imgFeedPic.setVisibility(View.VISIBLE);
-            Picasso.with(holder.imgFeedPic.getContext()).load(item.photo_url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
+            String url = item.photo_url;
+            if (url.startsWith("/"))
+                url = "file://" + url;
+            Picasso.with(holder.imgFeedPic.getContext()).load(url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
             holder.holderFeedMenu.setBackgroundColor(feedBgColor);
         } else {
             Compat.setDrawable(holder.holderFeedMenu,feedBgMenu);

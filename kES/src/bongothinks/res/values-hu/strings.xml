@@ -86,7 +86,6 @@
     <string name="copied_to_clipboard">Vágólapra másolva</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
     <string name="refund_email_title">Visszatérítés kérelem</string>
     <string name="refund_email_message">Kérem a következő rendelés visszatérítését:</string>
     <string name="refund_email_dialog_title">Visszatérítés</string>
@@ -99,7 +98,6 @@
     <string name="credit_status_processing">Fizetés feldolgozása</string>
     <string name="credit_status_processing_fail">Bongo nem jutott hozzá a banánokhoz!</string>
     <string name="credit_status_disconnected">Kapcsolat megszakadt</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
     <string name="fragment_credit_title">Szerezz banánt</string>
     <string name="credit_info">Bongo éhes!</string>
     <string name="credit_message">Gyorsan etesd meg banánnal hogy még több kérdésre válaszolhasson!</string>

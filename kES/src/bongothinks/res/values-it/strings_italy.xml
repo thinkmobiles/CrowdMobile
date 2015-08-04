@@ -86,7 +86,6 @@
     <string name="copied_to_clipboard">Copiato su clipboard</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
     <string name="refund_email_title">richiesta di rimborso</string>
     <string name="refund_email_message">Per favore cancella i seguenti ordini:</string>
     <string name="refund_email_dialog_title">Rimborso</string>
@@ -99,7 +98,6 @@
     <string name="credit_status_processing">Processing payment</string>
     <string name="credit_status_processing_fail">Bongo non può ricevere le banane cha hai comprato.</string>
     <string name="credit_status_disconnected">Disconnesso</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
     <string name="fragment_credit_title">Prendi le banane</string>
     <string name="credit_info">Bongo è affamato!</string>
     <string name="credit_message">Su forza...dagli qualche banana così può rispondere alle tue domande!</string>

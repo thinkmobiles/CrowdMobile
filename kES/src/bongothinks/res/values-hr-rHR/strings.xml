@@ -75,7 +75,6 @@
     <string name="newsfeed">Novosti</string>
     <string name="myfeed">Moja pitanja</string>
     <string name="item_share">SHARE</string>
-    <string name="loremipsum">Bacon ipsum dolor amet rump spare ribs t-bone swine, fatback pork belly meatball drumstick porchetta. Salami chuck porchetta meatloaf, beef picanha ball tip venison alcatra pancetta meatball tongue turkey. Picanha frankfurter chicken, biltong tongue corned beef pork belly chuck. T-bone pancetta tail ball tip biltong salami.</string>
     <string name="item_retry">Pokušaj ponovno</string>
     <string name="item_noanswer">Bongo će uskoro odgovoriti na tvoje pitanje</string>
     <string name="timeformat_day" formatted="false">%d dana</string>
@@ -85,7 +84,6 @@
     <string name="copied_to_clipboard">Kopirano</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
     <string name="refund_email_title">vrati zahtjev</string>
     <string name="refund_email_message">Otkažite sljedeće narudžbe:</string>
     <string name="refund_email_dialog_title">Vrati</string>
@@ -98,7 +96,6 @@
     <string name="credit_status_processing">Plaćanje se procesuira</string>
     <string name="credit_status_processing_fail">Bongo nije dobio banane koje si mu kupio.</string>
     <string name="credit_status_disconnected">Disconnected</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
     <string name="fragment_credit_title">Kupi banane</string>
     <string name="credit_info">Bongo je gladan!</string>
     <string name="credit_message">Požuri se i nahrani ga da bi odgovorio na tvoja pitanja!</string>

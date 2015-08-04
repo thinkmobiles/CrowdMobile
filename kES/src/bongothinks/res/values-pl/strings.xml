@@ -84,7 +84,6 @@
     <string name="copied_to_clipboard">Kopiowanie do schowka</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
     <string name="refund_email_title">żądanie zwrotu kosztów</string>
     <string name="refund_email_message">Proszę anulować następujące rozkazy:</string>
     <string name="refund_email_dialog_title">Zwrot kosztów</string>
@@ -97,7 +96,6 @@
     <string name="credit_status_processing">Przetwarzanie płatności</string>
     <string name="credit_status_processing_fail">Bongo nie mógł zjeść banany, które mu kupiłeś</string>
     <string name="credit_status_disconnected">Odłączony</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
     <string name="fragment_credit_title">Zdobądź banany</string>
     <string name="credit_info">Bongo jest głodny!</string>
     <string name="credit_message">Pośpiesz się i nakarm go bananami by mógł odpowiedzieć na wszytkie twoje pytania</string>

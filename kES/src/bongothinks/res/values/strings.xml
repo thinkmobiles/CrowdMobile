@@ -95,8 +95,8 @@
 
     <!-- Credit -->
     <string name="refund_email" translatable="false">bongo@199bongo.com</string>
-    <string name="refund_email_title" translatable="false">refund request</string>
-    <string name="refund_email_message" translatable="false">Please cancel the following BongoThinks for Android orders:</string>
+    <string name="refund_email_title" translatable="true">refund request</string>
+    <string name="refund_email_message" translatable="true">Please cancel the following BongoThinks for Android orders:</string>
     <string name="refund_email_dialog_title">Refund</string>
     <string name="purchase_retry">Retry</string>
     <string name="purchase_refund">Refund</string>

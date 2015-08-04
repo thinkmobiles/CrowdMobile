@@ -86,7 +86,6 @@
     <string name="copied_to_clipboard">Kopioitu leikepöydälle</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
     <string name="refund_email_title">refund pyyntö</string>
     <string name="refund_email_message">Peruuttaisitko seuraavat tilaukset:</string>
     <string name="refund_email_dialog_title">Refund</string>
@@ -99,7 +98,6 @@
     <string name="credit_status_processing">Käsitellään maksua</string>
     <string name="credit_status_processing_fail">Bongo ei saanut banaaneita jotka ostit.</string>
     <string name="credit_status_disconnected">Yhteys katkaistu</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
     <string name="fragment_credit_title">Hommaa banaaneita</string>
     <string name="credit_info">Bongo on nälkäinen!</string>
     <string name="credit_message">Kiirehdi ja syötä hänelle banaaneita, jotta hän voi vastata useampiin kysymyksiin!</string>

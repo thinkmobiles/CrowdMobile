@@ -85,7 +85,6 @@
     <string name="copied_to_clipboard">Kópia do clipboard</string>
 
     <!-- Credit -->
-    <string name="refund_email">support@bongo.com</string>
     <string name="refund_email_title">Požiadavka na vrátenie peňazí</string>
     <string name="refund_email_message">Prosim zrušte nasledujúcu objednávku:</string>
     <string name="refund_email_dialog_title">Vrátenie peňazí</string>
@@ -98,7 +97,6 @@
     <string name="credit_status_processing">Spracovanie platby</string>
     <string name="credit_status_processing_fail">Bongo nemohol dostať banány, ktore ste zakúpili.</string>
     <string name="credit_status_disconnected">Odpojené</string>
-    <string name="credit_price_format" formatted="false">%s %.2f</string>
     <string name="fragment_credit_title">Dostat banány</string>
     <string name="credit_info">Bongo je hladný!</string>
     <string name="credit_message">Rýchlo, nakrm ho banánmi, nech vládze zodpovedať čo najviac otázok!</string>

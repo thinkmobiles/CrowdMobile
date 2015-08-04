@@ -45,14 +45,7 @@
     <string name="error_kes_login">Login to KES failed</string>
     <string name="error_fb_nouserinfo">Could not retrieve user info</string>
     
-    <!-- Preferences -->
-    <string name="key_logout">key_logout</string>
-    <string name="key_user_id">key_userid</string>
-    <string name="key_user_firstname">key_userfirstname</string>
-    <string name="key_user_lastname">key_userlastname</string>
-    <string name="key_user_email">key_useremail</string>
-    <string name="key_user_authtoken">key_userauthtoken</string>
-    
+
     
     <!-- Menu -->
     <string name="action_privacy">Privacy settings</string>
@@ -144,13 +137,6 @@
     <!-- Crop -->
     <string name="crop_title">Crop your image</string>
 
-    <!-- Preferences -->
-    <string name="key_skip_login">skip_login</string>
-    <string name="key_active_fragment">active_fragment</string>
-    <string name="key_compose_text">compose_text</string>
-    <string name="key_compose_private">compose_private</string>
-    <string name="key_camera_picture">camera_picture</string>
-    <string name="key_composed_picture">composed_picture</string>
 
     <!-- In app purchase -->
     <string name="credits_prefix">qredits_</string>
@@ -181,10 +167,8 @@
         <item>pt_PT</item>
     </string-array>
 
-    <string name="key_language">key_language</string>
     <string name="title_language">Language</string>
 
-    <string name="key_updateinterval">key_updateinterval</string>
     <string name="title_updateinterval">News update interval</string>
 
     <string-array name="updateInterval">
@@ -194,14 +178,7 @@
         <item>every week</item>
     </string-array>
 
-    <string-array name="updateIntervalAlias">
-        <item>24</item>
-        <item>48</item>
-        <item>72</item>
-        <item>168</item>
-    </string-array>
 
-    <string name="key_gender">key_gender</string>
     <string name="title_gender">Gender</string>
 
     <string-array name="genderNames">
@@ -209,24 +186,12 @@
         <item>Female</item>
     </string-array>
 
-    <string-array name="genderAlias">
-        <item>M</item>
-        <item>F</item>
-    </string-array>
-
-
-
-    <string name="key_showsuggestion">key_showsuggestion</string>
     <string name="title_showsuggestion">Show suggestions</string>
     <string name="detail_showsuggestion">Show suggested questions at compose screen</string>
 
     <string name="category_account">Account</string>
-    <string name="key_accountname">key_accountname</string>
-
-    <string name="key_birthdate">key_birthdate</string>
     <string name="title_birthdate">Birth date</string>
 
-    <string name="key_relationship">key_relationship</string>
     <string name="title_relationship">Relationship</string>
 
     <string-array name="relationshipNames">
@@ -234,13 +199,6 @@
         <item>In a relationship</item>
         <item>Common Law</item>
         <item>Married</item>
-    </string-array>
-
-    <string-array name="relationshipAlias">
-        <item>S</item>
-        <item>R</item>
-        <item>C</item>
-        <item>M</item>
     </string-array>
 
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import com.kes.net.DataFetcher;
 
+import java.io.File;
 import java.io.IOException;
 
 class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentResponseHolder> {
@@ -44,7 +45,7 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
     protected void onExecute(Context context, Intent intent, FeedManager.PhotoCommentResponseHolder wrapper) throws DataFetcher.KESNetworkException, IOException, InterruptedException {
         Bundle extras = intent.getExtras();
         String token = extras.getString(TAG_TOKEN);
-        int internalID = extras.getInt(TAG_INTERNALID);
+        wrapper.internalid = extras.getInt(TAG_INTERNALID);
         String message = extras.getString(TAG_MESSAGE);
         String filePath = extras.getString(TAG_FILEPATH);
         String[] tags = extras.getStringArray(TAG_TAGS);
@@ -52,12 +53,14 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
         String photo_data = null;
         if (filePath != null)
             photo_data = Utils.fileToBase64(filePath);
-        wrapper.internalid = internalID;
 
 //        Thread.sleep(2000);
 //        if (true) throw new IOException("Test IO exception");
 
         wrapper.response = NetworkAPI.postQuestion(token, message, photo_data, tags, is_private);
+
+        File f = new File(filePath);
+        f.delete();
 
         try {
             wrapper.user = NetworkAPI.getAccount(token);

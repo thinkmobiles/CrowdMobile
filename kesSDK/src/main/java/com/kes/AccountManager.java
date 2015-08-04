@@ -186,7 +186,7 @@ public class AccountManager {
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         if (user == null || !user.isRegistered())
             return;
-        mKES.getFeedManager().feed(FeedManager.FeedType.My).clear();
+        mKES.getFeedManager().cacheOf(FeedManager.FeedType.My).clear();
         mKES.getFeedManager().clearPendingDB();
         PreferenceUtil.clearUser(mKES.getContext());
         user = null;
