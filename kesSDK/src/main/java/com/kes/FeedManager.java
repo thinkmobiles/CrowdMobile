@@ -39,9 +39,6 @@ public class FeedManager {
     int minIDPublicFeed = 0;
     int minIDMyFeed = 0;
 
-    //Drop received data if request happened before clearing cache
-    int transactionIDPublicFeed = 0;
-    int transactionIDMyFeed = 0;
 
     private FeedCache publicCache;
     private FeedCache myCache;
@@ -59,7 +56,6 @@ public class FeedManager {
 
     public static class PhotoCommentResponseHolder extends ResultWrapper {
         public long internalid;
-        public PhotoComment response;
     }
 
     public static class FeedWrapper extends ResultWrapper {
@@ -71,7 +67,6 @@ public class FeedManager {
         public String tags;
         public PhotoComment photoComments[];
         public boolean flag_feedBottomReached = false;
-        protected int transactionid;
         public boolean unreadItems = false;
         public boolean appended = false;
 
@@ -121,35 +116,19 @@ public class FeedManager {
 
 
         public void load() {
-            String token = null;
-
             //feedWrapper.page_size = 3;  //TODO:remove
-            if (feedWrapper.max_id != null)
+            //If we already know the bottom end of the feed, reject lower id requests
+            if (feedWrapper.max_id != null && feedWrapper.max_id <= manager.cacheOf(feedWrapper.feedType).get_EOF_ID())
             {
-                int compareID = 0;
-                if (feedWrapper.feedType == FeedType.Public)
-                    compareID = manager.minIDPublicFeed;
-                else if (feedWrapper.feedType == FeedType.My)
-                    compareID = manager.minIDMyFeed;
-
-                if (feedWrapper.max_id <= compareID)
-                {
-                    feedWrapper.flag_feedBottomReached = true;
-                    manager.postChange(feedWrapper);
-                    return;
-                }
+                feedWrapper.flag_feedBottomReached = true;
+                manager.postChange(feedWrapper);
+                return;
             }
 
-            token = manager.mSession.getAccountManager().getToken(feedWrapper.feedType == FeedType.Public);
-
-            if (feedWrapper.feedType == FeedType.Public)
-                feedWrapper.transactionid = manager.transactionIDPublicFeed;
-            else if (feedWrapper.feedType == FeedType.My)
-                feedWrapper.transactionid = manager.transactionIDMyFeed;
-
-            TaskLoadFeed.loadFeed(manager.mSession.getContext(), token, feedWrapper);
+            TaskLoadFeed.loadFeed(manager.mSession.getContext(),
+                    manager.mSession.getAccountManager().getToken(feedWrapper.feedType == FeedType.Public),
+                    feedWrapper);
         }
-
     }
 
     public void checkUnread()
@@ -166,11 +145,6 @@ public class FeedManager {
 
 
     protected void updateData(FeedWrapper feedWrapper) {
-        //Prevent updating data if clearCache was called after the request
-        if (feedWrapper.feedType == FeedType.My && feedWrapper.transactionid < transactionIDMyFeed)
-                return;
-        if (feedWrapper.feedType == FeedType.Public && feedWrapper.transactionid < transactionIDPublicFeed)
-            return;
 
         int commentsLength = feedWrapper.photoComments != null ? feedWrapper.photoComments.length : 0;
 
@@ -179,8 +153,7 @@ public class FeedManager {
             for (int i = 0; i < commentsLength; i++)
                 feedWrapper.photoComments[i].setAsRead(true);
 
-        cacheOf(FeedType.Public).updateData(feedWrapper);
-        cacheOf(FeedType.My).updateData(feedWrapper);
+        cacheOf(feedWrapper.feedType).updateData(feedWrapper);
 
         postChange(feedWrapper);
     }
@@ -211,7 +184,7 @@ public class FeedManager {
         mSession = session;
         publicCache = new FeedCache(FeedType.Public);
         myCache = new FeedCache(FeedType.My);
-        mSession.getDB().getAllPending(myCache.getInsertedItems());
+        mSession.getDB().getAllPending(myCache.getPendingItems());
     }
 
     //http://kes-middletier-staging.elasticbeanstalk.com/api/wwjd/v1/photo_comments/?filter=feed&page=1&tags=word1%20word2
@@ -227,9 +200,17 @@ public class FeedManager {
         return result;
     }
 
+    int dstid = 310000;
     public void postQuestion(PhotoComment p) {
+        /*
+        PhotoComment p2 = new PhotoComment();
+        p2.copyFrom(p);
+        p2.status = PhotoComment.PostStatus.Posted;
+        p2.setID(dstid++);
+        myCache.moveInsertedItem(p.getID(FeedType.My), p2);
+        */
         p.status = PhotoComment.PostStatus.Pending;
-        myCache.updateInsertedItem(p);
+        myCache.PendingItem(p);
         TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.getID(), p.message, p.photo_url, null, p.is_private);
     }
 
@@ -349,16 +330,16 @@ public class FeedManager {
     protected void updatePendingQuestion(PhotoCommentResponseHolder holder) {
         if (holder.user != null)
             mSession.getAccountManager().updateBalance(holder.user.balance);
-        if (holder.exception == null && holder.response != null) {
+        if (holder.exception == null && holder.photoComment != null) {
             mSession.getDB().updatePendingQuestion(holder.internalid, true);
-            myCache.moveInsertedItem(holder.internalid, holder.photoComment);
+            myCache.setPendingItemPosted(holder.internalid, holder.photoComment);
             return;
         }
 
         mSession.getDB().updatePendingQuestion(holder.internalid, false);
-        PhotoComment item = myCache.getInsertedItem(holder.internalid);
+        PhotoComment item = myCache.getPendingItemByID(holder.internalid);
         item.status = PhotoComment.PostStatus.Error;
-        myCache.updateInsertedItem(item);
+        myCache.PendingItem(item);
 
 
         boolean noCredit = false;

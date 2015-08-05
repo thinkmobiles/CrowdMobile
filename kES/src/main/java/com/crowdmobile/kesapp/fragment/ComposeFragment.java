@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crowdmobile.kesapp.AppCfg;
 import com.crowdmobile.kesapp.MainActivityInterface;
 import com.crowdmobile.kesapp.PictureActivity;
 import com.crowdmobile.kesapp.R;
@@ -67,7 +68,6 @@ public class ComposeFragment extends Fragment {
     int postEnabled = -1;
     boolean afterResume = false;
     boolean isPrivate;
-    Handler mHandler;
     CharsetEncoder latinEncoder;
     SuggestionDialog suggestionDialog;
     MainActivityInterface mainActivityInterface;
@@ -95,14 +95,12 @@ public class ComposeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mHandler = new Handler();
         latinEncoder = Charset.forName("ISO-8859-1").newEncoder();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mHandler = null;
         latinEncoder = null;
     }
 
@@ -441,22 +439,52 @@ public class ComposeFragment extends Fragment {
         final String question = edMessage.getText().toString();
         final String picturePath = PreferenceUtils.getComposedPicture(getActivity());
 
-        if (KES.shared().getAccountManager().getUser().balance < 1) {
+        if (KES.shared().getAccountManager().getUser().balance < 1 && !AppCfg.isStaging()) {
             mainActivityInterface.showNoCreditDialog();
             return;
         }
 
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        //Some delay for hiding keyboard
+        mainActivityInterface.getHandler().postDelayed(
+                new PostQuestion1(mainActivityInterface.getHandler(),
+                        isPrivate,
+                        question,
+                        picturePath),
+                300);
+    }
+
+    class PostQuestion1 implements Runnable {
+        private int phase;
+        private Handler handler;
+        private boolean isPrivate;
+        private String question;
+        private String picturePath;
+
+        public PostQuestion1(Handler handler, boolean isPrivate,String question,String picturePath)
+        {
+            phase = 1;
+            this.handler = handler;
+            this.isPrivate = isPrivate;
+            this.question = question;
+            this.picturePath = picturePath;
+        }
+
+        @Override
+        public void run() {
+            if (phase == 1) {
                 edMessage.setText("");
                 previewClose(false);
                 NavigationBar nb = ((NavigationBar.NavigationCallback) getActivity()).getNavigationBar();
                 nb.navigateTo(NavigationBar.Attached.MyFeed);
+                phase = 2;
+                handler.postDelayed(this,300);
+            } else
+            if (phase == 2) {
                 KES.shared().getFeedManager().postQuestion(isPrivate, question, picturePath);
             }
-        },250);
+        }
     }
+
 
     void pictureWarning()
     {

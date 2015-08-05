@@ -26,6 +26,7 @@ import com.crowdmobile.kesapp.util.Compat;
 import com.kes.FeedCache;
 import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
+import com.kes.model.StrUtil;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -91,6 +92,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         View holderLike;
         View holderFeedMenu;
         ImageView imgLike;
+        String urlCache;
 
         public View answerBackground;
         public ValueAnimator backgroundAnimator;
@@ -338,7 +340,10 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             String url = item.photo_url;
             if (url.startsWith("/"))
                 url = "file://" + url;
-            Picasso.with(holder.imgFeedPic.getContext()).load(url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
+            if (!StrUtil.strEqual(holder.urlCache,url)) {
+                holder.urlCache = url;
+                Picasso.with(holder.imgFeedPic.getContext()).load(url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
+            }
             holder.holderFeedMenu.setBackgroundColor(feedBgColor);
         } else {
             Compat.setDrawable(holder.holderFeedMenu,feedBgMenu);
@@ -352,6 +357,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             holder.ivAnswerLeft.setVisibility(View.INVISIBLE);
             holder.ivAnswerCenter.setVisibility(View.VISIBLE);
             holder.ivAnswerRight.setVisibility(View.INVISIBLE);
+            holder.holderFeedMenu.setVisibility(View.GONE);
 //            holder.holderBackground.setBackgroundColor(R.color.item_background_disabled);
 //            holder.layout.setMaskColor(resources.getColor(R.color.item_fade_layer));
         } else {
@@ -360,6 +366,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
 //            holder.layout.setMaskColor(0);
 
 
+            holder.holderFeedMenu.setVisibility(View.VISIBLE);
             if (holder.holderLike != null) {
                 holder.holderLike.setTag(item);
                 int likeCount = item.responses[0].likes_count;

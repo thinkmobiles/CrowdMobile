@@ -51,16 +51,17 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
         String[] tags = extras.getStringArray(TAG_TAGS);
         boolean is_private = extras.getBoolean(TAG_PRIVATE);
         String photo_data = null;
-        if (filePath != null)
+        if (filePath != null) {
             photo_data = Utils.fileToBase64(filePath);
+            File f = new File(filePath);
+            f.delete();
+        }
 
-//        Thread.sleep(2000);
-//        if (true) throw new IOException("Test IO exception");
+        //Thread.sleep(1000);
+        //if (true) throw new IOException("Test IO exception");
 
-        wrapper.response = NetworkAPI.postQuestion(token, message, photo_data, tags, is_private);
+        wrapper.photoComment = NetworkAPI.postQuestion(token, message, photo_data, tags, is_private);
 
-        File f = new File(filePath);
-        f.delete();
 
         try {
             wrapper.user = NetworkAPI.getAccount(token);

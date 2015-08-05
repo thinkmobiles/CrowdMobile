@@ -47,6 +47,11 @@ public class FeedCache {
         return mLoaded;
     }
 
+    public long get_EOF_ID()
+    {
+        return eofID;
+    }
+
     protected Integer getHighestID()
     {
         int size = internalCache.size();
@@ -61,26 +66,25 @@ public class FeedCache {
     }
 
     private SparseArray<FeedCacheItem> internalCache = new SparseArray<FeedCacheItem>();
-    private ArrayList<PhotoComment> insertedItems = new ArrayList<PhotoComment>();
+    private ArrayList<PhotoComment> pendingItems = new ArrayList<PhotoComment>();
 
-    protected ArrayList<PhotoComment> getInsertedItems()
+    protected ArrayList<PhotoComment> getPendingItems()
     {
-        return insertedItems;
+        return pendingItems;
     }
 
     protected void insertItem(PhotoComment p)
     {
-        insertedItems.add(0,p);
+        pendingItems.add(0, p);
     }
 
-    protected void updateInsertedItem(PhotoComment p)
+    protected void PendingItem(PhotoComment p)
     {
-        for (int i = 0; i < insertedItems.size(); i++)
+        for (int i = 0; i < pendingItems.size(); i++)
         {
-            PhotoComment tmp = insertedItems.get(i);
+            PhotoComment tmp = pendingItems.get(i);
             if (tmp.getID() == p.getID() && Utils.strEqual(tmp.message,p.message) && Utils.strEqual(tmp.photo_url, p.photo_url))
             {
-                p.status = PhotoComment.PostStatus.Pending;
                 notifyListeners(UpdateType.update,i);
                 return;
             }
@@ -93,26 +97,26 @@ public class FeedCache {
         return "can't find pending question id=" + Long.toString(internalID);
     }
 
-    protected PhotoComment getInsertedItem(long internalID)
+    protected PhotoComment getPendingItemByID(long internalID)
     {
-        for (int i = 0; i < insertedItems.size(); i++) {
-            PhotoComment tmp = insertedItems.get(i);
+        for (int i = 0; i < pendingItems.size(); i++) {
+            PhotoComment tmp = pendingItems.get(i);
             if (tmp.getID() == internalID)
                 return tmp;
         }
         throw new IllegalStateException(idNotFound(internalID));
     }
 
-    protected void moveInsertedItem(long internalID, PhotoComment updated)
+    protected void setPendingItemPosted(long internalID, PhotoComment updated)
     {
         int insertedIdx = -1;
         int destIdx = -1;
-        for (int i = 0; i < insertedItems.size(); i++)
+        for (int i = 0; i < pendingItems.size(); i++)
         {
-            PhotoComment tmp = insertedItems.get(i);
-            if (tmp.getID() == internalID)
+            PhotoComment tmp = pendingItems.get(i);
+            if (tmp.getID(mFeedType) == internalID)
             {
-                insertedItems.remove(i);
+                pendingItems.remove(i);
                 insertedIdx = i;
                 break;
             }
@@ -122,21 +126,22 @@ public class FeedCache {
 
         int currentID = updated.getID(mFeedType);
         FeedCacheItem item = internalCache.get(currentID);
+        boolean moved = false;
         if (item == null)
         {
             item = new FeedCacheItem();
             internalCache.put(currentID, item);
-            destIdx = internalCache.indexOfKey(currentID);
+            moved = true;
         }
         item.photoComment = updated;
         item.cacheConnected = true;
-        if (destIdx != -1)
-            notifyListeners(UpdateType.move, insertedIdx, internalPosToExternal(destIdx));
+        destIdx = internalPosToExternal(internalCache.indexOfKey(currentID));
+        if (moved)
+            notifyListeners(UpdateType.move, insertedIdx, destIdx);
         else
-        {
             notifyListeners(UpdateType.remove, insertedIdx);
-            notifyListeners(UpdateType.update, internalPosToExternal(destIdx));
-        }
+
+        notifyListeners(UpdateType.update, destIdx);
     }
 
     private WeakHashMap<OnUpdateListener, Void> updateListeners = new WeakHashMap<OnUpdateListener, Void>();
@@ -170,7 +175,8 @@ public class FeedCache {
                     updateTmp.onItemRemoved(position);
                     break;
                 case move:
-                    updateTmp.onItemMoved(position,position2);
+                    if (position != position2)
+                        updateTmp.onItemMoved(position,position2);
                     break;
                 case update:
                     updateTmp.onItemUpdated(position);
@@ -284,14 +290,14 @@ public class FeedCache {
         mLoaded = false;
         for (int i = 0; i < cache.size(); i++)
             notifyListeners(UpdateType.remove, i);
-        insertedItems.clear();
+        pendingItems.clear();
         internalCache.clear();
     }
 
 
     private int internalPosToExternal(int internalPos)
     {
-        return (internalCache.size() - 1) - internalPos + insertedItems.size();
+        return (internalCache.size() - 1) - internalPos + pendingItems.size();
     }
 
     public class FeedArray extends ArrayList<PhotoComment> {
@@ -302,17 +308,17 @@ public class FeedCache {
             int maxPos = size();
             if (location < 0 || location > maxPos - 1)
                 throw new IndexOutOfBoundsException();
-            if (location < insertedItems.size())
-                return insertedItems.get(location);
+            if (location < pendingItems.size())
+                return pendingItems.get(location);
             if (footer && location == maxPos - 1)
                     return null;
-            location -= insertedItems.size();
+            location -= pendingItems.size();
             return internalCache.valueAt(internalCache.size() - location - 1).photoComment;
         }
 
         @Override
         public int size() {
-            int size = insertedItems.size() + internalCache.size();
+            int size = pendingItems.size() + internalCache.size();
             if (footer)
                 size ++;
             return size;

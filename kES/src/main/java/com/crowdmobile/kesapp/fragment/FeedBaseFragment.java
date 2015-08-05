@@ -555,28 +555,35 @@ public abstract class FeedBaseFragment extends Fragment {
             if (wrapper.feedType != getFeedType())
                 return;
 
-            loadingNextPage = false;
             if (!wrapper.unreadItems)
                 showMainProgressbar(false);
 
-            if (wrapper.max_id == null)
+            //Feed top load result
+            if (wrapper.max_id == null && wrapper.unreadItems == false)
+            {
                 swipeContainer.setRefreshing(false);
 
-            int listSize = list.size();
+                if (wrapper.exception != null) {
+                    swipeContainer.setEnabled(false);
+                    if (list.size() == 0 || wrapper.appended == false)
+                        showLoadError();
+                    else
+                        adapter.setFooterLoading(false);
+                    return;
+                } else
+                    swipeContainer.setEnabled(true);
 
-            if (wrapper.exception != null) {
-                swipeContainer.setEnabled(false);
-                if (listSize == 0 || wrapper.appended == false)
-                    showLoadError();
-                else
+            } else
+            //Next page load result
+            {
+                loadingNextPage = false;
+                if (wrapper.exception != null)
                     adapter.setFooterLoading(false);
-                return;
             }
 
-            adapter.hideFooter();
-            if (wrapper.flag_feedBottomReached)
-                bottomReached = true;
-
+            bottomReached |= wrapper.flag_feedBottomReached;
+            if (wrapper.exception == null)
+                adapter.hideFooter();
         }
 
         @Override

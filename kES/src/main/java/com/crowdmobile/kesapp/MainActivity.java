@@ -737,6 +737,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     }
 
     @Override
+    public Handler getHandler() {
+        return mHandler;
+    }
+
+    @Override
     public void showNoCreditDialog() {
         LayoutInflater inflater = MainActivity.this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_nocredit,null);

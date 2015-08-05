@@ -16,7 +16,7 @@ public class AppCfg {
     private static final String BASE_URL_V2 = "http://kes-middle-prod.elasticbeanstalk.com/api/bongothinks/v1.1/";
 
 
-    public static final String BASE_URL = BASE_URL_PROD;
+    public static final String BASE_URL = BASE_URL_STAGING;
 
     public static final String ApiKey = "AIzaSyA-R5ilcQaQ_AQsySEI0cO-1l3yIIUdncw";
 

@@ -22,7 +22,6 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
     public static final String TAG_MAXID = "maxid";
     public static final String TAG_SINCEID = "sinceid";
     public static final String TAG_PAGESIZE = "pagesize";
-    public static final String TAG_TRANSACTIONID = "transactionid";
     public static final String TAG_TAGS = "tags";
     public static final String TAG_APPENDED = "appended";
 
@@ -36,7 +35,6 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
         if (wrapper.since_id != null)
             intent.putExtra(TAG_SINCEID,wrapper.since_id);
         intent.putExtra(TAG_PAGESIZE,wrapper.page_size);
-        intent.putExtra(TAG_TRANSACTIONID,wrapper.transactionid);
         intent.putExtra(TAG_TAGS,wrapper.tags);
         intent.putExtra(TAG_APPENDED,wrapper.appended);
 		NetworkService.execute(context, intent);
@@ -70,7 +68,6 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
             default:
                 break;
         }
-        wrapper.transactionid = Integer.valueOf(extras.getInt(TAG_TRANSACTIONID));
         if (extras.containsKey(TAG_MAXID))
             wrapper.max_id = Integer.valueOf(extras.getInt(TAG_MAXID));
         if (extras.containsKey(TAG_SINCEID))

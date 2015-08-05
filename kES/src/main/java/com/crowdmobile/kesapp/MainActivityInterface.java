@@ -1,5 +1,6 @@
 package com.crowdmobile.kesapp;
 
+import android.os.Handler;
 import android.widget.ImageView;
 
 /**
@@ -9,5 +10,5 @@ public interface MainActivityInterface {
 
     void zoomImageFromThumb(ImageView view);
     void showNoCreditDialog();
-
+    Handler getHandler();
 }
