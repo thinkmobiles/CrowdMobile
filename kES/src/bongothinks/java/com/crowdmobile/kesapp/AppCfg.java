@@ -5,18 +5,9 @@ package com.crowdmobile.kesapp;
 * */
 public class AppCfg {
 
-    public static boolean isStaging()
-    {
-        return BASE_URL != BASE_URL_PROD;
-    }
-    private static final String BASE_URL_STAGING = "http://kes-middle-staging.elasticbeanstalk.com/api/bongothinks/v1.1/";
-    private static final String BASE_URL_LOCAL = "http://middletier.globalaqa.com:8080/api/bongothinks/v1.1/";
-    private static final String BASE_URL_PROD = "https://middletier.globalaqa.com/api/bongothinks/v1.1/";
+    public static boolean staging = true;
 
-    private static final String BASE_URL_V2 = "http://kes-middle-prod.elasticbeanstalk.com/api/bongothinks/v1.1/";
-
-
-    public static final String BASE_URL = BASE_URL_STAGING;
+    public static final String API_ID = "bongo_api_id";
 
     public static final String ApiKey = "AIzaSyA-R5ilcQaQ_AQsySEI0cO-1l3yIIUdncw";
 

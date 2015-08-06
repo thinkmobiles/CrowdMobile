@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -152,7 +153,25 @@ public class DataFetcher {
 
     }
 
-	public static String locale = Locale.getDefault().toString();
+	protected static String locale = Locale.getDefault().toString();
+	protected static String api_id = null;
+
+	public static void setLocale(Locale locale)
+	{
+		DataFetcher.locale = locale.toString();
+	}
+
+    private static Map<String, String> defaultGetParams = null;
+    private static String API_ID_KEY = "api_id";
+
+	public static void setAPI_ID(String api_id)
+	{
+        if (defaultGetParams == null)
+            defaultGetParams = new HashMap<String, String>();
+        defaultGetParams.clear();
+        defaultGetParams.put(API_ID_KEY,api_id);
+		DataFetcher.api_id = api_id;
+	}
 
 	public static DefaultHttpClient getHttpClient()
 	{
@@ -286,8 +305,11 @@ public class DataFetcher {
 		}
 	*/
 	   
-		public static String requestAction(String url, RequestType type, Map<String, String> getParams, Map<String, String> postParams, String postData) throws KESNetworkException, InterruptedException {
-			return requestAction(url, type, getParams, postParams, acceptHeader, postData);
+		public static String requestAction(String url,
+                                           RequestType type,
+                                           Map<String, String> getParams,
+                                           String postData) throws KESNetworkException, InterruptedException {
+			return requestAction(url, type, getParams, acceptHeader, postData);
 		}
 		/*
 		public static String requestAction(String url, RequestType type, Map<String, String> getParams, Map<String, String> postParams,
@@ -305,9 +327,19 @@ public class DataFetcher {
 		}
 		*/
 
-		public static String requestAction(String url, RequestType type, Map<String, String> getParams,
-            Map<String, String> postParams, Map<String, String> headers, String postData)
+
+		public static String requestAction(String url,
+                                           RequestType type,
+                                           Map<String, String> getParams,
+                                           Map<String, String> headers,
+                                           String postData)
             throws KESNetworkException,InterruptedException {
+            if (type == RequestType.GET) {
+                if (getParams != null)
+                    getParams.put(API_ID_KEY, api_id);
+                else
+                    getParams = defaultGetParams;
+            }
             url = buildGetUrl(url, getParams);
 //            addNetworkLog(url.toString());
             HttpResponse response = null;
@@ -333,13 +365,8 @@ public class DataFetcher {
                     case POST:
 						sType = "POST";
                         HttpPost post = new HttpPost(url);
-                        StringEntity entity = getPostEntity(postParams);
-                        if (entity == null && postData != null) {
-                            entity = new StringEntity(postData);
-                        }
-                        if (entity != null) {
-                            post.setEntity(entity);
-                        }
+                        if (postData != null)
+                            post.setEntity(new StringEntity(postData));
                         request = post;
                         break;
                     case DELETE:
@@ -350,13 +377,8 @@ public class DataFetcher {
                     case PUT:
 						sType = "PUT";
                         HttpPut put = new HttpPut(url);
-                        StringEntity putEntity = getPostEntity(postParams);
-                        if (putEntity == null && postData != null) {
-                            putEntity = new StringEntity(postData);
-                        }
-                        if (putEntity != null) {
-                            put.setEntity(putEntity);
-                        }
+                        if (postData != null)
+                            put.setEntity(new StringEntity(postData));
                         request = put;
                         break;
                 }

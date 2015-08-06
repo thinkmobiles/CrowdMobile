@@ -42,7 +42,7 @@ public class LandingActivity extends Activity {
             s += "\r\nDebug signature";
             ds = true;
         }
-        if (AppCfg.isStaging()) {
+        if (AppCfg.staging) {
             s += "\r\nDEMO / Staging";
             ds = true;
         }

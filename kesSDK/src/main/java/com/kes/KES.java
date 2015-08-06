@@ -68,16 +68,17 @@ public class KES {
     {
         if (configOptions == null)
             throw new IllegalStateException("KesConfigOptions can''t be null");
-        if (!Utils.strHasValue(configOptions.serverURL))
-            throw new IllegalStateException("Server URL of KESConfigOptions can''t be bull");
+        if (!Utils.strHasValue(configOptions.api_id))
+            throw new IllegalStateException("api_id of KESConfigOptions can''t be bull");
     }
+
 
     private static void updateConfigOptions(KesConfigOptions options)
     {
-        String tmp = options.serverURL;
-        if (tmp.charAt(options.serverURL.length() - 1) != '/')
-            tmp = options.serverURL + "/";
-        ServerNavigator.BASE_URL = tmp;
+
+        if (options.staging)
+            ServerNavigator.setStaging();
+        DataFetcher.setAPI_ID(options.api_id);
     }
 
     private KES(Context context,KesConfigOptions configOptions) {
@@ -85,6 +86,11 @@ public class KES {
         updateConfigOptions(mConfigOptions);
         mContext = context.getApplicationContext();
         mHandler = new Handler();
+    }
+
+    protected KesConfigOptions getConfigOptions()
+    {
+        return mConfigOptions;
     }
 
     protected Context getContext()
@@ -138,7 +144,7 @@ public class KES {
 
     protected void setLocale(Locale locale)
     {
-        DataFetcher.locale = locale.toString();
+        DataFetcher.setLocale(locale);
         if (feedManager != null)
             feedManager.localeChanged();
     }

@@ -34,9 +34,9 @@ class TaskSuggestion extends NetworkExecutable<FeedManager.SuggestionsHolder> {
         Bundle extras = intent.getExtras();
         String token = extras.getString(TAG_TOKEN);
         ModelFactory.SuggestionsWrapper result = NetworkAPI.getSuggestions(token);
-        if (result.suggestions != null && result.suggestions.length == 0)
-            result.suggestions = null;
-        wrapper.response = result.suggestions;
+        if (result.suggested_questions != null && result.suggested_questions.length == 0)
+            result.suggested_questions = null;
+        wrapper.response = result.suggested_questions;
 	}
 	
 }

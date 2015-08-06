@@ -102,7 +102,6 @@ public class NetworkService extends Service {
         return START_NOT_STICKY;
     }
 
-    
     @Override
     public void onCreate()
     {

@@ -41,7 +41,8 @@ public class KesApplication extends Application {
         });
 
         KesConfigOptions kesConfigOptions = new KesConfigOptions();
-        kesConfigOptions.serverURL = AppCfg.BASE_URL;
+        kesConfigOptions.staging = AppCfg.staging;
+        kesConfigOptions.api_id = AppCfg.API_ID;
 
         KES.initialize(this, kesConfigOptions);
         KES.shared().getAccountManager().setUAChannelID(UAirship.shared().getPushManager().getChannelId());

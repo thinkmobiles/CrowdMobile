@@ -14,7 +14,8 @@ import java.util.Properties;
  */
 public class KesConfigOptions {
 
-    public String serverURL;
+    public String api_id = null;
+    public boolean staging = false;
 
     public static KesConfigOptions loadDefaultOptions(Context ctx) {
         KesConfigOptions options = new KesConfigOptions();

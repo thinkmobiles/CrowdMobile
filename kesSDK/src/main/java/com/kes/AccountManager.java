@@ -169,7 +169,7 @@ public class AccountManager {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         login_progress = true;
-        TaskLogin.login(mKES.getContext(), ModelFactory.LoginType.Facebook,facebook_token,null, facebook_uid);
+        TaskLogin.login(mKES.getContext(), ModelFactory.LoginType.Facebook,mKES.getConfigOptions().api_id, facebook_token,null, facebook_uid);
     }
 
     public void loginTwitter(String twitter_token, String twitter_secret, String twitter_uid)
@@ -177,7 +177,7 @@ public class AccountManager {
         if (login_progress)
             throw new IllegalStateException(OPERATION_IN_PROGRESS);
         login_progress = true;
-        TaskLogin.login(mKES.getContext(), ModelFactory.LoginType.Twitter,twitter_token,twitter_secret,twitter_uid);
+        TaskLogin.login(mKES.getContext(), ModelFactory.LoginType.Twitter,mKES.getConfigOptions().api_id, twitter_token,twitter_secret,twitter_uid);
     }
 
     public void logout()

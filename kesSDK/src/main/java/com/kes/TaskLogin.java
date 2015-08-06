@@ -19,6 +19,7 @@ class TaskLogin extends NetworkExecutable<AccountManager.UserWrapper> {
     private static final String CMD_LOGIN = "com.crowdmobile.kes.net.login";
 
     protected static final String TAG_LOGIN_TYPE = "login_type";
+    protected static final String TAG_API_ID = "api_id";
     protected static final String TAG_ACCESS_TOKEN = "access_token";
     protected static final String TAG_ACCESS_TOKEN_SECRET = "access_token_secret";
     protected static final String TAG_UID = "uid";
@@ -26,12 +27,14 @@ class TaskLogin extends NetworkExecutable<AccountManager.UserWrapper> {
     public static void login(
             Context context,
             ModelFactory.LoginType loginType,
+            String api_id,
             String access_token,
             String access_token_secret,
             String uid) {
         Intent intent = new Intent(ACTION);
         intent.putExtra(TAG_CMD, CMD_LOGIN);
         intent.putExtra(TAG_LOGIN_TYPE, loginType.ordinal());
+        intent.putExtra(TAG_API_ID, api_id);
         intent.putExtra(TAG_ACCESS_TOKEN, access_token);
         intent.putExtra(TAG_ACCESS_TOKEN_SECRET, access_token_secret);
         intent.putExtra(TAG_UID, uid);
@@ -53,6 +56,7 @@ class TaskLogin extends NetworkExecutable<AccountManager.UserWrapper> {
         */
         wrapper.user = NetworkAPI.registerMe(
                 ModelFactory.LoginType.values()[extras.getInt(TAG_LOGIN_TYPE)],
+                extras.getString(TAG_API_ID),
                 extras.getString(TAG_ACCESS_TOKEN),
                 extras.getString(TAG_ACCESS_TOKEN_SECRET),
                 extras.getString(TAG_UID),

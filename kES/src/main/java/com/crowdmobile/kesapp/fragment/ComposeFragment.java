@@ -439,7 +439,7 @@ public class ComposeFragment extends Fragment {
         final String question = edMessage.getText().toString();
         final String picturePath = PreferenceUtils.getComposedPicture(getActivity());
 
-        if (KES.shared().getAccountManager().getUser().balance < 1 && !AppCfg.isStaging()) {
+        if (KES.shared().getAccountManager().getUser().balance < 1 && !AppCfg.staging) {
             mainActivityInterface.showNoCreditDialog();
             return;
         }

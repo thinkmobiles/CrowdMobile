@@ -3,7 +3,15 @@ package com.kes.net;
 
 public class ServerNavigator {
 
-    public static String BASE_URL;
+    private static final String BASE_URL_STAGING = "http://kes-middle-staging.elasticbeanstalk.com/api/kes/v1.1/";
+    private static final String BASE_URL_PROD = "https://middletier.globalaqa.com/api/kes/v1.1/";
+
+    public static void setStaging()
+    {
+        BASE_URL = BASE_URL_STAGING;
+    }
+
+    private static String BASE_URL = BASE_URL_PROD;
 
 	public static String getMe(String token) {
 		return BASE_URL + "account/" + token + "/";
@@ -30,7 +38,7 @@ public class ServerNavigator {
     }
 
     public static String getSuggestions() {
-        return BASE_URL + "suggestions";
+        return BASE_URL + "suggested_questions";
     }
 
     public static String report(int id) {

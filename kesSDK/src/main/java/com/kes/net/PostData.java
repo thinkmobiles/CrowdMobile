@@ -30,6 +30,7 @@ public class PostData {
 
     protected static class LoginRequest {
         protected String login_type;
+        protected String api_id;
         protected String access_token;
         protected String access_token_secret;
         protected String uid;

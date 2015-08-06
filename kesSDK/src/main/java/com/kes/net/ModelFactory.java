@@ -91,7 +91,7 @@ public class ModelFactory {
 
     //--------------------------------------------------------------------------------------------------
     public static class SuggestionsWrapper {
-        public String[] suggestions;
+        public String[] suggested_questions;
     }
 
     //--------------------------------------------------------------------------------------------------
@@ -105,6 +105,7 @@ public class ModelFactory {
 
 	public static String getLoginWrapper(
 			LoginType loginType,
+            String api_id,
 			String access_token,
 			String access_token_secret,
 			String uid,
@@ -112,7 +113,8 @@ public class ModelFactory {
 	{
 		PostData.LoginRequest result = new PostData.LoginRequest();
 		result.login_type = loginType.name();
-		result.access_token = access_token;
+		result.api_id = api_id;
+        result.access_token = access_token;
 		result.access_token_secret = access_token_secret;
 		result.uid = uid;
 		result.device = "android";

@@ -192,6 +192,7 @@ public class FeedManager {
     protected void localeChanged()
     {
         cacheOf(FeedType.Public).clear();
+        suggestedQuestions = null;
     }
 
     public QueryParams feed(FeedType feedType) {
