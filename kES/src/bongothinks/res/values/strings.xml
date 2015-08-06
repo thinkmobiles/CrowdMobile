@@ -212,18 +212,18 @@
     <string-array name="languageAlias" translatable="false">
         <item>0</item>
         <item>en_US</item>
-        <item>sv</item>
-        <item>fi</item>
+        <item>sv_SV</item>
+        <item>fi_FI</item>
         <item>pt_PT</item>
         <item>hr_HR</item>
         <item>hr_BA</item>
-        <item>it</item>
-        <item>pl</item>
+        <item>it_IT</item>
+        <item>pl_PL</item>
         <item>cs_CZ</item>
-        <item>sk</item>
+        <item>sk_SK</item>
         <item>sr_RS</item>
         <item>sr_ME</item>
-        <item>hu</item>
+        <item>hu_HU</item>
     </string-array>
 
 </resources>

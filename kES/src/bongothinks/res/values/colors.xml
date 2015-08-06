@@ -31,8 +31,8 @@
 
     <item name="suggestion_marker" type="color">#096fc2</item>
     <item name="suggestion_textcolor" type="color">#000</item>
-    <item name="suggestion_background1" type="color">#ccc</item>
-    <item name="suggestion_background2" type="color">#fff</item>
+    <item name="suggestion_background1" type="color">#deee</item>
+    <item name="suggestion_background2" type="color">#dfff</item>
 
     <!-- Compose -->
     <item name="compose_background" type="color">#e3f1f5</item>

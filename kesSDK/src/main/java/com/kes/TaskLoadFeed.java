@@ -51,6 +51,9 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
         session.getFeedManager().updateData(wrapper);
     }
 
+//    static boolean first = true;
+//    static boolean changed = false;
+
     @Override
     public void onExecute(Context context, Intent intent, FeedManager.FeedWrapper wrapper) throws DataFetcher.KESNetworkException, IOException, InterruptedException {
         Bundle extras = intent.getExtras();
@@ -73,12 +76,27 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
         if (extras.containsKey(TAG_SINCEID))
             wrapper.since_id = Integer.valueOf(extras.getInt(TAG_SINCEID));
         wrapper.page_size = extras.getInt(TAG_PAGESIZE);
+        //wrapper.page_size = 3;
         wrapper.appended = extras.getBoolean(TAG_APPENDED);
         wrapper.tags = extras.getString(TAG_TAGS);
 
+        /*
+        if (first && wrapper.max_id == null && wrapper.feedType == FeedManager.FeedType.Public)
+        {
+            first = false;
+            changed = true;
+            wrapper.max_id = 28191;
+        }
+        */
         ModelFactory.PhotoCommentWrapper photoCommentWrapper =
                 NetworkAPI.getFeed(token, false, wrapper.max_id, wrapper.since_id, wrapper.page_size, filter, wrapper.tags);
 
+        /*
+        if (wrapper.feedType == FeedManager.FeedType.Public && changed) {
+            changed = false;
+            wrapper.max_id = null;
+        }
+        */
 
         //Thread.sleep(1000);
         //TODO:remove,debug stuff, removes answers

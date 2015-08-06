@@ -331,6 +331,11 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
             holder.messagePlaceholder.setVisibility(View.GONE);
         }
 
+        /*
+        holder.tvQuestion.setVisibility(View.VISIBLE);
+        holder.tvQuestion.setText(Integer.toString(item.getID(feedType)));
+        */
+
         holder.ivAnswerRight.setTag(item);
         holder.btRetry.setTag(item);
         holder.btRetry.setVisibility(item.status == PhotoComment.PostStatus.Error ? View.VISIBLE : View.GONE);
@@ -348,6 +353,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         } else {
             Compat.setDrawable(holder.holderFeedMenu,feedBgMenu);
             holder.imgFeedPic.setVisibility(View.GONE);
+            holder.imgFeedPic.setImageBitmap(null);
         }
 
         if (item.responses == null || item.responses.length == 0) {

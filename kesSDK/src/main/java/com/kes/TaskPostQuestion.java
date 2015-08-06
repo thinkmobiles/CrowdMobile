@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import com.kes.net.DataFetcher;
 
-import java.io.File;
 import java.io.IOException;
 
 class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentResponseHolder> {
@@ -47,15 +46,12 @@ class TaskPostQuestion extends NetworkExecutable<FeedManager.PhotoCommentRespons
         String token = extras.getString(TAG_TOKEN);
         wrapper.internalid = extras.getInt(TAG_INTERNALID);
         String message = extras.getString(TAG_MESSAGE);
-        String filePath = extras.getString(TAG_FILEPATH);
+        wrapper.filePath = extras.getString(TAG_FILEPATH);
         String[] tags = extras.getStringArray(TAG_TAGS);
         boolean is_private = extras.getBoolean(TAG_PRIVATE);
         String photo_data = null;
-        if (filePath != null) {
-            photo_data = Utils.fileToBase64(filePath);
-            File f = new File(filePath);
-            f.delete();
-        }
+        if (wrapper.filePath != null)
+            photo_data = Utils.fileToBase64(wrapper.filePath);
 
         //Thread.sleep(1000);
         //if (true) throw new IOException("Test IO exception");

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.kes.model.PhotoComment;
 import com.kes.net.DataFetcher;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 
@@ -56,6 +57,7 @@ public class FeedManager {
 
     public static class PhotoCommentResponseHolder extends ResultWrapper {
         public long internalid;
+        public String filePath;
     }
 
     public static class FeedWrapper extends ResultWrapper {
@@ -334,6 +336,11 @@ public class FeedManager {
         if (holder.exception == null && holder.photoComment != null) {
             mSession.getDB().updatePendingQuestion(holder.internalid, true);
             myCache.setPendingItemPosted(holder.internalid, holder.photoComment);
+            if (holder.filePath != null)
+            {
+                File f = new File(holder.filePath);
+                f.delete();
+            }
             return;
         }
 

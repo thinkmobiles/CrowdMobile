@@ -140,5 +140,9 @@ public class PrefsFragment extends PreferenceFragment {
         */
     }
 
+    public static boolean getShowSuggestions(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(context.getString(R.string.key_showsuggestion), true);
+    }
 
 }

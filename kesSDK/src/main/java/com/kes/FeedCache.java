@@ -230,8 +230,10 @@ public class FeedCache {
         if (!feedWrapper.unreadItems && feedWrapper.max_id == null && internalCache.size() > 0)
             internalCache.valueAt(internalCache.size() - 1).cacheConnected = false;
 
-        if (commentsLength < 1)
+        if (commentsLength < 1) {
+            cutInvalid();
             return;
+        }
 
         //Add items to cache one by one
         for (int i = 0; i < feedWrapper.photoComments.length; i++) {
@@ -283,7 +285,7 @@ public class FeedCache {
             if (commentsLength > 0)
                 internalCache.get(feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType)).lastItem = true;
         }
-
+        cutInvalid();
     }
 
     public void clear() {
@@ -294,6 +296,26 @@ public class FeedCache {
         internalCache.clear();
     }
 
+    private void cutInvalid()
+    {
+        int found = -1;
+        for (int i = internalCache.size(); i > 0; i--)
+        {
+            FeedCacheItem item = internalCache.valueAt(i - 1);
+            if (item.cacheConnected == false)
+            {
+                found = i;
+                break;
+            }
+        }
+        if (found == -1)
+            return;
+        for (int i = found; i > 0; i--)
+        {
+            internalCache.removeAt(i - 1);
+            notifyListeners(UpdateType.remove,internalPosToExternal(i - 1));
+        }
+    }
 
     private int internalPosToExternal(int internalPos)
     {

@@ -8,8 +8,10 @@
     <TextView
         android:layout_weight="1"
         android:id="@+id/tvSuggestion"
-        android:paddingRight="@dimen/suggestion_padding"
+        android:padding="@dimen/suggestion_text_padding"
+        android:gravity="center_vertical"
         android:textColor="@color/suggestion_textcolor"
+        android:textSize="@dimen/suggestion_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <View

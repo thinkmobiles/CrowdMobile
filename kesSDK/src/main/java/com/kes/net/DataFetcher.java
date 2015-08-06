@@ -158,7 +158,9 @@ public class DataFetcher {
 
 	public static void setLocale(Locale locale)
 	{
-		DataFetcher.locale = locale.toString();
+        DataFetcher.locale = locale.toString();
+        if (DataFetcher.locale.indexOf('_') < 0)
+            DataFetcher.locale = DataFetcher.locale + '_' + DataFetcher.locale;
 	}
 
     private static Map<String, String> defaultGetParams = null;

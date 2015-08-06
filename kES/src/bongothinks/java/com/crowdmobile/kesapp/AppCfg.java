@@ -5,7 +5,7 @@ package com.crowdmobile.kesapp;
 * */
 public class AppCfg {
 
-    public static boolean staging = true;
+    public static boolean staging = false;
 
     public static final String API_ID = "bongo_api_id";
 

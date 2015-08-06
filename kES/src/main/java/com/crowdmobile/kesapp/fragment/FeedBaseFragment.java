@@ -570,8 +570,10 @@ public abstract class FeedBaseFragment extends Fragment {
                     else
                         adapter.setFooterLoading(false);
                     return;
-                } else
+                } else {
                     swipeContainer.setEnabled(true);
+                    rvFeed.scrollToPosition(0);
+                }
 
             } else
             //Next page load result

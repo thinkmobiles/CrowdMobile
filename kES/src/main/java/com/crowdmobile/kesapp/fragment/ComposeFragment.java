@@ -155,6 +155,12 @@ public class ComposeFragment extends Fragment {
         return result;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateSuggestionsVisibility();
+    }
+
 
     private void updatePrivate()
     {
@@ -206,8 +212,8 @@ public class ComposeFragment extends Fragment {
             @Override
             public void onItemSelected(String item) {
                 edMessage.setText(item);
-                if (!TextUtils.isEmpty(item))
-                    edMessage.setSelection(item.length());
+                if (edMessage.getText() != null && edMessage.getText().length() > 0)
+                    edMessage.setSelection(edMessage.getText().length());
                 suggestionDialog.hide();
 
             }
@@ -533,6 +539,17 @@ public class ComposeFragment extends Fragment {
         alertDialog.show();
     }
 
+    private void updateSuggestionsVisibility()
+    {
+        boolean visible = true;
+        if (!PrefsFragment.getShowSuggestions(getActivity()))
+            visible = false;
+        if (suggestions == null || suggestions.length == 0)
+            visible = false;
+        holderSuggestion.setVisibility(visible ? View.VISIBLE : View.GONE);
+
+    }
+
     FeedManager.OnChangeListener onFeedChange = new FeedManager.OnChangeListener() {
         @Override
         public void onPageLoaded(FeedManager.FeedWrapper wrapper) {
@@ -542,7 +559,7 @@ public class ComposeFragment extends Fragment {
         @Override
         public void onSuggestedQuestions(String[] questions, Exception error) {
             suggestions = questions;
-            holderSuggestion.setVisibility(suggestions != null ? View.VISIBLE : View.GONE);
+            updateSuggestionsVisibility();
         }
 
         @Override
