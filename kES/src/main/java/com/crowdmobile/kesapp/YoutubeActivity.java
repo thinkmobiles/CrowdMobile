@@ -17,7 +17,7 @@ import com.google.android.youtube.player.YouTubePlayerView;
  * Created by gadza on 2015.07.07..
  */
 public class YoutubeActivity extends YouTubeBaseActivity implements YouTubePlayer.OnInitializedListener {
-    public static final String API_KEY = AppCfg.ApiKey;
+    public static final String API_KEY = AppCfg.youtubeApiKey;
 
     //http://youtu.be/<VIDEO_ID>
     public static final String TAG_VIDEO_ID = "video_id";

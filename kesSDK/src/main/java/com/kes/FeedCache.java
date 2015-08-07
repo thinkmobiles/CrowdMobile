@@ -4,6 +4,7 @@ import android.util.SparseArray;
 
 import com.kes.model.PhotoComment;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.WeakHashMap;
@@ -31,6 +32,8 @@ public class FeedCache {
     private FeedManager.FeedType mFeedType;
     private boolean mLoaded;
     private int eofID = 0;
+
+    private ArrayList<PhotoComment> backCache = new ArrayList<PhotoComment>();
 
     public FeedCache(FeedManager.FeedType feedType)
     {
@@ -76,6 +79,7 @@ public class FeedCache {
     protected void insertItem(PhotoComment p)
     {
         pendingItems.add(0, p);
+        notifyListeners(UpdateType.insert, 0);
     }
 
     protected void PendingItem(PhotoComment p)
@@ -322,7 +326,7 @@ public class FeedCache {
         return (internalCache.size() - 1) - internalPos + pendingItems.size();
     }
 
-    public class FeedArray extends ArrayList<PhotoComment> {
+    public class FeedArray extends AbstractList<PhotoComment> {
         private boolean footer = false;
 
         @Override

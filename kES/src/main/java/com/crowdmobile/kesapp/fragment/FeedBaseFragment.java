@@ -289,6 +289,8 @@ public abstract class FeedBaseFragment extends Fragment {
         @Override
         public void onItemInserted(int position) {
             adapter.notifyItemInserted(position);
+            if (position == 0)
+                rvFeed.scrollToPosition(0);
         }
 
         @Override
@@ -631,6 +633,7 @@ public abstract class FeedBaseFragment extends Fragment {
 
         @Override
         public void onMarkAsPrivateResult(PhotoComment p, Exception error) {
+            /*
             if (p == null)
                 return;
             if (getFeedType() == FeedManager.FeedType.Public)
@@ -649,6 +652,7 @@ public abstract class FeedBaseFragment extends Fragment {
                     adapter.notifyItemRemoved(idx);
                 }
             }
+            */
         }
 
         @Override
@@ -656,9 +660,11 @@ public abstract class FeedBaseFragment extends Fragment {
             if (getFeedType() != FeedManager.FeedType.My)
                 return;
             accessViewHolder.setVisibility(View.GONE);
+            /*
             list.add(0,photoComment);
             adapter.notifyItemInserted(0);
             rvFeed.scrollToPosition(0);
+            */
             if (list.size() == 1)
                 swipeContainer.setEnabled(true);
         }
