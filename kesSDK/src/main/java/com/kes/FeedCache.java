@@ -6,6 +6,7 @@ import com.kes.model.PhotoComment;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.WeakHashMap;
 
@@ -76,13 +77,13 @@ public class FeedCache {
         return pendingItems;
     }
 
-    protected void insertItem(PhotoComment p)
+    protected void insertPendingItem(PhotoComment p)
     {
         pendingItems.add(0, p);
         notifyListeners(UpdateType.insert, 0);
     }
 
-    protected void PendingItem(PhotoComment p)
+    protected void updatePendingItem(PhotoComment p)
     {
         for (int i = 0; i < pendingItems.size(); i++)
         {
@@ -113,20 +114,20 @@ public class FeedCache {
 
     protected void setPendingItemPosted(long internalID, PhotoComment updated)
     {
-        int insertedIdx = -1;
-        int destIdx = -1;
+        int pendingIdx = -1;
+        int permanentIdx = -1;
         for (int i = 0; i < pendingItems.size(); i++)
         {
             PhotoComment tmp = pendingItems.get(i);
             if (tmp.getID(mFeedType) == internalID)
             {
                 pendingItems.remove(i);
-                insertedIdx = i;
+                pendingIdx = i;
                 break;
             }
         }
-        if (insertedIdx == -1)
-            throw new IllegalStateException("inserted item " + internalID + " not found in cache");
+        if (pendingIdx == -1)
+            throw new IllegalStateException("pending item " + internalID + " not found in cache");
 
         int currentID = updated.getID(mFeedType);
         FeedCacheItem item = internalCache.get(currentID);
@@ -139,13 +140,13 @@ public class FeedCache {
         }
         item.photoComment = updated;
         item.cacheConnected = true;
-        destIdx = internalPosToExternal(internalCache.indexOfKey(currentID));
+        permanentIdx = internalPosToExternal(internalCache.indexOfKey(currentID));
         if (moved)
-            notifyListeners(UpdateType.move, insertedIdx, destIdx);
+            notifyListeners(UpdateType.move, pendingIdx, permanentIdx);
         else
-            notifyListeners(UpdateType.remove, insertedIdx);
+            notifyListeners(UpdateType.remove, pendingIdx);
 
-        notifyListeners(UpdateType.update, destIdx);
+        notifyListeners(UpdateType.update, permanentIdx);
     }
 
     private WeakHashMap<OnUpdateListener, Void> updateListeners = new WeakHashMap<OnUpdateListener, Void>();
@@ -194,44 +195,204 @@ public class FeedCache {
     }
 
 
-    private void updateItems(PhotoComment[] photoComments)
-    {
-        for (int i = 0; i < photoComments.length; i++)
-            updateItem(photoComments[i]);
-    }
 
-    protected void updateItem(PhotoComment photoComment)
+    protected boolean updateItem(PhotoComment photoComment)
     {
         if (photoComment == null)
-            return;
+            return false;
         int idx = internalCache.indexOfKey(photoComment.getID(mFeedType));
         if (idx < 0)
-            return;
+            return false;
         FeedCacheItem item = internalCache.valueAt(idx);
         if (!item.photoComment.equals(photoComment)) {
             item.photoComment = photoComment;
             notifyListeners(UpdateType.update, internalPosToExternal(idx));
         }
+        return true;
     }
+
+
+    public void clear() {
+        mLoaded = false;
+        cache.removeFooter();
+        for (int i = 0; i < cache.size(); i++)
+            notifyListeners(UpdateType.remove, 0);
+        pendingItems.clear();
+        internalCache.clear();
+    }
+
+    private void cutInvalid()
+    {
+        int found = -1;
+        for (int i = internalCache.size(); i > 0; i--)
+        {
+            FeedCacheItem item = internalCache.valueAt(i - 1);
+            if (item.cacheConnected == false)
+            {
+                found = i;
+                break;
+            }
+        }
+        if (found == -1)
+            return;
+        for (int i = found; i > 0; i--)
+        {
+            int notifyPos = internalPosToExternal(i - 1);
+            internalCache.removeAt(i - 1);
+            notifyListeners(UpdateType.remove,notifyPos);
+        }
+    }
+
+    private int internalPosToExternal(int internalPos)
+    {
+        return (internalCache.size() - 1) - internalPos + pendingItems.size();
+    }
+
+    private static String cache_exception = "cache can't be updated directly";
+
+    public class FeedArray extends AbstractList<PhotoComment> {
+        private boolean footer = false;
+
+        @Override
+        public void add(int location, PhotoComment object) {
+            throw new IllegalStateException(cache_exception);
+        }
+
+        @Override
+        public boolean add(PhotoComment object) {
+            throw new IllegalStateException(cache_exception);
+        }
+
+        @Override
+        public boolean addAll(int location, Collection<? extends PhotoComment> collection) {
+            throw new IllegalStateException(cache_exception);
+        }
+
+        @Override
+        public PhotoComment remove(int location) {
+            throw new IllegalStateException(cache_exception);
+        }
+
+        @Override
+        protected void removeRange(int start, int end) {
+            throw new IllegalStateException(cache_exception);
+        }
+
+        @Override
+        public PhotoComment get(int location) {
+            int maxPos = size();
+            if (location < 0 || location > maxPos - 1)
+                throw new IndexOutOfBoundsException();
+            if (location < pendingItems.size())
+                return pendingItems.get(location);
+            if (footer && location == maxPos - 1)
+                    return null;
+            location -= pendingItems.size();
+            return internalCache.valueAt(internalCache.size() - location - 1).photoComment;
+        }
+
+        @Override
+        public int size() {
+            int size = pendingItems.size() + internalCache.size();
+            if (footer)
+                size ++;
+            return size;
+        }
+
+        public void insertFooter()
+        {
+            if (footer)
+                notifyListeners(UpdateType.update, size() - 1);
+            else {
+                footer = true;
+                notifyListeners(UpdateType.insert,size() - 1);
+            }
+        }
+
+        public void removeFooter()
+        {
+            if (!footer)
+                return;
+            footer = false;
+            notifyListeners(UpdateType.remove,size() - 1);
+        }
+
+    }
+
+    protected void addItem(PhotoComment p)
+    {
+        if (p == null)
+            return;
+        if (updateItem(p))
+            return;
+
+        int id = p.getID(mFeedType);
+        if (internalCache.size() == 0)
+            return;
+        int maxid = internalCache.get(internalCache.size() - 1).photoComment.getID(mFeedType);
+        int minid = internalCache.get(0).photoComment.getID(mFeedType);
+        if (id > maxid || id < minid)
+            return;
+        FeedCacheItem item = new FeedCacheItem();
+        item.photoComment = p;
+        item.cacheConnected = true;
+        internalCache.put(id, item);
+        notifyListeners(UpdateType.insert, internalPosToExternal(internalCache.indexOfKey(id)));
+    }
+
+    protected void removeItem(PhotoComment p)
+    {
+        if (p == null)
+            return;
+        int i = internalCache.indexOfKey(p.getID(mFeedType));
+        if (i < 0)
+            return;
+        int notifyPos = internalPosToExternal(i);
+        internalCache.remove(i);
+        notifyListeners(UpdateType.remove, notifyPos);
+    }
+
+    SparseArray<PhotoComment> tmpArray = new SparseArray<PhotoComment>();
 
     //Called from FeedManager
     protected void updateData(FeedManager.FeedWrapper feedWrapper)
     {
         int commentsLength = feedWrapper.photoComments != null ? feedWrapper.photoComments.length : 0;
-        if (commentsLength == 0)
-            return;
-
-        if (mFeedType != feedWrapper.feedType)
-        {
-            updateItems(feedWrapper.photoComments);
-            return;
-        }
 
         mLoaded |= (feedWrapper.exception == null && feedWrapper.max_id == null && feedWrapper.unreadItems == false);
 
+        if (mFeedType != feedWrapper.feedType && feedWrapper.photoComments != null)
+        {
+            for (int i = 0; i < feedWrapper.photoComments.length; i++)
+                updateItem(feedWrapper.photoComments[i]);
+            return;
+        }
+
+        //if cache has higher items than top of the feed, remove them
+        if (feedWrapper.max_id == null && !feedWrapper.unreadItems && feedWrapper.photoComments != null && feedWrapper.photoComments.length > 0)
+        {
+            int highestID = feedWrapper.photoComments[0].getID(mFeedType);
+            for (int i = internalCache.size(); i > 0; i--)
+            {
+                if (internalCache.valueAt(i - 1).photoComment.getID(mFeedType) > highestID) {
+                    int notifyPos = internalPosToExternal(i - 1);
+                    internalCache.removeAt(i - 1);
+                    notifyListeners(UpdateType.remove, notifyPos);
+                } else
+                    break;
+            }
+        }
+
+        if (feedWrapper.photoComments != null && feedWrapper.photoComments.length > 2)
+        {
+            tmpArray.clear();
+            for (int i = 0; i < feedWrapper.photoComments.length; i++)
+                tmpArray.put(feedWrapper.photoComments[i].getID(feedWrapper.feedType), feedWrapper.photoComments[i]);
+        }
+
         //Check if we have received data
 
-        if (!feedWrapper.unreadItems && feedWrapper.max_id == null && internalCache.size() > 0)
+        if (feedWrapper.exception == null && !feedWrapper.unreadItems && feedWrapper.max_id == null && internalCache.size() > 0)
             internalCache.valueAt(internalCache.size() - 1).cacheConnected = false;
 
         if (commentsLength < 1) {
@@ -290,84 +451,6 @@ public class FeedCache {
                 internalCache.get(feedWrapper.photoComments[commentsLength - 1].getID(feedWrapper.feedType)).lastItem = true;
         }
         cutInvalid();
-    }
-
-    public void clear() {
-        mLoaded = false;
-        for (int i = 0; i < cache.size(); i++)
-            notifyListeners(UpdateType.remove, i);
-        pendingItems.clear();
-        internalCache.clear();
-    }
-
-    private void cutInvalid()
-    {
-        int found = -1;
-        for (int i = internalCache.size(); i > 0; i--)
-        {
-            FeedCacheItem item = internalCache.valueAt(i - 1);
-            if (item.cacheConnected == false)
-            {
-                found = i;
-                break;
-            }
-        }
-        if (found == -1)
-            return;
-        for (int i = found; i > 0; i--)
-        {
-            internalCache.removeAt(i - 1);
-            notifyListeners(UpdateType.remove,internalPosToExternal(i - 1));
-        }
-    }
-
-    private int internalPosToExternal(int internalPos)
-    {
-        return (internalCache.size() - 1) - internalPos + pendingItems.size();
-    }
-
-    public class FeedArray extends AbstractList<PhotoComment> {
-        private boolean footer = false;
-
-        @Override
-        public PhotoComment get(int location) {
-            int maxPos = size();
-            if (location < 0 || location > maxPos - 1)
-                throw new IndexOutOfBoundsException();
-            if (location < pendingItems.size())
-                return pendingItems.get(location);
-            if (footer && location == maxPos - 1)
-                    return null;
-            location -= pendingItems.size();
-            return internalCache.valueAt(internalCache.size() - location - 1).photoComment;
-        }
-
-        @Override
-        public int size() {
-            int size = pendingItems.size() + internalCache.size();
-            if (footer)
-                size ++;
-            return size;
-        }
-
-        public void insertFooter()
-        {
-            if (footer)
-                notifyListeners(UpdateType.update, size() - 1);
-            else {
-                footer = true;
-                notifyListeners(UpdateType.insert,size() - 1);
-            }
-        }
-
-        public void removeFooter()
-        {
-            if (!footer)
-                return;
-            footer = false;
-            notifyListeners(UpdateType.remove,size() - 1);
-        }
-
     }
 
 }

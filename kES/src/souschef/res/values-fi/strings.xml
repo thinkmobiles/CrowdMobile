@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bongo Thinks</string>
+
+    <plurals name="credits_purchase_messgae_plurals">
+        <item quantity="one">HALUATKO OSTAA %1$d KREDIITIN HINTAAN %2$s?</item>
+        <item quantity="other">HALUATKO OSTAA %1$d KREDIITTEJÄ HINTAAN %2$s?</item>
+    </plurals>
+
+    <plurals name="credits_plurals">
+        <item quantity="one">krediitti</item>
+        <item quantity="other">krediittejä</item>
+    </plurals>
+
+    <!-- No account -->
+    <string name="noaccount_title">Hups!</string>
+    <string name="noaccount_message">Et ole kirjautunut Google-tilillä! Bongo ei voi tavoittaa sinua ilman Google Cloudia.</string>
+    <string name="noaccount_btquit">Lopeta</string>
+
+    <!-- Notification bar -->
+    <string name="notification_title">Bongo</string>
+    <string name="notification_text">Sinulla on uusi vastaus kysymykseen</string>
+
+    <!-- Login -->
+    <string name="login_facebook">Kirjaudu Facebookilla</string>
+    <string name="login_twitter">Kirjaudu Twitterillä</string>
+    <string name="login_skip">Ohita</string>
+
+    <string name="welcome">Tervetuloa Bongoon</string>
+    <string name="error">Virhe</string>
+    <string name="ok">OK</string>
+    <string name="fb_login">Yhdistetään Facebookiin</string>
+    <string name="twitter_login">Yhdistetään Twitteriin</string>
+    <string name="connecting">Yhdistetään</string>
+    <string name="error_fb_login">Facebook yhteysvirhe</string>
+    <string name="error_kes_login">KES-kirjautuminen epäonnistui</string>
+    <string name="error_fb_nouserinfo">Ei voitu hakea käyttäjätietoja</string>
+    
+
+    
+    <!-- Menu -->
+    <string name="action_settings">Asetukset</string>
+    <string name="action_privacy">Yksityisyys asetukset</string>
+    <string name="action_about">Tietoa</string>
+    <string name="action_agreement">Sopimuksen ehdot</string>
+    <string name="action_support">Tuki</string>
+    <string name="action_terms">Ehdot</string>
+    <string name="action_logout">Kirjaudu ulos</string>
+    <string name="title_activity_profile">Profiilin toiminta</string>
+
+    <!-- Not registered -->
+    <string name="not_registered_title">Näe, mitä Bongo tietää sinusta</string>
+    <string name="not_registered_message">Tämä sivu on suljettu käyttäjiltä ilman tiliä. Kirjaudu NYT!</string>
+    <string name="not_registered_btstart">Aloita</string>
+    <string name="not_registered_dialog_message">Tämä ominaisuus on suljettu käyttäjiltä ilman tiliä. Aloita ja tee tili nyt!</string>
+
+    <string name="myfeed_noposts_title">Voi ei, Sinulla ei ole viestejä</string>
+    <string name="myfeed_noposts_message">Sinulla ei ole kysymyksiä Bongolle vielä. Kysy kysymys häneltä nyt!</string>
+    <string name="myfeed_noposts_btn">Kysy kysymys</string>
+
+    <string name="publicfeed_noposts_title">Voi ei, meillä ei ole viestejä</string>
+    <string name="publicfeed_noposts_message">Ole kiltti ja palaa myöhemmin!</string>
+    <string name="publicfeed_noposts_btn">Päivitä</string>
+
+    <string name="feed_error_title">Voi ei, yhteysvirhe</string>
+    <string name="feed_error_message">Syötettä ei voitu ladata!</string>
+    <string name="feed_error_btn">Yritä uudelleen</string>
+
+    <!-- Feed -->
+    <string name="feed_question">Kysymys:</string>
+    <string name="feed_answer">Vastaus:</string>
+    <string name="feed_posting">Lähetetään kysymystä...</string>
+    <string name="share_title">Jaa kysymys</string>
+    <string name="share_unavailable">Jako ei ole käytettävissä</string>
+    <string name="share_subject">Tsekkaa Bongo!</string>
+
+    <string name="newsfeed">Uutiset</string>
+    <string name="myfeed">Minun kysymykset</string>
+    <string name="item_share">JAA</string>
+    <string name="item_retry">Yritä uudelleen</string>
+    <string name="item_noanswer">Bongo vastaa kysymykseesi pikimmiten</string>
+    <string name="timeformat_day" formatted="false">%d päivää sitten</string>
+    <string name="timeformat_hour_min" formatted="false">%d tuntia %d minuuttia</string>
+    <string name="timeformat_min" formatted="false">%d minuuttia sitten</string>
+    <string name="clipboard_label">Bongo Kysymys</string>
+    <string name="copied_to_clipboard">Kopioitu leikepöydälle</string>
+
+    <!-- Credit -->
+    <string name="refund_email_title">refund pyyntö</string>
+    <string name="refund_email_message">Peruuttaisitko seuraavat tilaukset:</string>
+    <string name="refund_email_dialog_title">Refund</string>
+    <string name="purchase_retry">Yritä uudelleen</string>
+    <string name="purchase_refund">Refund</string>
+    <string name="credit_status_init">Käynnistetään google play</string>
+    <string name="credit_status_initfail">Google play yhteys epäonnistui</string>
+    <string name="credit_status_inventoryfail">Tuotteen haku epäonnistui</string>
+    <string name="credit_status_request_products">Ladataan</string>
+    <string name="credit_status_processing">Käsitellään maksua</string>
+    <string name="credit_status_processing_fail">Bongo ei saanut banaaneita jotka ostit.</string>
+    <string name="credit_status_disconnected">Yhteys katkaistu</string>
+    <string name="fragment_credit_title">Hommaa banaaneita</string>
+    <string name="credit_info">Bongo on nälkäinen!</string>
+    <string name="credit_message">Kiirehdi ja syötä hänelle banaaneita, jotta hän voi vastata useampiin kysymyksiin!</string>
+    <string name="credit_itemname">\u0020/ Banaani</string>
+    <string name="btn_buy">OSTA</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Haluaisitko syöttää hänelle banaaneja, jotta hän voi vastata uusiin kysymyksiin?</string>
+
+    <!-- Compose -->
+    <string name="compose_suggested">suositellut kysymykset</string>
+    <string name="compose_private">yksityinen</string>
+    <string name="compose_public">julkinen</string>
+    <string name="compose_invalidchar">Tukematon merkki</string>
+    <string name="compose_title">Kysy Bongolta</string>
+    <string name="compose_hint">Kysy kysymyksesi Bongolta</string>
+    <string name="bubble_text">Lisää kuva tai kysymys lähetettäväksi Bongolle, tai molemmat!</string>
+    <string name="error_nocamera">Anteeksi, kamera ei ole saatavilla.</string>
+    <string name="error_storagewrite">Virhe kirjoittaessa ulkoiseen muistiin.</string>
+
+    <string name="compose_nopic_title">vahvistus</string>
+    <string name="compose_nopic_message">Oletko varma että haluat kysyä kysymyksesi ilman kuvaa?</string>
+    <string name="dontshowagain">Älä näytä uudestaan</string>
+
+    <!-- Gallery -->
+    <string name="gallery_title">Valitse kuva</string>
+    <!-- Crop -->
+    <string name="crop_title">Rajaa kuvasi</string>
+
+
+
+    <!-- Preferences -->
+    <string name="title_activity_settings">Asetukset</string>
+    <string name="category_general">Yleiset</string>
+
+    <string name="title_language">Kieli</string>
+
+    <string name="title_updateinterval">News update interval</string>
+
+    <string-array name="updateInterval">
+        <item>päivittäin</item>
+        <item>joka toinen päivä</item>
+        <item>joka kolmas päivä</item>
+        <item>joka viikko</item>
+    </string-array>
+
+
+    <string name="title_gender">Sukupuoli</string>
+
+    <string-array name="genderNames">
+        <item>Mies</item>
+        <item>Nainen</item>
+    </string-array>
+
+
+
+    <string name="title_showsuggestion">Näytä ehdotukset</string>
+    <string name="detail_showsuggestion">Näytä ehdotetut kysymykset kirjoittaessa</string>
+
+    <string name="category_account">Tili</string>
+
+    <string name="title_birthdate">Syntymäaika</string>
+
+    <string name="title_relationship">Siviilisääty</string>
+
+    <string-array name="relationshipNames">
+        <item>Sinkku</item>
+        <item>Suhteessa</item>
+        <item>Avosuhteessa</item>
+        <item>Naimisissa</item>
+    </string-array>
+
+</resources>

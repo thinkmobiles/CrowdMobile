@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bongo Thinks</string>
+
+    <plurals name="credits_purchase_messgae_plurals">
+        <item quantity="one">VILL DU KÖPA %1$d KOSTNAD AV %2$s?</item>
+        <item quantity="other">VILL DU KÖPA %1$d KOSTNAD AV %2$s?</item>
+    </plurals>
+
+    <plurals name="credits_plurals">
+        <item quantity="one">kostnader</item>
+        <item quantity="other">kostnader</item>
+    </plurals>
+
+    <!-- No account -->
+    <string name="noaccount_title">Ops!</string>
+    <string name="noaccount_message">Du har inget google konto registrerat! Bongo kan inte kontakta dig utan Google Cloud Messaging.</string>
+    <string name="noaccount_btquit">avsluta</string>
+
+    <!-- Notification bar -->
+    <string name="notification_title">Bongo</string>
+    <string name="notification_text">Du har en besvarad fråga</string>
+
+    <!-- Login -->
+    <string name="login_facebook">Logga in med Facebook</string>
+    <string name="login_twitter">Logga in med Twitter</string>
+    <string name="login_skip">hoppa över</string>
+
+    <string name="welcome">Välkommen till Bongo</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
+    <string name="fb_login">Ansluter till Facebook</string>
+    <string name="twitter_login">Ansluter till Twitter</string>
+    <string name="connecting">Ansluter</string>
+    <string name="error_fb_login">Facebook anslutnings fel</string>
+    <string name="error_kes_login">Logg in till KES misslyckades</string>
+    <string name="error_fb_nouserinfo">Kunde inte hämta användar info</string>
+    
+
+    
+    <!-- Menu -->
+    <string name="action_settings">Inställningar</string>
+    <string name="action_privacy">Integritets inställningar</string>
+    <string name="action_about">Om</string>
+    <string name="action_agreement">Avtalsvillkor</string>
+    <string name="action_support">Support</string>
+    <string name="action_terms">Vilkor</string>
+    <string name="action_logout">Logg ut</string>
+    <string name="title_activity_profile">Profil Aktivitet</string>
+
+    <!-- Not registered -->
+    <string name="not_registered_title">Se vad Bongo vet om dig</string>
+    <string name="not_registered_message">Denna sida är otillgänglig för användare utan konto. Skaffa konto NU!!</string>
+    <string name="not_registered_btstart">Börja</string>
+    <string name="not_registered_dialog_message">Den här funktionen är otillgänglig för användare utan konto. Starta ett konto och få tillgång nu!</string>
+
+    <string name="myfeed_noposts_title">Uh oh, Du har inga inlägg</string>
+    <string name="myfeed_noposts_message">Du har inte ställt någon fråga till Bongo än. Ställ en fråga nu!</string>
+    <string name="myfeed_noposts_btn">Ask question</string>
+
+    <string name="publicfeed_noposts_title">Uh oh, vi har inga inlägg</string>
+    <string name="publicfeed_noposts_message">Kom tillbaka senare!</string>
+    <string name="publicfeed_noposts_btn">Uppdatera</string>
+
+    <string name="feed_error_title">Uh oh, nätverksfel</string>
+    <string name="feed_error_message">Kunde inte ladda upp ditt inlägg!</string>
+    <string name="feed_error_btn">Försök igen</string>
+
+    <!-- Feed -->
+    <string name="feed_question">Fråga:</string>
+    <string name="feed_answer">Svar:</string>
+    <string name="feed_posting">Ställd fråga...</string>
+    <string name="share_title">Delad fråga</string>
+    <string name="share_unavailable">Delning är inte möjlig</string>
+    <string name="share_subject">Kolla in Bongo!</string>
+
+    <string name="newsfeed">Nyhetsfeed</string>
+    <string name="myfeed">Min fråga</string>
+    <string name="item_share">DELA</string>
+    <string name="item_retry">Försök igen</string>
+    <string name="item_noanswer">Bongo kommer att svara på din fråga så snabbt han kan</string>
+    <string name="timeformat_day" formatted="false">%d dagar sedan</string>
+    <string name="timeformat_hour_min" formatted="false">%d timmar %d minuter sedan</string>
+    <string name="timeformat_min" formatted="false">%d minuter sedan</string>
+    <string name="clipboard_label">Bongo Fråga</string>
+    <string name="copied_to_clipboard">kopiera till clipboard</string>
+
+    <!-- Credit -->
+    <string name="refund_email_title">refund förfrågan</string>
+    <string name="refund_email_message">Vänligen avbryt följande order:</string>
+    <string name="refund_email_dialog_title">Refundera</string>
+    <string name="purchase_retry">Försök igen</string>
+    <string name="purchase_refund">Försök igen</string>
+    <string name="credit_status_init">Initiering google play</string>
+    <string name="credit_status_initfail">Misslyckad initiering google play</string>
+    <string name="credit_status_inventoryfail">Det gick inte att hämta produkten</string>
+    <string name="credit_status_request_products">Laddar</string>
+    <string name="credit_status_processing">Bearbetar betalning</string>
+    <string name="credit_status_processing_fail">Bongo kunde inte få bananerna som du köpte.</string>
+    <string name="credit_status_disconnected">Frånkopplad</string>
+    <string name="fragment_credit_title">Få bananer</string>
+    <string name="credit_info">Bongo\'s hungrig!</string>
+    <string name="credit_message">Skynda dig och mata honom med bananer så att han kan svara på fler frågor!</string>
+    <string name="credit_itemname">\u0020/ Banana</string>
+    <string name="btn_buy">KÖP</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Vill du mata honom med bananer så att han kan svara på fler frågor?</string>
+
+    <!-- Compose -->
+    <string name="compose_suggested">föreslagna frågorna</string>
+    <string name="compose_private">privat</string>
+    <string name="compose_public">Allmänt</string>
+    <string name="compose_invalidchar">karaktär stöds ej</string>
+    <string name="compose_title">Fråga Bongo</string>
+    <string name="compose_hint">Ställ din fråga till Bongo</string>
+    <string name="bubble_text">Lägg till ett foto eller en fråga att ställa till Bongo, eller bådadera!</string>
+    <string name="error_nocamera">Tyvärr, kamera är inte tillgängligt.</string>
+    <string name="error_storagewrite">Fel vid skrivning till externa lagrings.</string>
+    <!-- Gallery -->
+    <string name="gallery_title">Välj en bild</string>
+    <!-- Crop -->
+    <string name="crop_title">Beskär bilden</string>
+
+    <!-- Preferences -->
+    <string name="title_activity_settings">Inställningar</string>
+    <string name="category_general">General</string>
+
+    <string name="title_language">språk</string>
+
+    <string name="title_updateinterval">News update interval</string>
+
+    <string-array name="updateInterval">
+        <item>dagligen</item>
+        <item>varje 2 dag</item>
+        <item>varje 3 dag</item>
+        <item>varje vecka</item>
+    </string-array>
+
+    <string name="title_gender">kön</string>
+
+    <string-array name="genderNames">
+        <item>Man</item>
+        <item>kvinna</item>
+    </string-array>
+
+
+    <string name="title_showsuggestion">Visa förslag</string>
+    <string name="detail_showsuggestion">Visa förslagen fråga i skriv rutan</string>
+
+    <string name="category_account">Konto</string>
+
+    <string name="title_birthdate">Födelsedag</string>
+
+    <string name="title_relationship">Förhållande</string>
+
+    <string-array name="relationshipNames">
+        <item>Singel</item>
+        <item>I ett förhållande</item>
+        <item>Sambo</item>
+        <item>Gift</item>
+    </string-array>
+
+
+</resources>

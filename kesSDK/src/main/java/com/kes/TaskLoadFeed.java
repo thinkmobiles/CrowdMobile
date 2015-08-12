@@ -92,6 +92,11 @@ class TaskLoadFeed extends com.kes.NetworkExecutable<FeedManager.FeedWrapper> {
                 NetworkAPI.getFeed(token, false, wrapper.max_id, wrapper.since_id, wrapper.page_size, filter, wrapper.tags);
 
         /*
+        if (wrapper.feedType == FeedManager.FeedType.My)
+            photoCommentWrapper.photo_comments = null;
+            */
+
+        /*
         if (wrapper.feedType == FeedManager.FeedType.Public && changed) {
             changed = false;
             wrapper.max_id = null;

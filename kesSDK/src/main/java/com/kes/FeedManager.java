@@ -213,7 +213,7 @@ public class FeedManager {
         myCache.moveInsertedItem(p.getID(FeedType.My), p2);
         */
         p.status = PhotoComment.PostStatus.Pending;
-        myCache.PendingItem(p);
+        myCache.updatePendingItem(p);
         TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.getID(), p.message, p.photo_url, null, p.is_private);
     }
 
@@ -227,7 +227,7 @@ public class FeedManager {
         p.is_private = isPrivate;
         if (picturePath != null)
             p.photo_url = picturePath;
-        myCache.insertItem(p);
+        myCache.insertPendingItem(p);
         mSession.getDB().addPending(p); //also sets id
         TaskPostQuestion.postQuestion(mSession.getContext(), mSession.getAccountManager().getToken(), p.getID(), question, picturePath, null, p.is_private);
         Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
@@ -246,6 +246,28 @@ public class FeedManager {
 
     protected void updateAction(ResultWrapper wrapper)
     {
+
+        switch (wrapper.actionType) {
+            case MarkAsPrivate:
+                if (wrapper.photoComment != null)
+                {
+                    if (!wrapper.photoComment.is_private)
+                        publicCache.addItem(wrapper.photoComment);
+                    else
+                        publicCache.removeItem(wrapper.photoComment);
+                }
+                myCache.updateItem(wrapper.photoComment);
+                break;
+            case MarkAsRead:
+                if (wrapper.user != null)
+                    mSession.getAccountManager().updateUnread(wrapper.user.unread_count);
+                publicCache.updateItem(wrapper.photoComment);
+                myCache.updateItem(wrapper.photoComment);
+                break;
+            default:
+                break;
+        }
+
         Iterator<OnChangeListener> iterator = callbacks.keySet().iterator();
         while (iterator.hasNext()) {
             tmp = iterator.next();
@@ -254,15 +276,9 @@ public class FeedManager {
                     tmp.onLikeResult(wrapper.questionID,wrapper.commentID,wrapper.exception);
                     break;
                 case MarkAsPrivate:
-                    publicCache.updateItem(wrapper.photoComment);
-                    myCache.updateItem(wrapper.photoComment);
                     tmp.onMarkAsPrivateResult(wrapper.photoComment, wrapper.exception);
                     break;
                 case MarkAsRead:
-                    if (wrapper.user != null)
-                        mSession.getAccountManager().updateUnread(wrapper.user.unread_count);
-                    publicCache.updateItem(wrapper.photoComment);
-                    myCache.updateItem(wrapper.photoComment);
                     tmp.onMarkAsReadResult(wrapper.photoComment, wrapper.exception);
                     break;
                 case Report:
@@ -347,7 +363,7 @@ public class FeedManager {
         mSession.getDB().updatePendingQuestion(holder.internalid, false);
         PhotoComment item = myCache.getPendingItemByID(holder.internalid);
         item.status = PhotoComment.PostStatus.Error;
-        myCache.PendingItem(item);
+        myCache.updatePendingItem(item);
 
 
         boolean noCredit = false;

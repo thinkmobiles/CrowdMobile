@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/compose_background"
+    android:gravity="center_vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.crowdmobile.kesapp.widget.EditorCard
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        custom:maxHeight="@dimen/compose_editor_height"
+        card_view:cardElevation="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/headerBar"
+                android:layout_alignParentTop="true"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:id="@+id/holderImage"
+                    android:layout_alignParentTop="true"
+                    android:layout_width="@dimen/compose_imagewidth"
+                    android:layout_height="@dimen/compose_imagewidth">
+                    <RelativeLayout
+                        android:padding="@dimen/compose_imagepadding"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:id="@+id/imgPreview"
+                            android:background="@drawable/ic_takephoto"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </RelativeLayout>
+                    <ImageView
+                        android:id="@+id/ivPreviewClose"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/ic_post_remove_image"
+                        android:layout_width="@dimen/imgclose"
+                        android:layout_height="@dimen/imgclose" />
+                </RelativeLayout>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_alignParentTop="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/holderPostSuggestion"
+                        android:layout_gravity="right"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tvSuggestion"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/compose_menutext"
+                            android:textColor="@color/appTitleColor"
+                            android:text="@string/compose_suggested"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <ImageView
+                            android:layout_gravity="right"
+                            android:src="@drawable/ic_edit"
+                            android:padding="@dimen/compose_smallbuttonpadding"
+                            android:layout_width="@dimen/compose_smallbuttonheight"
+                            android:layout_height="@dimen/compose_smallbuttonheight" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/holderPostVisibility"
+                        android:layout_gravity="right"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tvVisibility"
+                            android:gravity="center_vertical"
+                            android:textSize="@dimen/compose_menutext"
+                            android:textColor="@color/appTitleColor"
+                            android:text="private"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <ImageView
+                            android:id="@+id/imgPrivate"
+                            android:layout_gravity="right"
+                            android:src="@drawable/ic_private"
+                            android:padding="@dimen/compose_smallbuttonpadding"
+                            android:layout_width="@dimen/compose_smallbuttonheight"
+                            android:layout_height="@dimen/compose_smallbuttonheight"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+            <EditText
+                android:background="@null"
+                android:padding="@dimen/compose_editpadding"
+                android:id="@+id/edMessage"
+                android:layout_alignParentBottom="true"
+                android:gravity="left|top"
+                android:textColor="@color/apptextcolor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/headerBar" />
+
+            <RelativeLayout
+                android:id="@+id/buttonHolder"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/imgPost"
+                    android:src="@drawable/transition_post"
+                    android:padding="@dimen/compose_buttonpadding"
+                    android:layout_width="@dimen/compose_buttonheight"
+                    android:layout_height="@dimen/compose_buttonheight" />
+            </RelativeLayout>
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/tvHint"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:textColor="@color/apptextcolorhint"
+            android:text="@string/compose_hint"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        </RelativeLayout>
+    </com.crowdmobile.kesapp.widget.EditorCard>
+</LinearLayout>

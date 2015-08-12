@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/splash_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.crowdmobile.kesapp.widget.FixedARImageView
+        android:id="@+id/imgLogo"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_landingpage"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/tvVersion"
+        android:gravity="right"
+        android:textColor="@color/splash_text"
+        android:padding="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+</RelativeLayout>

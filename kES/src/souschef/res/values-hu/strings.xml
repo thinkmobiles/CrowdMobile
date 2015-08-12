@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bongo Thinks</string>
+
+    <plurals name="credits_purchase_messgae_plurals">
+        <item quantity="one">DO YOU WANT TO BUY %1$d CREDIT FOR %2$s?</item>
+        <item quantity="other">DO YOU WANT TO BUY %1$d CREDITS FOR %2$s?</item>
+    </plurals>
+
+    <plurals name="credits_plurals">
+        <item quantity="one">credit</item>
+        <item quantity="other">credits</item>
+    </plurals>
+
+    <!-- No account -->
+    <string name="noaccount_title">Opsz!</string>
+    <string name="noaccount_message">Nincs Google accountod regisztralva! Bongo nem tud uzenetet kuldeni neked.</string>
+    <string name="noaccount_btquit">Kilépés</string>
+
+    <!-- Notification bar -->
+    <string name="notification_title">Bongo</string>
+    <string name="notification_text">Bongo válaszolt neked!</string>
+
+    <!-- Login -->
+    <string name="login_facebook">Belépés Facebook-al</string>
+    <string name="login_twitter">Belépés Twitter-el</string>
+    <string name="login_skip">Később</string>
+
+    <string name="welcome">Bongo üdvözöl</string>
+    <string name="error">Hiba</string>
+    <string name="ok">OK</string>
+    <string name="fb_login">Csatlakozás Facebookhoz</string>
+    <string name="twitter_login">Csatlakozás Twitterhez</string>
+    <string name="connecting">Cstlakozás</string>
+    <string name="error_fb_login">Facebook kapcsolódás hiba</string>
+    <string name="error_kes_login">Belépés Bongo-hoz sikertelen</string>
+    <string name="error_fb_nouserinfo">Felhasználó információ nem elérhető</string>
+    
+
+    
+    <!-- Menu -->
+    <string name="action_settings">Beállítások</string>
+    <string name="action_privacy">Adatvédelem</string>
+    <string name="action_about">Bongoról</string>
+    <string name="action_agreement">Felhasználási feltételek</string>
+    <string name="action_support">Támogatás</string>
+    <string name="action_terms">Feltételek</string>
+    <string name="action_logout">Kijelentkezés</string>
+    <string name="title_activity_profile">Profil tevékenység</string>
+
+    <!-- Not registered -->
+    <string name="not_registered_title">Mit tud rólad Bongo?</string>
+    <string name="not_registered_message">Ez a funkció csak regisztrált felhasználóknak elérhető. Regisztrálj most!</string>
+    <string name="not_registered_btstart">Kezdjük</string>
+    <string name="not_registered_dialog_message">Ez a funkció csak regisztrált felhasználóknak elérhető. Regisztrálj most!</string>
+
+    <string name="myfeed_noposts_title">Oh-oh, nincsenek még kérdéseid</string>
+    <string name="myfeed_noposts_message">Még nem kérdeztél semmit Bongótól.Kérdezz most!</string>
+    <string name="myfeed_noposts_btn">Kérdezek</string>
+
+    <string name="publicfeed_noposts_title">Oh-oh, még nincsenek kérdések</string>
+    <string name="publicfeed_noposts_message">Nézz vissza később!</string>
+    <string name="publicfeed_noposts_btn">Frissítés</string>
+
+    <string name="feed_error_title">Oh oh, kapcsolati hiba</string>
+    <string name="feed_error_message">Nem tudtam betölteni a hírfolyamot!</string>
+    <string name="feed_error_btn">Újra</string>
+
+    <!-- Feed -->
+    <string name="feed_question">Kérdés:</string>
+    <string name="feed_answer">Válasz:</string>
+    <string name="feed_posting">Kérdés küldése...</string>
+    <string name="share_title">Megosztás</string>
+    <string name="share_unavailable">Megosztás nem elérhető</string>
+    <string name="share_subject">Próbáld ki Bongót!</string>
+
+    <string name="newsfeed">Hírfolyam</string>
+    <string name="myfeed">Saját kérdéseim</string>
+    <string name="item_share">Megosztás</string>
+    <string name="item_retry">Újra</string>
+    <string name="item_noanswer">Bongo amint tud, válaszol.</string>
+    <string name="timeformat_day" formatted="false">%d napja</string>
+    <string name="timeformat_hour_min" formatted="false">%d óra %d perce</string>
+    <string name="timeformat_min" formatted="false">%d perce</string>
+    <string name="clipboard_label">Bongo kérdés</string>
+    <string name="copied_to_clipboard">Vágólapra másolva</string>
+
+    <!-- Credit -->
+    <string name="refund_email_title">Visszatérítés kérelem</string>
+    <string name="refund_email_message">Kérem a következő rendelés visszatérítését:</string>
+    <string name="refund_email_dialog_title">Visszatérítés</string>
+    <string name="purchase_retry">Újra</string>
+    <string name="purchase_refund">Visszatérítés</string>
+    <string name="credit_status_init">Google Play inicializálás</string>
+    <string name="credit_status_initfail">Nem sikerült a Google Play inicializálása</string>
+    <string name="credit_status_inventoryfail">Nem sikerult lekérdezni a termékeket</string>
+    <string name="credit_status_request_products">Betöltés</string>
+    <string name="credit_status_processing">Fizetés feldolgozása</string>
+    <string name="credit_status_processing_fail">Bongo nem jutott hozzá a banánokhoz!</string>
+    <string name="credit_status_disconnected">Kapcsolat megszakadt</string>
+    <string name="fragment_credit_title">Szerezz banánt</string>
+    <string name="credit_info">Bongo éhes!</string>
+    <string name="credit_message">Gyorsan etesd meg banánnal hogy még több kérdésre válaszolhasson!</string>
+    <string name="credit_itemname">\u0020/ Banán</string>
+    <string name="btn_buy">Vásárlás</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Szeretnéd megetetni banánnal hogy még több kérdésre válaszolhasson?</string>
+
+    <!-- Compose -->
+    <string name="compose_suggested">Javasolt kérdések</string>
+    <string name="compose_private">privát</string>
+    <string name="compose_public">mindenki látja</string>
+    <string name="compose_invalidchar">nem támogatott karakter</string>
+    <string name="compose_title">Kérdezd Bongót</string>
+    <string name="compose_hint">Kérdezz Bongótól</string>
+    <string name="bubble_text">Küldj Bongónak képet, kérdést, vagy mindkettőt!</string>
+    <string name="error_nocamera">Sajnos a kamera nem elérhető</string>
+    <string name="error_storagewrite">Adat írási hiba.</string>
+
+    <string name="compose_nopic_title">Megerősítés</string>
+    <string name="compose_nopic_message">Biztos el akarod küldeni a kérdést kép nélkül?</string>
+    <string name="dontshowagain">Ne mutasd többször</string>
+
+    <!-- Gallery -->
+    <string name="gallery_title">Válassz képet</string>
+    <!-- Crop -->
+    <string name="crop_title">Kijelölés</string>
+
+
+    <!-- Preferences -->
+    <string name="title_activity_settings">Beállítások</string>
+    <string name="category_general">Általános</string>
+
+
+    <string name="title_language">Nyelv</string>
+
+    <string name="title_updateinterval">Hírfolyam frissítése</string>
+
+    <string-array name="updateInterval">
+        <item>naponta</item>
+        <item>2 naponta</item>
+        <item>3 naponta</item>
+        <item>hetente</item>
+    </string-array>
+
+
+    <string name="title_gender">Nem</string>
+
+    <string-array name="genderNames">
+        <item>Férfi</item>
+        <item>Nő</item>
+    </string-array>
+
+
+
+
+    <string name="title_showsuggestion">Javasolt kérdések</string>
+    <string name="detail_showsuggestion">Javasolt kérdések megjelenítése üzenet írásnál</string>
+
+    <string name="category_account">Profil</string>
+
+    <string name="title_birthdate">Születésnap</string>
+
+    <string name="title_relationship">Kapcsolat állapot</string>
+
+    <string-array name="relationshipNames">
+        <item>Egyedülálló</item>
+        <item>Kapcsolatban</item>
+        <item>Élettársi</item>
+        <item>Házas</item>
+    </string-array>
+
+</resources>

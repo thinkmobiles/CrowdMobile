@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Bongo Misli</string>
+
+    <plurals name="credits_purchase_messgae_plurals">
+        <item quantity="one">ŽELITE LI KUPITI %1$d KREDIT ZA %2$s?</item>
+        <item quantity="other">ŽELITE LI KUPITI %1$d KREDITA ZA %2$s?</item>
+    </plurals>
+
+    <plurals name="credits_plurals">
+        <item quantity="one">kredit</item>
+        <item quantity="other">kredita</item>
+    </plurals>
+
+    <!-- No account -->
+    <string name="noaccount_title">Ops!</string>
+    <string name="noaccount_message">Nemate registriran Google račun! Bongo ne može raditi bez Google Cloud Messaginga.</string>
+    <string name="noaccount_btquit">Quit</string>
+
+    <!-- Notification bar -->
+    <string name="notification_title">Bongo</string>
+    <string name="notification_text">Imate nova odgovorena pitanja</string>
+
+    <!-- Login -->
+    <string name="login_facebook">Logirajte se Facebookom</string>
+    <string name="login_twitter">Logirajte se Twitterom</string>
+    <string name="login_skip">Preskoči</string>
+
+    <string name="welcome">Dobrodošli u Bongo</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
+    <string name="fb_login">Spajanje s Facebookom</string>
+    <string name="twitter_login">Spajanje s Twitterom</string>
+    <string name="connecting">Spajanje</string>
+    <string name="error_fb_login">Greška sa spajanjem na Facebook</string>
+    <string name="error_kes_login">Logiranje u KES neuspjelo</string>
+    <string name="error_fb_nouserinfo">Ne možemo vratiti korisničke informacije</string>
+    
+    <!-- Menu -->
+    <string name="action_settings">Postavke</string>
+    <string name="action_privacy">Postavke privatnosti</string>
+    <string name="action_about">O nama</string>
+    <string name="action_agreement">Uvjeti sporazuma</string>
+    <string name="action_support">Podrška</string>
+    <string name="action_terms">Uvjeti</string>
+    <string name="action_logout">Odjavite se</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+
+    <!-- Not registered -->
+    <string name="not_registered_title">Otkrij što Bongo zna o tebi</string>
+    <string name="not_registered_message">Ovoj stranici ne mogu pristupiti neregistrirani korisnici. Prijavite se!</string>
+    <string name="not_registered_btstart">Započnite</string>
+    <string name="not_registered_dialog_message">Ovome ne mogu pristupiti neregistrirani kosinici. Započnite i registrirajte se sad!</string>
+
+    <string name="myfeed_noposts_title">Uh oh, nemaš postova</string>
+    <string name="myfeed_noposts_message">Još nemaš pitanja za Bonga. Postavi mu pitanje!</string>
+    <string name="myfeed_noposts_btn">Postavi pitanje</string>
+
+    <string name="publicfeed_noposts_title">Uh oh, nemamo pitanja</string>
+    <string name="publicfeed_noposts_message">Molimo vratite se kasnije!</string>
+    <string name="publicfeed_noposts_btn">Refresh</string>
+
+    <string name="feed_error_title">Uh oh, problemi s mrežom</string>
+    <string name="feed_error_message">Ne možemo učitati novosti!</string>
+    <string name="feed_error_btn">Pokušaj ponovno</string>
+
+    <!-- Feed -->
+    <string name="feed_question">Pitanje:</string>
+    <string name="feed_answer">Odgovor:</string>
+    <string name="feed_posting">Objavljujemo pitanje...</string>
+    <string name="share_title">Podijeli pitanje</string>
+    <string name="share_unavailable">Ne može se podijeliti</string>
+    <string name="share_subject">Provjeri Bongo!</string>
+
+    <string name="newsfeed">Novosti</string>
+    <string name="myfeed">Moja pitanja</string>
+    <string name="item_share">SHARE</string>
+    <string name="item_retry">Pokušaj ponovno</string>
+    <string name="item_noanswer">Bongo će uskoro odgovoriti na tvoje pitanje</string>
+    <string name="timeformat_day" formatted="false">%d dana</string>
+    <string name="timeformat_hour_min" formatted="false">%d sati %d minuta</string>
+    <string name="timeformat_min" formatted="false">%d minuta</string>
+    <string name="clipboard_label">Bongo Pitanje</string>
+    <string name="copied_to_clipboard">Kopirano</string>
+
+    <!-- Credit -->
+    <string name="refund_email_title">vrati zahtjev</string>
+    <string name="refund_email_message">Otkažite sljedeće narudžbe:</string>
+    <string name="refund_email_dialog_title">Vrati</string>
+    <string name="purchase_retry">Pokušaj ponovno</string>
+    <string name="purchase_refund">Vrati</string>
+    <string name="credit_status_init">Inicijalizira se Google Play</string>
+    <string name="credit_status_initfail">Neuspjelo otvaranje Google Play aplikacije</string>
+    <string name="credit_status_inventoryfail">Neuspjelo vraćanje produkta</string>
+    <string name="credit_status_request_products">Učitava se</string>
+    <string name="credit_status_processing">Plaćanje se procesuira</string>
+    <string name="credit_status_processing_fail">Bongo nije dobio banane koje si mu kupio.</string>
+    <string name="credit_status_disconnected">Disconnected</string>
+    <string name="fragment_credit_title">Kupi banane</string>
+    <string name="credit_info">Bongo je gladan!</string>
+    <string name="credit_message">Požuri se i nahrani ga da bi odgovorio na tvoja pitanja!</string>
+    <string name="credit_itemname">\u0020/ Banana</string>
+    <string name="btn_buy">KUPI</string>
+    <!-- Insufficient credit -->
+    <string name="nocredit_message">Želiš li ga nahraniti bananama da bi odgovorio na više pitanja?</string>
+
+    <!-- Compose -->
+    <string name="compose_suggested">predložena pitanja</string>
+    <string name="compose_private">privatno</string>
+    <string name="compose_public">javno</string>
+    <string name="compose_invalidchar">Nepodržani znak</string>
+    <string name="compose_title">Pitaj Bonga</string>
+    <string name="compose_hint">Postavi pitanja Bongu</string>
+    <string name="bubble_text">Dodaj fotografiju, pitanje ili oboje za Bonga!</string>
+    <string name="error_nocamera">Sorry, ne radi.</string>
+    <string name="error_storagewrite">Greška u pisanju.</string>
+    <!-- Gallery -->
+    <string name="gallery_title">Odaberi fotografiju</string>
+    <!-- Crop -->
+    <string name="crop_title">Obreži fotografiju</string>
+
+    <!-- Preferences -->
+    <string name="title_activity_settings">Postavke</string>
+    <string name="category_general">General</string>
+
+    <string name="title_language">Jezik</string>
+
+    <string name="title_updateinterval">Osvježavanje novosti</string>
+
+    <string-array name="updateInterval">
+        <item>svakodnevno</item>
+        <item>svaka 2 dana</item>
+        <item>svaka 3 sana</item>
+        <item>jednom tjedno</item>
+    </string-array>
+
+    <string name="title_gender">Spol</string>
+
+    <string-array name="genderNames">
+        <item>Muško</item>
+        <item>Žensko</item>
+    </string-array>
+
+
+    <string name="title_showsuggestion">Pokaži prijedloge</string>
+    <string name="detail_showsuggestion">Pokaži predložena pitanja</string>
+
+    <string name="category_account">Račun</string>
+
+    <string name="title_birthdate">Datum rođenja</string>
+
+    <string name="title_relationship">Veza</string>
+
+    <string-array name="relationshipNames">
+        <item>Single</item>
+        <item>U vezi</item>
+        <item>Životno partnerstvo</item>
+        <item>U braku</item>
+    </string-array>
+
+
+</resources>

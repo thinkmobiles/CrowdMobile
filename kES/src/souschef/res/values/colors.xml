@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="splash_background" type="color">#fff</item>
+    <item name="splash_text" type="color">#000</item>
+    <item name="splash_text_development" type="color">#00f</item>
+
+    <!-- Compose -->
+
+    <item name="white" type="color">#fff</item>
+    <item name="appTitleColor" type="color">#4caf50</item>
+    <item name="colorPrimary" type="color">#2e7d32</item>
+
+    <item name="questionFont" type="color">#555</item>
+    <item name="answerBackground" type="color">#0000</item>
+    <item name="answerFont" type="color">#555</item>
+
+    <item name="appbackground" type="color">#fff</item>
+    <item name="apptextcolor" type="color">#444</item>
+    <item name="apptextcolorhint" type="color">#ccc</item>
+
+    <item name="navbarbackground" type="color">#4caf50</item>
+    <item name="navbarseparator" type="color">#80096fc2</item>
+
+
+    <item name="bubblecolor" type="color">#000</item>
+    <item name="bubbletextcolor" type="color">#fff</item>
+
+    <item name="unreadcountbackground" type="color">#fff</item>
+    <item name="unreadcounttext" type="color">#000</item>
+
+    <item name="suggestion_marker" type="color">#096fc2</item>
+    <item name="suggestion_textcolor" type="color">#000</item>
+    <item name="suggestion_background1" type="color">#deee</item>
+    <item name="suggestion_background2" type="color">#dfff</item>
+
+    <!-- Compose -->
+    <item name="compose_background" type="color">#e3f1f5</item>
+    <item name="crop_rect" type="color">#4caf50</item>
+
+    <!-- Login -->
+    <item name="login_background" type="color">#e3f1f5</item>
+    <item name="login_button_text" type="color">#fff</item>
+    <item name="login_button_facebook" type="color">#3b5998</item>
+    <item name="login_button_twitter" type="color">#33ccff</item>
+    <item name="login_skip_text" type="color">#517cb1</item>
+
+    <!-- Not registered -->
+    <item name="access_font" type="color">#000</item>
+    <item name="access_btstart" type="color">#4caf50</item>
+    <item name="access_btstart_text" type="color">#000</item>
+
+    <!-- Feed -->
+    <item name="feed_background" type="color">#e3f1f5</item>
+
+    <!-- Feed item -->
+    <item name="feed_item_like_font" type="color">#fff</item>
+    <item name="feedbgcolor" type="color">#9222</item>
+
+    <item name="item_unread" type="color">#800880de</item>
+    <item name="item_stripe" type="color">#4caf50</item>
+    <item name="item_separator" type="color">#eee</item>
+    <item name="item_background" type="color">#fff</item>
+    <item name="item_background_disabled" type="color">#aaa</item>
+    <item name="item_retry_background" type="color">#afff</item>
+    <item name="item_retry_font" type="color">#096fc2</item>
+
+    <!-- Gallery -->
+    <item name="gallery_title_font" type="color">#808080</item>
+    <item name="gallery_background" type="color">#fff</item>
+    <item name="gallery_item_background" type="color">#d8d8d8</item>
+
+    <!-- Credit -->
+    <item name="credit_background" type="color">#e3f1f5</item>
+    <item name="credit_card_background" type="color">#fff</item>
+    <item name="credit_pricetextcolor" type="color">#bbb</item>
+    <item name="credittextcolor" type="color">#555</item>
+    <item name="creditdiscounttextcolor" type="color">#43c58a</item>
+    <item name="credit_buy_textcolor" type="color">#000</item>
+    <item name="purchased_font" type="color">#0f0</item>
+
+</resources>

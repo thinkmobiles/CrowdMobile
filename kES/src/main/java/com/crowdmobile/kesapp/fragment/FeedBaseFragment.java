@@ -588,6 +588,9 @@ public abstract class FeedBaseFragment extends Fragment {
             bottomReached |= wrapper.flag_feedBottomReached;
             if (wrapper.exception == null)
                 adapter.hideFooter();
+
+            if (list.size() == 0 && KES.shared().getFeedManager().cacheOf(getFeedType()).isLoaded())
+                    showNoPost();
         }
 
         @Override
@@ -660,11 +663,6 @@ public abstract class FeedBaseFragment extends Fragment {
             if (getFeedType() != FeedManager.FeedType.My)
                 return;
             accessViewHolder.setVisibility(View.GONE);
-            /*
-            list.add(0,photoComment);
-            adapter.notifyItemInserted(0);
-            rvFeed.scrollToPosition(0);
-            */
             if (list.size() == 1)
                 swipeContainer.setEnabled(true);
         }
@@ -674,47 +672,6 @@ public abstract class FeedBaseFragment extends Fragment {
             if (getFeedType() != FeedManager.FeedType.My)
                 return;
             accessViewHolder.setVisibility(View.GONE);
-            if (error != null)
-            {
-                int i = list.indexOf(photoComment);
-                if (i >= 0)
-                    adapter.notifyItemChanged(i);
-                return;
-            }
-            //Check if already updated with pull down to refresh
-            int last = list.lastIndexOf(photoComment);
-            int first = list.indexOf(photoComment);
-            if (first != last)
-            {
-                list.remove(last);
-                adapter.notifyItemRemoved(last);
-                return;
-            }
-
-            //Move to new position
-
-            int newPosition = list.size();
-            for (int i = 0, l = list.size(); i < l; i++)
-            {
-                PhotoComment pc = list.get(i);
-                if (pc == null || pc == photoComment || pc.status != PhotoComment.PostStatus.Posted)
-                    continue;
-                if (pc.getID(FeedManager.FeedType.My) > photoComment.getID(FeedManager.FeedType.My))
-                    continue;
-                newPosition = i;
-                break;
-            }
-            if (newPosition > first)
-                newPosition --;
-
-            if (first != newPosition) {
-                list.remove(first);
-                //adapter.notifyItemRemoved(first);
-                list.add(newPosition, photoComment);
-                //adapter.notifyItemInserted(newPosition);
-                adapter.notifyItemMoved(first,newPosition);
-            }
-            adapter.notifyItemChanged(newPosition);
         }
 
         @Override

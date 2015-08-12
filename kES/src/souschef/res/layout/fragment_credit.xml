@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/credit_background"
+    android:orientation="vertical"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_marginLeft="@dimen/credit_padding"
+        android:layout_marginRight="@dimen/credit_padding"
+        android:layout_marginTop="@dimen/credit_padding"
+        android:background="@color/credit_card_background"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_height="0px"
+        android:layout_above="@+id/ivShopFooter">
+        <LinearLayout
+            android:padding="@dimen/credit_title_padding"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:paddingRight="@dimen/credit_title_linespace"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:layout_width="0px"
+                android:layout_weight="2"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:paddingBottom="@dimen/credit_title_linespace"
+                    android:textSize="@dimen/credit_titlefontsize"
+                    android:textColor="@color/credittextcolor"
+                    android:text="@string/credit_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/credit_title_linespace"/>
+                <TextView
+                    android:paddingTop="@dimen/credit_title_linespace"
+                    android:lineSpacingExtra="@dimen/credit_title_linespace"
+                    android:textSize="@dimen/credit_messagefontsize"
+                    android:textColor="@color/credittextcolor"
+                    android:text="@string/credit_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+            <ImageView
+                android:layout_gravity="bottom"
+                android:src="@drawable/ic_checkout_logo"
+                android:adjustViewBounds="true"
+                android:layout_weight="1"
+                android:layout_width="0px"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <View
+            android:background="@color/credit_background"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/credit_item_space"/>
+        <ListView
+            android:id="@+id/lvPricelist"
+            android:divider="@color/credit_background"
+            android:dividerHeight="@dimen/credit_item_space"
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"/>
+    </LinearLayout>
+    <android.support.v7.widget.CardView
+        android:id="@+id/holderProgress"
+        android:padding="5dp"
+        android:layout_centerInParent="true"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:layout_margin="@dimen/item_padding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        card_view:cardElevation="4dp"
+        card_view:cardCornerRadius="4dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                    <ProgressBar
+                        android:id="@+id/creditProgress"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:id="@+id/creditStatus"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content" />
+            </LinearLayout>
+        <LinearLayout
+            android:id="@+id/holderButtons"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btCreditRetry"
+                android:text="@string/purchase_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/btCreditRefund"
+                android:text="@string/purchase_refund"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <ImageView
+        android:id="@+id/ivShopFooter"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_access_bongo"
+        android:adjustViewBounds="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/credit_bottomicon_height"
+        android:scaleType="fitCenter" />
+    <RelativeLayout
+        android:visibility="invisible"
+        android:id="@+id/holderPurchased"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_checkout_logo"
+            android:adjustViewBounds="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvPurchased"
+            android:layout_centerInParent="true"
+            android:textColor="@color/purchased_font"
+            android:textSize="@dimen/purchased_font"
+            android:text="10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+</RelativeLayout>

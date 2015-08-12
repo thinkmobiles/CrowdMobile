@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="@string/key_preferenceScreen">
+    <PreferenceCategory
+        android:title="@string/category_general">
+        <ListPreference
+            android:defaultValue="0"
+            android:key="@string/key_language"
+            android:title="@string/title_language"
+            android:entries="@array/Language"
+            android:entryValues="@array/languageAlias"/>
+        <ListPreference
+            android:defaultValue="24"
+            android:key="@string/key_updateinterval"
+            android:title="@string/title_updateinterval"
+            android:entries="@array/updateInterval"
+            android:entryValues="@array/updateIntervalAlias"/>
+        <SwitchPreference
+            android:key="@string/key_showsuggestion"
+            android:title="@string/title_showsuggestion"
+            android:summary="@string/detail_showsuggestion"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="@string/key_account"
+        android:title="@string/category_account">
+
+        <Preference
+            android:selectable="false"
+            android:enabled="true"
+            android:key="@string/key_accountname"/>
+        <ListPreference
+            android:icon="@drawable/ic_settings_gender"
+            android:defaultValue="24"
+            android:key="@string/key_gender"
+            android:title="@string/title_gender"
+            android:entries="@array/genderNames"
+            android:entryValues="@array/genderAlias"/>
+        <com.crowdmobile.kesapp.widget.DatePreference
+            android:icon="@drawable/ic_settings_birthdate"
+            android:key="@string/key_birthdate"
+            android:title="@string/title_birthdate"/>
+
+        <ListPreference
+            android:icon="@drawable/ic_settings_relationship"
+            android:key="@string/key_relationship"
+            android:title="@string/title_relationship"
+            android:entries="@array/relationshipNames"
+            android:entryValues="@array/relationshipAlias"/>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

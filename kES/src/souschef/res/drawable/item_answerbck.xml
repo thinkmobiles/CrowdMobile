@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/item_unread" />
+    <corners android:topLeftRadius="1px" android:topRightRadius="1px"
+        android:bottomLeftRadius="@dimen/item_stripe_radius" android:bottomRightRadius="@dimen/item_stripe_radius"/>
+</shape>
