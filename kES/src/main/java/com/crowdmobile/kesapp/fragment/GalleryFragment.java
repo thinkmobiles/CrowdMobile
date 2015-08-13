@@ -148,7 +148,7 @@ public class GalleryFragment extends Fragment {
                 Picasso.with(context).load("file://" + fileName).fit().centerCrop().into(holder.imgPhoto);
             }
             else
-                holder.imgPhoto.setImageResource(R.drawable.ic_camera_gallery);
+                Picasso.with(context).load(R.drawable.ic_camera_gallery).fit().centerCrop().into(holder.imgPhoto);
             return convertView;
         }
 

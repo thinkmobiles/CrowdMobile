@@ -329,9 +329,9 @@ public class FeedCache {
         int id = p.getID(mFeedType);
         if (internalCache.size() == 0)
             return;
-        int maxid = internalCache.get(internalCache.size() - 1).photoComment.getID(mFeedType);
-        int minid = internalCache.get(0).photoComment.getID(mFeedType);
-        if (id > maxid || id < minid)
+        int maxid = internalCache.valueAt(internalCache.size() - 1).photoComment.getID(mFeedType);
+        int minid = internalCache.valueAt(0).photoComment.getID(mFeedType);
+        if (id > maxid + 1|| id < minid - 1)
             return;
         FeedCacheItem item = new FeedCacheItem();
         item.photoComment = p;
@@ -348,7 +348,7 @@ public class FeedCache {
         if (i < 0)
             return;
         int notifyPos = internalPosToExternal(i);
-        internalCache.remove(i);
+        internalCache.removeAt(i);
         notifyListeners(UpdateType.remove, notifyPos);
     }
 

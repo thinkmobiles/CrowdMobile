@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
@@ -44,6 +45,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
     private Bitmap placeHolder;
     private Drawable feedBgMenu;
     private int feedBgColor;
+    private BitmapDrawable errorDrawable;
 
     private Bitmap btLike,btLiked;
 
@@ -347,7 +349,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 url = "file://" + url;
             if (!StrUtil.strEqual(holder.urlCache,url)) {
                 holder.urlCache = url;
-                Picasso.with(holder.imgFeedPic.getContext()).load(url).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).into(holder.imgFeedPic);
+                Picasso.with(holder.imgFeedPic.getContext()).load(url + "x").fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.imgFeedPic);
             }
             holder.holderFeedMenu.setBackgroundColor(feedBgColor);
         } else {

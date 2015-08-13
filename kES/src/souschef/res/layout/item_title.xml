@@ -16,7 +16,7 @@
             <ImageView
                 android:id="@+id/imgTimeQuestion"
                 android:layout_centerVertical="true"
-                android:src="@drawable/ic_feed_item_header_icon"
+                android:src="@drawable/ic_feed_item_header"
                 android:scaleType="fitXY"
                 android:adjustViewBounds="true"
                 android:layout_width="@dimen/item_header_icon_height"
@@ -27,7 +27,7 @@
                 android:textColor="@color/questionFont"
                 android:paddingLeft="@dimen/item_header_sidepadding"
                 android:text="35 min"
-                android:layout_toRightOf="@+id/imgTimeQuestion"
+                    android:layout_toRightOf="@+id/imgTimeQuestion"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
