@@ -41,8 +41,7 @@
     <!-- Login -->
     <item name="login_background" type="color">#e3f1f5</item>
     <item name="login_button_text" type="color">#fff</item>
-    <item name="login_button_facebook" type="color">#3b5998</item>
-    <item name="login_button_twitter" type="color">#33ccff</item>
+    <item name="login_button" type="color">#8ccc</item>
     <item name="login_skip_text" type="color">#517cb1</item>
 
     <!-- Not registered -->

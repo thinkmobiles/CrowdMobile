@@ -20,6 +20,8 @@
         <item>M</item>
     </string-array>
 
+    <string name="tag_image" translatable="false">picasso id tag</string>
+
     <!-- Preferences -->
     <string name="key_preferenceScreen" translatable="false">key_preference_screen</string>
     <string name="key_logout" translatable="false">key_logout</string>

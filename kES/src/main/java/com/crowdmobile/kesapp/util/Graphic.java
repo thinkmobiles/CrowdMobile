@@ -5,6 +5,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
+import com.crowdmobile.kesapp.R;
+import com.squareup.picasso.RequestCreator;
 
 import java.io.IOException;
 
@@ -24,7 +29,7 @@ public class Graphic {
         int h = bitmap.getHeight();
 
         int[] pix = new int[w * h];
-        Log.e("pix", w + " " + h + " " + pix.length);
+        //Log.i("pix", w + " " + h + " " + pix.length);
         bitmap.getPixels(pix, 0, w, 0, 0, w, h);
 
         int wm = w - 1;
@@ -293,6 +298,77 @@ public class Graphic {
         } catch (IOException ignored) {}
         return result;
     }
+
+    public static void setImageLoader(ImageView imageView, OnImageLoadRequest imageLoadRequest, View.OnClickListener imageClick)
+    {
+        imageView.setTag(R.string.tag_image ,new ImageLoadCallback(imageView, imageLoadRequest, imageClick));
+    }
+
+    public static ImageLoadCallback getImageLoader(ImageView imageView)
+    {
+        ImageLoadCallback imageLoadCallback = (ImageLoadCallback)imageView.getTag(R.string.tag_image);
+        return imageLoadCallback;
+    }
+
+    public interface OnImageLoadRequest {
+        public RequestCreator onGetRequest(String source,ImageView imageView);
+    }
+
+    public static class ImageLoadCallback implements com.squareup.picasso.Callback {
+
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (error)
+                    load(url);
+                else
+                    if (imageClick != null && success)
+                        imageClick.onClick(dest);
+            }
+        };
+
+        boolean error = false;
+        boolean success = false;
+        ImageView dest;
+        View.OnClickListener imageClick;
+        OnImageLoadRequest onImageLoadRequest;
+        String url;
+
+        protected ImageLoadCallback(ImageView imageView, OnImageLoadRequest onImageLoadRequest, View.OnClickListener imageClick)
+        {
+            this.dest = imageView;
+            this.dest.setOnClickListener(onClickListener);
+            this.imageClick = imageClick;
+            this.onImageLoadRequest = onImageLoadRequest;
+            dest.setTag(this);
+        }
+
+        public void load(String url)
+        {
+            error = false;
+            success = false;
+            onImageLoadRequest.onGetRequest(url, dest).into(dest,this);
+        }
+
+        public boolean isError()
+        {
+            return error;
+        }
+
+        @Override
+        public void onSuccess() {
+            success = true;
+            error = false;
+        }
+
+        @Override
+        public void onError() {
+            success = false;
+            error = true;
+        }
+    };
+
+
 
 }
 

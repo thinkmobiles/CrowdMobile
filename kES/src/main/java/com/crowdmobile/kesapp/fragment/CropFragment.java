@@ -1,7 +1,10 @@
 package com.crowdmobile.kesapp.fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
@@ -83,13 +86,33 @@ public class CropFragment extends Fragment {
     class LoadImage extends AsyncTask<String, Void, Bitmap> {
         @Override
         protected Bitmap doInBackground(String[] params) {
-            return Graphic.decodeBitmap(params[0],displaySize.x,displaySize.y, true);
+            return Graphic.decodeBitmap(params[0], displaySize.x, displaySize.y, true);
         }
 
         @Override
         protected void onPostExecute(Bitmap result) {
             holder.removeView(progress);
             progress = null;
+            if (result == null)
+            {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder
+                        .setTitle(R.string.crop_title)
+                        .setMessage(R.string.error_picture)
+                        .setNegativeButton(android.R.string.cancel, new Dialog.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                callback.onCropCanceled();
+                            }
+                        })
+                        .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                callback.onCropCanceled();
+                            }
+                        })
+                        .show();
+            }
             cropView.setBitmap(result);
         }
     };

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Bongo Thinks</string>
+    <string name="app_name">Souschef</string>
 
     <plurals name="credits_purchase_messgae_plurals">
         <item quantity="one">DO YOU WANT TO BUY %1$d CREDIT FOR %2$s?</item>

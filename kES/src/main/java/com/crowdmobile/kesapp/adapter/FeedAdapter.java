@@ -24,11 +24,13 @@ import android.widget.Toast;
 
 import com.crowdmobile.kesapp.R;
 import com.crowdmobile.kesapp.util.Compat;
+import com.crowdmobile.kesapp.util.Graphic;
 import com.kes.FeedCache;
 import com.kes.FeedManager;
 import com.kes.model.PhotoComment;
 import com.kes.model.StrUtil;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 /**
  * Created by gadza on 2015.04.01..
@@ -71,7 +73,14 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
         list.insertFooter();
     }
 
-    public static class ItemHolder extends RecyclerView.ViewHolder {
+    Graphic.OnImageLoadRequest onImageLoadRequest = new Graphic.OnImageLoadRequest() {
+        @Override
+        public RequestCreator onGetRequest(String source, ImageView imageView) {
+            return Picasso.with(imageView.getContext()).load(source).fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo);
+        }
+    };
+
+    public class ItemHolder extends RecyclerView.ViewHolder {
         public int itemID;
         int viewType;
         View itemCard;
@@ -112,7 +121,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 messagePlaceholder = view.findViewById(R.id.messagePlaceholder);
                 imgLike = (ImageView) view.findViewById(R.id.imgLike);
                 imgFeedPic = (ImageView) view.findViewById(R.id.imgFeedPic);
-                imgFeedPic.setOnClickListener(imgClick);
+                Graphic.setImageLoader(imgFeedPic, onImageLoadRequest, imgClick);
                 imgOpenShare = view.findViewById(R.id.imgOpenShare);
 
                 if (imgOpenShare != null) {
@@ -349,7 +358,7 @@ public class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.ItemHolder> {
                 url = "file://" + url;
             if (!StrUtil.strEqual(holder.urlCache,url)) {
                 holder.urlCache = url;
-                Picasso.with(holder.imgFeedPic.getContext()).load(url + "x").fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.imgFeedPic);
+                Graphic.getImageLoader(holder.imgFeedPic).load(url);
             }
             holder.holderFeedMenu.setBackgroundColor(feedBgColor);
         } else {

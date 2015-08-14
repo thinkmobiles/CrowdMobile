@@ -127,6 +127,7 @@
     <string name="error_nocamera">Sorry, camera isn\'t available.</string>
     <string name="error_storagewrite">Error writing to external storage.</string>
 
+
     <string name="compose_nopic_title">Confirmation</string>
     <string name="compose_nopic_message">Are you sure you want to post your question without a picture?</string>
     <string name="dontshowagain">Don\'t show this again</string>
@@ -135,6 +136,7 @@
     <string name="gallery_title">Choose a picture</string>
     <!-- Crop -->
     <string name="crop_title">Crop your image</string>
+    <string name="error_picture">Error processing picture.</string>
 
 
     <!-- In app purchase -->

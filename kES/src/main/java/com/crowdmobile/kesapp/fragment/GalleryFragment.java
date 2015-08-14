@@ -145,7 +145,7 @@ public class GalleryFragment extends Fragment {
             holder.imgPhoto.setTag(Integer.valueOf(position));
             if (position != 0) {
                 String fileName = data.thumbnail != null ? data.thumbnail : data.image;
-                Picasso.with(context).load("file://" + fileName).fit().centerCrop().into(holder.imgPhoto);
+                Picasso.with(context).load("file://" + fileName).fit().centerCrop().into(holder.imgPhoto,null);
             }
             else
                 Picasso.with(context).load(R.drawable.ic_camera_gallery).fit().centerCrop().into(holder.imgPhoto);
