@@ -122,6 +122,7 @@
     <string name="compose_public">public</string>
     <string name="compose_invalidchar">Unsupported character</string>
     <string name="compose_title">Ask Bongo</string>
+    <string name="social_title">Social</string>
     <string name="compose_hint">Ask your question to Bongo</string>
     <string name="bubble_text">Add a photo or a question to submit to Bongo, or both!</string>
     <string name="error_nocamera">Sorry, camera isn\'t available.</string>

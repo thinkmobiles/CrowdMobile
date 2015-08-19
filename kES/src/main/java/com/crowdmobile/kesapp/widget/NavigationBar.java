@@ -22,6 +22,7 @@ import com.crowdmobile.kesapp.fragment.ComposeFragment;
 import com.crowdmobile.kesapp.fragment.CreditFragment;
 import com.crowdmobile.kesapp.fragment.MyFeedFragment;
 import com.crowdmobile.kesapp.fragment.NewsFeedFragment;
+import com.crowdmobile.kesapp.fragment.SocialFragment;
 import com.crowdmobile.kesapp.util.PreferenceUtils;
 import com.kes.KES;
 
@@ -34,8 +35,8 @@ public class NavigationBar {
 		public NavigationBar getNavigationBar();
 	}
 
-	public enum Attached {Empty, Feed, MyFeed, Compose, Checkout};
-	private ImageView btFeed,btMyFeed,btCompose,btCheckout;
+	public enum Attached {Empty, Feed, MyFeed, Compose, Checkout, Social};
+	private ImageView btFeed,btMyFeed,btCompose,btCheckout, btnSocial;
 	private AppCompatActivity mActivity;
 	private Attached attached = Attached.Empty;
 	private ViewPager mViewPager;
@@ -54,11 +55,12 @@ public class NavigationBar {
 		btMyFeed = (ImageView)v.findViewById(R.id.btMyFeed);
 		btCompose = (ImageView)v.findViewById(R.id.btCompose);
 		btCheckout = (ImageView)v.findViewById(R.id.btCheckout);
-
+        btnSocial  = (ImageView)v.findViewById(R.id.btnSocial);
 		btFeed.setOnClickListener(onClickListener);
 		btMyFeed.setOnClickListener(onClickListener);
 		btCompose.setOnClickListener(onClickListener);
 		btCheckout.setOnClickListener(onClickListener);
+        btnSocial.setOnClickListener(onClickListener);
         tvUnreadCount = (TextView)v.findViewById(R.id.tvUnreadCount);
         setUnreadCount(KES.shared().getAccountManager().getUser().unread_count);
 	}
@@ -147,6 +149,10 @@ public class NavigationBar {
         if (src == Attached.Compose)
             return new ComposeFragment();
 
+        if (src == Attached.Social)
+            return new SocialFragment();
+
+
         return null;
     }
 
@@ -190,6 +196,13 @@ public class NavigationBar {
         else
             btCompose.setImageResource(R.drawable.ic_tabbar_post);
 
+        if (attached == Attached.Social) {
+            mActivity.getSupportActionBar().setTitle(R.string.social_title);
+            destIcon = btnSocial;
+        }
+        else
+            btCompose.setImageResource(R.drawable.ic_tabbar_post);
+
         Animation a = AnimationUtils.loadAnimation(mActivity,R.anim.bounce);
         destIcon.startAnimation(a);
 	}
@@ -207,8 +220,9 @@ public class NavigationBar {
 				navigateTo(Attached.Checkout);
             else if (v == btCompose)
                 navigateTo(Attached.Compose);
-		}
-		
+            else if (v == btnSocial)
+                navigateTo(Attached.Social);        }
+
 	};
 
     public void navigateTo(Attached dest)
