@@ -36,7 +36,7 @@
             android:title="@string/title_gender"
             android:entries="@array/genderNames"
             android:entryValues="@array/genderAlias"/>
-        <com.crowdmobile.kesapp.widget.DatePreference
+        <com.crowdmobile.reskintest.widget.DatePreference
             android:icon="@drawable/ic_settings_birthdate"
             android:key="@string/key_birthdate"
             android:title="@string/title_birthdate"/>

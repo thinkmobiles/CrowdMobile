@@ -29,7 +29,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <com.crowdmobile.kesapp.widget.FixedARImageView
+                <com.crowdmobile.reskintest.widget.FixedARImageView
                     android:id="@+id/imgFeedPic"
                     android:scaleType="centerCrop"
                     android:layout_width="match_parent"
@@ -137,7 +137,7 @@
                             android:layout_height="wrap_content" />
                     </RelativeLayout>
                     <TextView
-                        android:id="@+id/tvAnswer"
+                        android:id="@+id/tvDescription"
                         android:paddingLeft="@dimen/item_header_sidepadding"
                         android:paddingRight="@dimen/item_header_sidepadding"
                         android:paddingBottom="@dimen/item_header_sidepadding"

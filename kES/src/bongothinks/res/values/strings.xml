@@ -17,7 +17,8 @@
         <item quantity="other">credits</item>
     </plurals>
 
- 	<string name="fb_app_id" translatable="false">760239814072784</string>
+ 	<string name="fb_app_id" translatable="false">1637582083150924</string>
+    <string name="wait">Wait...</string>
 
 
     <!-- No account -->

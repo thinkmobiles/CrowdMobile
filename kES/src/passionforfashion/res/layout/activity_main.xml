@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/app_background"
-    tools:context="com.crowdmobile.kesapp.MainActivity"
+    tools:context="com.crowdmobile.reskintest.MainActivity"
     tools:ignore="MergeRootFrame" >
     <RelativeLayout
         android:layout_width="match_parent"

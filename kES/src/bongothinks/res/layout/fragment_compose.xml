@@ -5,7 +5,7 @@
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.crowdmobile.kesapp.widget.EditorCard
+    <com.crowdmobile.reskintest.widget.EditorCard
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         custom:maxHeight="@dimen/compose_editor_height"
@@ -132,5 +132,5 @@
             android:layout_height="match_parent" />
 
         </RelativeLayout>
-    </com.crowdmobile.kesapp.widget.EditorCard>
+    </com.crowdmobile.reskintest.widget.EditorCard>
 </LinearLayout>

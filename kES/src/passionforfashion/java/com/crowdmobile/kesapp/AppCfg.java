@@ -1,4 +1,4 @@
-package com.crowdmobile.kesapp;
+package com.crowdmobile.reskintest;
 
 /*
 * P4F configuration

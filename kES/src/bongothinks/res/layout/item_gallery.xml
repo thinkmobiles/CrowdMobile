@@ -3,7 +3,7 @@
     android:background="@color/gallery_item_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <com.crowdmobile.kesapp.widget.FixedARImageView
+    <com.crowdmobile.reskintest.widget.FixedARImageView
         android:id="@+id/ivPhoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

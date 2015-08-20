@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.crowdmobile.kesapp.widget.FixedARImageView
+    <com.crowdmobile.reskintest.widget.FixedARImageView
         android:id="@+id/imgLogo"
         android:layout_centerInParent="true"
         android:src="@drawable/ic_landingpage"
