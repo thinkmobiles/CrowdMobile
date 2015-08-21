@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,8 +56,13 @@ import com.urbanairship.google.PlayServicesUtils;
 import net.hockeyapp.android.UpdateManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
-
+import twitter4j.MediaEntity;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationBar.NavigationCallback,MainActivityInterface {
@@ -213,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
                     PreferenceUtils.setActiveFragment(this,saved);
             }
         }
-        navigationBar.navigateTo(a[saved],false);
+        navigationBar.navigateTo(a[saved], false);
     }
 
     public void executeFacebookGetPost(){
@@ -254,9 +260,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
             @Override
             public void onSuccess(String token, String secret, long uid) {
-
-
-//                KES.shared().getAccountManager().loginTwitter(token,secret,Long.toString(uid));
+               KES.shared().getAccountManager().loginTwitter(token, secret, Long.toString(uid));
+               new AsyncTwitterPosts().execute();
             }
 
             @Override
@@ -274,6 +279,80 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
                 progressDialog.hide();
             }
         };
+    }
+
+    private class AsyncTwitterPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
+
+        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+
+//        @Override
+//        protected ArrayList<SocialPost> InBackground(Void... params) {
+//            Log.i(TAG, "doInBackground");
+//
+//            return null;
+//        }
+
+        @Override
+        protected void onPostExecute(ArrayList<SocialPost> result) {
+            Log.i(TAG, "onPostExecute");
+            socialFragment.setCallbackData(result);
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected ArrayList<SocialPost> doInBackground(Void... params) {
+            return  getTwitterStatuses();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Log.i(TAG, "onPreExecute");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            Log.i(TAG, "onProgressUpdate");
+        }
+
+    }
+
+    public ArrayList<SocialPost> getTwitterStatuses(){
+        TwitterUtil twitterUtil = TwitterUtil.getInstance(MainActivity.this);
+        ArrayList<SocialPost> socialPosts = new ArrayList<>();
+
+        try {
+            List<Status> statuses;
+            String user;
+
+                statuses = twitterUtil.getTwitter().getUserTimeline(Long.valueOf(getResources().getString(R.string.kardashian_id_twitter)));
+
+            for (Status status : statuses) {
+                String image_data =null;
+
+
+                if(status.getMediaEntities()!=null&& status.getMediaEntities().length != 0)
+                    if(status.getMediaEntities()[0].getType().equals("photo"))
+                        image_data= status.getMediaEntities()[0].getMediaURLHttps();
+
+                PostOwner postOwner = new PostOwner(String.valueOf(status.getUser().getId()),status.getUser().getScreenName(),status.getUser().getProfileImageURLHttps());
+                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()),status.getText(), image_data ,status.getCreatedAt().toString(),postOwner);
+//                Log.e("TWITTER_TEXT", status.getUser().getScreenName() + " - " + status.getText() + status.getCreatedAt());
+
+                socialPosts.add(socialPost);
+                for (MediaEntity entity: status.getMediaEntities()){
+//                    Log.e("TWITTER_IMAGE", entity.getType() + ": " +entity.getMediaURLHttps());
+                }
+                Log.e("TWIT", socialPost.toString());
+
+            }
+        } catch (TwitterException te) {
+            te.printStackTrace();
+            System.out.println("Failed to get timeline: " + te.getMessage());
+        }
+
+        return socialPosts;
     }
 
     private void createProgressDialog(){

@@ -50,6 +50,10 @@ public class TwitterUtil {
 
     private final String callbackUrl;
 
+    public Twitter getTwitter() {
+        return twitter;
+    }
+
     private Twitter twitter;
     private Context context;
 

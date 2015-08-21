@@ -23,7 +23,8 @@
     <string name="tag_image" translatable="false">picasso id tag</string>
     <string name="base_url_facebook_avatar">https://graph.facebook.com/</string>
     <string name="second_url_facebook_avatar">/picture?type=large</string>
-    <string name="kardasjan_id">114696805612</string>
+    <string name="kardashian_id_facebook">114696805612</string>
+    <string name="kardashian_id_twitter">25365536</string>
 
     <!-- Preferences -->
     <string name="key_preferenceScreen" translatable="false">key_preference_screen</string>

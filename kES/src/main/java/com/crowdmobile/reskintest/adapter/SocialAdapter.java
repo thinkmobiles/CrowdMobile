@@ -56,13 +56,17 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
         holder.ownerName.setText(post.getPostOwner().getName());
         downloadAvatar(holder);
         if(post.getCreate_date() != null)
-            holder.create_time.setText(dateParce(getTrueDateFormat(post.getCreate_date())));
+            holder.create_time.setText(post.getCreate_date());
         else
             holder.create_time.setText("2112-08-10");
 
-        if(post.getImage()!= null)
+        if(post.getImage()!= null) {
+            holder.image.setVisibility(View.VISIBLE);
             Picasso.with(activity.getApplicationContext())
-                .load(post.getImage()).resize(600,600).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
+                    .load(post.getImage()).resize(600, 600).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
+        }
+        else
+            holder.image.setVisibility(View.GONE);
 
 
 //        Picasso.with(activity.getApplicationContext())
@@ -102,7 +106,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
     }
 
 
-    private Date getTrueDateFormat(String _date) {
+    private Date getTrueDateFormatFacebook(String _date) {
         Date date = null;
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         try {
@@ -113,11 +117,14 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
         return date;
     }
 
+
     private String dateParce(Date _date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String formatedDate = format.format(_date);
         return formatedDate;
     }
+
+
 
     public void updateData(ArrayList<SocialPost>socialPosts){
         items =socialPosts;
