@@ -5,13 +5,13 @@ package com.crowdmobile.reskintest.model;
  */
 public class SocialPost {
 
-    private String id, message, picture, created_time;
+    private String id, message, full_picture, created_time;
     private PostOwner postOwner;
 
     public SocialPost(String id, String description, String image, String create_date, PostOwner postOwner) {
         this.id = id;
         this.message = description;
-        this.picture = image;
+        this.full_picture = image;
         this.created_time = create_date;
         this.postOwner = postOwner;
     }
@@ -33,11 +33,11 @@ public class SocialPost {
     }
 
     public String getImage() {
-        return picture;
+        return full_picture;
     }
 
     public void setImage(String image) {
-        this.picture = image;
+        this.full_picture = image;
     }
 
     public PostOwner getPostOwner() {
@@ -61,7 +61,7 @@ public class SocialPost {
         return "SocialPost{" +
                 "id='" + id + '\'' +
                 ", message='" + message + '\'' +
-                ", picture='" + picture + '\'' +
+                ", picture='" + full_picture + '\'' +
                 ", created_time='" + created_time + '\'' +
                 ", postOwner=" + postOwner +
                 '}';

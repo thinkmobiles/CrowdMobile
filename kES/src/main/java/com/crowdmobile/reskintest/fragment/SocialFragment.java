@@ -27,7 +27,7 @@ import java.util.ArrayList;
 /**
  * Created by john on 18.08.15.
  */
-public class SocialFragment extends Fragment implements View.OnClickListener {
+public class SocialFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = SocialFragment.class.getSimpleName();
     private MainActivity activity;
@@ -40,6 +40,21 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
     private SocialAdapter socialAdapter;
     private ArrayList<SocialPost> posts;
     private LinearLayoutManager mLayoutManager;
+
+    @Override
+    public void onRefresh() {
+        if(state == State.FACEBOOK)
+            activity.executeFacebookGetPost();
+        else
+            activity.executeTwitterGetPost();
+    }
+
+    public void cancelRefresh(){
+        refreshLayout.setRefreshing(false);
+    }
+
+    private enum State {FACEBOOK, TWITTER};
+    private State state = State.FACEBOOK;
 
 
 //    private SocialFragment(){
@@ -99,6 +114,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
     private void setListener(){
         facebook.setOnClickListener(this);
         twitter.setOnClickListener(this);
+        refreshLayout.setOnRefreshListener(this);
     }
 
     @Override
@@ -106,41 +122,14 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
 
         switch (v.getId()){
             case R.id.btnFacebook:
+                state = State.FACEBOOK;
                 activity.executeFacebookGetPost();
-
-
                 break;
             case R.id.btnTwitter:
+                state = State.TWITTER;
                 activity.executeTwitterGetPost();
-
                 break;
 
-        }
-    }
-
-    public class AsynkFacebookFeed extends AsyncTask<String, Void, ArrayList<SocialPost>>{
-        ArrayList<SocialPost> socialPosts = new ArrayList<>();
-        ProgressDialog dialog = new ProgressDialog(activity);
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            dialog.setTitle("Wait...");
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.show();
-        }
-
-        @Override
-        protected ArrayList<SocialPost> doInBackground(String... params) {
-
-
-            return socialPosts;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<SocialPost> socialPosts) {
-            super.onPostExecute(socialPosts);
-            dialog.dismiss();
         }
     }
 
@@ -153,5 +142,17 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         activity.setFragment(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        activity.closeSession();
     }
 }

@@ -9,12 +9,18 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 
 import com.crowdmobile.reskintest.AppCfg;
+import com.crowdmobile.reskintest.MainActivity;
 import com.crowdmobile.reskintest.R;
 import com.crowdmobile.reskintest.TwitterActivity;
+import com.crowdmobile.reskintest.model.PostOwner;
+import com.crowdmobile.reskintest.model.SocialPost;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
@@ -24,6 +30,7 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
+import com.crowdmobile.reskintest.util.DateParser;
 
 /**
  * Created on 9/3/14.
@@ -283,6 +290,47 @@ public class TwitterUtil {
             tokenTask = null;
         }
     }
+
+    public ArrayList<SocialPost> getTwitterStatuses(MainActivity activity){
+        TwitterUtil twitterUtil = TwitterUtil.getInstance(activity);
+        ArrayList<SocialPost> socialPosts = new ArrayList<>();
+
+        try {
+            List<Status> statuses;
+            String user;
+
+            statuses = twitterUtil.getTwitter().getUserTimeline(Long.valueOf(activity.getResources().getString(R.string.kardashian_id_twitter)));
+
+            for (Status status : statuses) {
+                String image_data =null;
+
+
+                if(status.getMediaEntities()!=null&& status.getMediaEntities().length != 0)
+                    if(status.getMediaEntities()[0].getType().equals("photo"))
+                        image_data= status.getMediaEntities()[0].getMediaURLHttps();
+
+                String date = DateParser.dateParce(status.getCreatedAt());
+
+                PostOwner postOwner = new PostOwner(String.valueOf(status.getUser().getId()),status.getUser().getScreenName(),status.getUser().getProfileImageURLHttps());
+                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()),status.getText(), image_data , date ,postOwner);
+//                Log.e("TWITTER_TEXT", status.getUser().getScreenName() + " - " + status.getText() + status.getCreatedAt());
+
+                socialPosts.add(socialPost);
+                for (MediaEntity entity: status.getMediaEntities()){
+//                    Log.e("TWITTER_IMAGE", entity.getType() + ": " +entity.getMediaURLHttps());
+                }
+                Log.e("TWIT", socialPost.toString());
+
+            }
+        } catch (TwitterException te) {
+            te.printStackTrace();
+            System.out.println("Failed to get timeline: " + te.getMessage());
+        }
+
+        return socialPosts;
+    }
+
+
 
 
 }

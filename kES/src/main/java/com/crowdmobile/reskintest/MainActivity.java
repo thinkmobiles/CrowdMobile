@@ -36,14 +36,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.crowdmobile.reskintest.fragment.SocialFragment;
-import com.crowdmobile.reskintest.model.PostOwner;
 import com.crowdmobile.reskintest.model.SocialPost;
 import com.crowdmobile.reskintest.util.BadgeUtils;
-import com.crowdmobile.reskintest.util.FacebookLogin;
+import com.crowdmobile.reskintest.util.FacebookUtil;
 import com.crowdmobile.reskintest.util.HockeyUtil;
 import com.crowdmobile.reskintest.util.PreferenceUtils;
 import com.crowdmobile.reskintest.util.TwitterUtil;
 import com.crowdmobile.reskintest.widget.NavigationBar;
+import com.facebook.Response;
 import com.kes.AccountManager;
 import com.kes.FeedManager;
 import com.kes.KES;
@@ -55,14 +55,9 @@ import com.urbanairship.google.PlayServicesUtils;
 
 import net.hockeyapp.android.UpdateManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.json.JSONException;
 
-import twitter4j.MediaEntity;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationBar.NavigationCallback,MainActivityInterface {
@@ -91,10 +86,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private float startScaleFinal;
     private ImageView thumbView;
     private boolean layerVisible = false;
-    private FacebookLogin.FacebookCallback fbCallback;
+    private FacebookUtil.FacebookCallback fbCallback;
     private ProgressDialog progressDialog;
     private AlertDialog alertDialog;
-    private FacebookLogin facebookLogin;
+    private FacebookUtil facebookUtil;
     private TwitterUtil.LoginManager twitterLogin;
     TwitterUtil.TwitterLoginCallback twitterCallback;
     private SocialFragment socialFragment;
@@ -146,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         initFacebookCallback();
         initTwitterCallback();
 
-        facebookLogin = new FacebookLogin(this, fbCallback);
+        facebookUtil = new FacebookUtil(this, fbCallback);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT >= 21) {
@@ -224,33 +219,41 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
     public void executeFacebookGetPost(){
         progressDialog.setMessage(getString(R.string.fb_login));
-        facebookLogin.execute();
+        facebookUtil.executeGetPosts();
 
 
     }
 
     public void executeTwitterGetPost(){
         progressDialog.setMessage(getString(R.string.twitter_login));
-        twitterLogin.login(this);
+        if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated())
+            new AsyncTwitterPosts().execute();
+        else
+            twitterLogin.login(this);
     }
 
 
     private void initFacebookCallback() {
 
-        fbCallback = new FacebookLogin.FacebookCallback() {
+        fbCallback = new FacebookUtil.FacebookCallback() {
             @Override
-            public void onFail(FacebookLogin.Fail fail) {
+            public void onFail(FacebookUtil.Fail fail) {
                 //Log.d(TAG,"Facebook fail");
 
                 progressDialog.hide();
-                //if (fail == FacebookLogin.Fail.SessionOpen)
-                showError(R.string.error_fb_login);
+                //if (fail == FacebookUtil.Fail.SessionOpen)
+//                showError(R.string.error_fb_login);
             }
 
             @Override
-            public void onUserInfo(FacebookLogin.UserInfo userInfo) {
-                Log.d(TAG, "Facebook success");
+            public void onUserInfo(FacebookUtil.UserInfo userInfo) {
 
+
+            }
+
+            @Override
+            public void onStatuses(Response response ) {
+                new AsyncFacebookPosts(response).execute();
             }
         };
     }
@@ -260,14 +263,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
             @Override
             public void onSuccess(String token, String secret, long uid) {
-               KES.shared().getAccountManager().loginTwitter(token, secret, Long.toString(uid));
-               new AsyncTwitterPosts().execute();
+                new AsyncTwitterPosts().execute();
             }
 
             @Override
             public void onFailed(String message) {
-                //twitterLogin.loadUrl("about:blank");
-
                 progressDialog.hide();
                 alertDialog.setMessage(message);
                 alertDialog.show();
@@ -275,10 +275,58 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
             @Override
             public void onCanceled() {
-
                 progressDialog.hide();
             }
+
+
         };
+    }
+
+    private class AsyncFacebookPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
+        Response response;
+        AsyncFacebookPosts(Response response){
+            this.response =response;
+        }
+        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+
+//        @Override
+//        protected ArrayList<SocialPost> InBackground(Void... params) {
+//            Log.i(TAG, "doInBackground");
+//
+//            return null;
+//        }
+
+        @Override
+        protected void onPostExecute(ArrayList<SocialPost> result) {
+            Log.i(TAG, "onPostExecute");
+            socialFragment.setCallbackData(result);
+            progressDialog.dismiss();
+            socialFragment.cancelRefresh();
+        }
+
+        @Override
+        protected ArrayList<SocialPost> doInBackground(Void... params) {
+            ArrayList<SocialPost> socialPosts= new ArrayList<>();
+            try {
+                socialPosts = facebookUtil.getListPosts(response);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return socialPosts;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Log.i(TAG, "onPreExecute");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            Log.i(TAG, "onProgressUpdate");
+        }
+
     }
 
     private class AsyncTwitterPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
@@ -297,11 +345,12 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
             Log.i(TAG, "onPostExecute");
             socialFragment.setCallbackData(result);
             progressDialog.dismiss();
+            socialFragment.cancelRefresh();
         }
 
         @Override
         protected ArrayList<SocialPost> doInBackground(Void... params) {
-            return  getTwitterStatuses();
+            return  TwitterUtil.getInstance(MainActivity.this).getTwitterStatuses(MainActivity.this);
         }
 
         @Override
@@ -318,42 +367,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
     }
 
-    public ArrayList<SocialPost> getTwitterStatuses(){
-        TwitterUtil twitterUtil = TwitterUtil.getInstance(MainActivity.this);
-        ArrayList<SocialPost> socialPosts = new ArrayList<>();
 
-        try {
-            List<Status> statuses;
-            String user;
-
-                statuses = twitterUtil.getTwitter().getUserTimeline(Long.valueOf(getResources().getString(R.string.kardashian_id_twitter)));
-
-            for (Status status : statuses) {
-                String image_data =null;
-
-
-                if(status.getMediaEntities()!=null&& status.getMediaEntities().length != 0)
-                    if(status.getMediaEntities()[0].getType().equals("photo"))
-                        image_data= status.getMediaEntities()[0].getMediaURLHttps();
-
-                PostOwner postOwner = new PostOwner(String.valueOf(status.getUser().getId()),status.getUser().getScreenName(),status.getUser().getProfileImageURLHttps());
-                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()),status.getText(), image_data ,status.getCreatedAt().toString(),postOwner);
-//                Log.e("TWITTER_TEXT", status.getUser().getScreenName() + " - " + status.getText() + status.getCreatedAt());
-
-                socialPosts.add(socialPost);
-                for (MediaEntity entity: status.getMediaEntities()){
-//                    Log.e("TWITTER_IMAGE", entity.getType() + ": " +entity.getMediaURLHttps());
-                }
-                Log.e("TWIT", socialPost.toString());
-
-            }
-        } catch (TwitterException te) {
-            te.printStackTrace();
-            System.out.println("Failed to get timeline: " + te.getMessage());
-        }
-
-        return socialPosts;
-    }
 
     private void createProgressDialog(){
         progressDialog = new ProgressDialog(this);
@@ -371,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     {
         progressDialog.hide();
         alertDialog.setMessage(getString(resID));
-        alertDialog.show();
+//        alertDialog.show();
     }
 
         @Override
@@ -810,7 +824,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (KES.shared().getBillingManager().handleActivityResult(requestCode,resultCode,data))
             return;
-        if (facebookLogin.onActivityResult(this, requestCode, resultCode, data)) {
+        if (facebookUtil.onActivityResult(this, requestCode, resultCode, data)) {
             return;
         }
         if (twitterLogin.onActivityResult(requestCode,resultCode,data)) {
@@ -1017,6 +1031,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         set.start();
         mCurrentAnimator = set;
     }
-
+    public void closeSession(){
+        facebookUtil.release();
+    }
 
 }
