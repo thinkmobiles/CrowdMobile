@@ -10,16 +10,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import com.crowdmobile.reskintest.util.FacebookLogin;
+import com.crowdmobile.reskintest.model.SocialPost;
+import com.crowdmobile.reskintest.util.FacebookUtil;
 import com.crowdmobile.reskintest.util.HockeyUtil;
 import com.crowdmobile.reskintest.util.PreferenceUtils;
 import com.crowdmobile.reskintest.util.TwitterUtil;
 import com.crowdmobile.reskintest.widget.NavigationBar;
+import com.facebook.Response;
 import com.kes.AccountManager;
 import com.kes.KES;
 import com.kes.model.User;
 import com.kes.net.DataFetcher;
 import com.urbanairship.analytics.Analytics;
+
+import java.util.ArrayList;
 
 public class AccountActivity extends Activity {
 
@@ -29,20 +33,41 @@ public class AccountActivity extends Activity {
 	private AlertDialog alertDialog;
 
     private TwitterUtil.LoginManager twitterLogin;
-    private FacebookLogin facebookLogin;
+    private static FacebookUtil facebookUtil;
     private boolean openingMainActivity = false;
     private boolean isForeground = false;
     private boolean loginInProgress = false;
 
-    public static void logout(Context context)
+    public static void logout(Activity activity)
     {
         KES.shared().getAccountManager().logout();
-        PreferenceUtils.setSkipLogin(context,false);
-        TwitterUtil.getInstance(context).logout();
-        //FacebookRegHelper.logout(mSession.getContext());
+        PreferenceUtils.setSkipLogin(activity.getApplicationContext(), false);
+        TwitterUtil.getInstance(activity.getApplicationContext()).logout();
 
-        AccountActivity.open(context);
-        PreferenceUtils.setActiveFragment(context, NavigationBar.Attached.Feed.ordinal());
+        if (facebookUtil == null)
+            facebookUtil =new FacebookUtil(activity, new LogoutCallback());
+
+        facebookUtil.logout(activity.getApplicationContext());
+
+        AccountActivity.open(activity.getApplicationContext());
+        PreferenceUtils.setActiveFragment(activity.getApplicationContext(), NavigationBar.Attached.Feed.ordinal());
+    }
+
+    static class LogoutCallback implements FacebookUtil.FacebookCallback{
+        @Override
+        public void onFail(FacebookUtil.Fail fail) {
+
+        }
+
+        @Override
+        public void onUserInfo(FacebookUtil.UserInfo userInfo) {
+
+        }
+
+        @Override
+        public void onStatuses(Response response) {
+
+        }
     }
 
 	public static void open(Context context)
@@ -78,7 +103,7 @@ public class AccountActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_login);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
-		facebookLogin = new FacebookLogin(this, fbCallback);
+		facebookUtil = new FacebookUtil(this, fbCallback);
         btFacebook = findViewById(R.id.btFacebook);
 		btFacebook.setOnClickListener(onClickListener);
         btTwitter = findViewById(R.id.btTwitter);
@@ -160,7 +185,7 @@ public class AccountActivity extends Activity {
                     return;
                 loginInProgress = true;
                 progressDialog.setMessage(getString(R.string.fb_login));
-                facebookLogin.execute();
+                facebookUtil.execute();
             }
             else if (v == btTwitter) {
                 {
@@ -193,20 +218,25 @@ public class AccountActivity extends Activity {
         MainActivity.open(AccountActivity.this);
     }
 
-    FacebookLogin.FacebookCallback fbCallback = new FacebookLogin.FacebookCallback() {
+    FacebookUtil.FacebookCallback fbCallback = new FacebookUtil.FacebookCallback() {
         @Override
-        public void onFail(FacebookLogin.Fail fail) {
+        public void onFail(FacebookUtil.Fail fail) {
             //Log.d(TAG,"Facebook fail");
             loginInProgress = false;
             progressDialog.hide();
-            //if (fail == FacebookLogin.Fail.SessionOpen)
+            //if (fail == FacebookUtil.Fail.SessionOpen)
             showError(R.string.error_fb_login);
         }
 
         @Override
-        public void onUserInfo(FacebookLogin.UserInfo userInfo) {
+        public void onUserInfo(FacebookUtil.UserInfo userInfo) {
             Log.d(TAG,"Facebook success");
             KES.shared().getAccountManager().loginFacebook(userInfo.token,userInfo.uid);
+        }
+
+        @Override
+        public void onStatuses(Response response) {
+
         }
     };
 
@@ -272,7 +302,7 @@ public class AccountActivity extends Activity {
             return;
         }
 
-		if (facebookLogin.onActivityResult(this, requestCode, resultCode, data)) {
+		if (facebookUtil.onActivityResult(this, requestCode, resultCode, data)) {
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -282,7 +312,7 @@ public class AccountActivity extends Activity {
 	public void onDestroy()
 	{
         loginInProgress = false;
-        facebookLogin.release();
+//        facebookUtil.release();
 		progressDialog.dismiss();
 		alertDialog.dismiss();
         KES.shared().getAccountManager().unRegisterListener(accountListener);

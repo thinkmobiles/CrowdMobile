@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * Created by john on 18.08.15.
  */
-public class SocialFragment extends Fragment implements View.OnClickListener {
+public class SocialFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = SocialFragment.class.getSimpleName();
     private static final String CHANNELID = "UCEeYPJ1GSYWf0RXS8nARHjg";
@@ -61,6 +61,21 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
     private LinearLayoutManager mLayoutManager;
     private ArrayList<SocialPost> postsList;
 
+    @Override
+    public void onRefresh() {
+        if(state == State.FACEBOOK)
+            activity.executeFacebookGetPost();
+        else
+            activity.executeTwitterGetPost();
+    }
+
+//    private SocialFragment(){
+//    }
+//
+//    public static SocialFragment getInstance(){
+//        if
+//        SocialFragment socialFragment = new SocialFragment()
+//    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -103,6 +118,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
         youtube.setOnClickListener(this);
         arrowRight.setOnClickListener(this);
         recyclerView.addOnScrollListener(scrollListener);
+        refreshLayout.setOnRefreshListener(this);
     }
 
     private void setAdapter(){
@@ -128,11 +144,13 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
 
         switch (v.getId()){
             case R.id.btnFacebook:
+                state = State.FACEBOOK;
                 activity.executeFacebookGetPost();
                 selectCurrentTab(facebook);
 
                 break;
             case R.id.btnTwitter:
+                state = State.TWITTER;
                 activity.executeTwitterGetPost();
                 selectCurrentTab(twitter);
 
@@ -177,6 +195,18 @@ public class SocialFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         activity.setFragment(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        activity.closeSession();
     }
 
     RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {

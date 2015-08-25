@@ -2,21 +2,26 @@
 package com.crowdmobile.reskintest.util;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.crowdmobile.reskintest.MainActivity;
 import com.crowdmobile.reskintest.R;
+import com.crowdmobile.reskintest.fragment.SocialFragment;
 import com.crowdmobile.reskintest.model.PostOwner;
 import com.crowdmobile.reskintest.model.SocialPost;
 import com.facebook.FacebookException;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
+import com.facebook.Request.Callback;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.android.Facebook;
 import com.facebook.model.GraphUser;
 import com.google.gson.Gson;
 
@@ -28,9 +33,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class FacebookLogin {
+public class FacebookUtil {
 
-	public static String KARDASJAN_ID ="114696805612";
+	public static String KARDASHIAN_ID ="114696805612";
 	public ArrayList<SocialPost> socialPosts;
 
 	public static class UserInfo {
@@ -46,7 +51,10 @@ public class FacebookLogin {
 	public interface FacebookCallback {
 		public void onFail(Fail fail);
 		public void onUserInfo(UserInfo userInfo);
+		void onStatuses(Response response);
 	};
+
+
 	
 //	public final static String ACTION_FACEBOOKREG_FAIL = "trndy.facebookregfail";
 //	public final static String TAG_ERRORMSG = "errormsg";
@@ -71,8 +79,8 @@ public class FacebookLogin {
             session = null;
         }
 	}
-	
-	public FacebookLogin(Activity activity, FacebookCallback callback)
+
+	public FacebookUtil(Activity activity, FacebookCallback callback)
 	{
         mActivity = activity;
 		if (callback == null)
@@ -98,21 +106,45 @@ public class FacebookLogin {
 	
 	public void execute()
 	{
-		if (session != null)
-			throw new IllegalStateException();
-		//if (!isFBInstalled(callback.getActivity()))
-		//	return;
-		userInfoCalled = false;
-		try {
-			session = new Session(mActivity);
-			Session.setActiveSession(session);
-			session.openForRead(new Session.OpenRequest(mActivity)
-					.setPermissions(Arrays.asList("basic_info", "user_about_me", "user_birthday", "read_stream"))
-							.setCallback(new FBStatusCallback()));
-		} catch (FacebookException | NullPointerException e) {
-			closeSession();
-			callback.onFail(Fail.SessionOpen);
+		session = Session.getActiveSession();
+		if (session != null){
+			Request request = Request.newMeRequest(session,new GraphUserCallback());
+			request.executeAsync();
+		}else {
+
+			//if (!isFBInstalled(callback.getActivity()))
+			//	return;
+			userInfoCalled = false;
+			try {
+				session = new Session(mActivity);
+				Session.setActiveSession(session);
+				session.openForRead(new Session.OpenRequest(mActivity)
+						.setPermissions(Arrays.asList("basic_info", "user_about_me", "user_birthday", "read_stream"))
+						.setCallback(new FBStatusCallback()));
+			} catch (FacebookException | NullPointerException e) {
+				closeSession();
+				callback.onFail(Fail.SessionOpen);
+			}
 		}
+	}
+
+	public void executeGetPosts(){
+		session = Session.getActiveSession();
+		if(session!=null){
+			makeGetPostRequest(session);
+		}else{
+			try {
+				session = new Session(mActivity);
+				Session.getActiveSession().setActiveSession(session);
+				session.openForRead( new Session.OpenRequest(mActivity)
+						.setPermissions("basic_info", "read_stream")
+						.setCallback(new FBStatusForGetPosts()));
+			} catch (FacebookException | NullPointerException e) {
+				closeSession();
+				callback.onFail(Fail.SessionOpen);
+			}
+		}
+
 	}
 
     /*
@@ -141,33 +173,12 @@ public class FacebookLogin {
 		@Override
 		public void call(Session session, SessionState state, Exception exception) {
 
-			Request request;
+
 			if (state == SessionState.OPENED)
 			{
-				request = new Request(
-						Session.getActiveSession(),
-						"/"+ KARDASJAN_ID +"/feed",
-						null,
-						HttpMethod.GET,
-						new Request.Callback() {
-							@Override
-							public void onCompleted(Response response) {
-								try {
-									if(mActivity != null&& mActivity instanceof MainActivity) {
-										MainActivity mainActivity = (MainActivity) mActivity;
-										mainActivity.setSocialData(getListPosts(response));
-									}
-
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-				);
-				Bundle parameters = new Bundle();
-				parameters.putString("fields", "id,message,picture, created_time,from");
-				request.setParameters(parameters);
+				Request request = Request.newMeRequest(session,new GraphUserCallback());
 				request.executeAsync();
+				return;
 
 			}
 			if (exception != null || state.isClosed()) {
@@ -180,7 +191,51 @@ public class FacebookLogin {
 
 	};
 
-	private ArrayList<SocialPost> getListPosts(Response graphResponse) throws JSONException {
+	class FBStatusForGetPosts implements Session.StatusCallback{
+
+		@Override
+		public void call(Session session, SessionState state, Exception exception) {
+			if(state == SessionState.OPENED)
+			{
+				makeGetPostRequest(session);
+			}
+			if (exception != null || state.isClosed()) {
+				closeSession();
+				if (!userInfoCalled)
+					callback.onFail(Fail.Login);
+				return;
+			}
+		}
+	}
+
+	class GetPostRequest implements Callback{
+
+		@Override
+		public void onCompleted(Response response) {
+
+				callback.onStatuses(response);
+//				closeSession();
+		}
+	}
+
+	public void makeGetPostRequest(Session session){
+		Request request = new Request(
+				session,
+				"/"+ KARDASHIAN_ID +"/feed",
+				null,
+				HttpMethod.GET,
+				new GetPostRequest());
+
+
+		Bundle parameters = new Bundle();
+		parameters.putString("fields", "id,message,full_picture, created_time,from");
+		request.setParameters(parameters);
+		request.executeAsync();
+	}
+
+
+
+	public ArrayList<SocialPost> getListPosts(Response graphResponse) throws JSONException {
 		socialPosts = new ArrayList<>();
 
 		JSONArray jsonArray = graphResponse.getGraphObject().getInnerJSONObject().getJSONArray("data");
@@ -190,11 +245,14 @@ public class FacebookLogin {
 			String json = String.valueOf(jsonArray.getJSONObject(i));
 			SocialPost post = gson.fromJson(json, SocialPost.class);
 
+			String date = DateParser.dateParce(DateParser.getDateFacebook(post.getCreate_date()));
+
 			String ownerJson = String.valueOf(jsonArray.getJSONObject(i).getJSONObject("from"));
 			PostOwner postOwner = gson.fromJson(ownerJson,PostOwner.class);
 			postOwner.setIcon(mActivity.getResources().getString(R.string.base_url_facebook_avatar)
 					+ postOwner.getId() + mActivity.getResources().getString(R.string.second_url_facebook_avatar));
 			post.setPostOwner(postOwner);
+			post.setCreate_date(date);
 			Log.e("ZZZZ ", post.toString());
 			socialPosts.add(post);
 		}
@@ -247,7 +305,7 @@ public class FacebookLogin {
 							lastName, "facebook", uid, token);
 							*/
 
-			closeSession();
+//			closeSession();
 		}
 	};
 	

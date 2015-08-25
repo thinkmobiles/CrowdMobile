@@ -14,15 +14,11 @@ import android.widget.TextView;
 
 import com.crowdmobile.reskintest.R;
 import com.crowdmobile.reskintest.model.SocialPost;
-import com.crowdmobile.reskintest.util.FacebookLogin;
-import com.crowdmobile.reskintest.widget.FixedARImageView;
+import com.crowdmobile.reskintest.util.FacebookUtil;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -70,7 +66,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
 
 
 //        Picasso.with(activity.getApplicationContext())
-//                .load("http://graph.facebook.com/" + FacebookLogin.KARDASJAN_ID + "/picture?type=large")
+//                .load("http://graph.facebook.com/" + FacebookUtil.KARDASJAN_ID + "/picture?type=large")
 //                .fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
 
         holder.description.setText(post.getDescription());
@@ -85,14 +81,14 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
                 URL fbAvatarUrl = null;
                 Bitmap fbAvatarBitmap = null;
                 try {
-                    fbAvatarUrl = new URL("https://graph.facebook.com/"+FacebookLogin.KARDASJAN_ID +"/picture?type=large");
+                    fbAvatarUrl = new URL("https://graph.facebook.com/"+ FacebookUtil.KARDASHIAN_ID +"/picture?type=large");
                     fbAvatarBitmap = BitmapFactory.decodeStream(fbAvatarUrl.openConnection().getInputStream());
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.d("AVA", "http://graph.facebook.com/"+FacebookLogin.KARDASJAN_ID+"/picture");
+                Log.d("AVA", "http://graph.facebook.com/"+ FacebookUtil.KARDASHIAN_ID+"/picture");
                 return fbAvatarBitmap;
             }
 
@@ -106,23 +102,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
     }
 
 
-    private Date getTrueDateFormatFacebook(String _date) {
-        Date date = null;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-        try {
-            date = format.parse(_date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
 
-
-    private String dateParce(Date _date) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String formatedDate = format.format(_date);
-        return formatedDate;
-    }
 
 
 
