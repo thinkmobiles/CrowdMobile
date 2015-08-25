@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private FacebookUtil.FacebookCallback fbCallback;
     private ProgressDialog progressDialog;
     private AlertDialog alertDialog;
-    private FacebookLogin facebookLogin;
+//    private FacebookLogin facebookLogin;
     private YoutubeUtil youtubeUtil;
     private FacebookUtil facebookUtil;
     private TwitterUtil.LoginManager twitterLogin;
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
     public void executeFacebookGetPost(){
         progressDialog.setMessage(getString(R.string.fb_login));
-        facebookLogin.execute();
+//        facebookLogin.execute();
         facebookUtil.executeGetPosts();
 
 
@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
     public void executeTwitterGetPost(){
         progressDialog.setMessage(getString(R.string.twitter_login));
+
         if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated())
             new AsyncTwitterPosts().execute();
         else
@@ -317,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         protected void onPostExecute(ArrayList<SocialPost> result) {
             Log.i(TAG, "onPostExecute");
             socialFragment.setCallbackData(result);
+//            socialFragment.updateFeedFacebook(result);
             progressDialog.dismiss();
             socialFragment.cancelRefresh();
         }
@@ -361,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         protected void onPostExecute(ArrayList<SocialPost> result) {
             Log.i(TAG, "onPostExecute");
             socialFragment.setCallbackData(result);
+//            socialFragment.updateFeedTwitter(result);
             progressDialog.dismiss();
             socialFragment.cancelRefresh();
         }

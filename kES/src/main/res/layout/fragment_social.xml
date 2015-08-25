@@ -11,35 +11,38 @@
         android:background="@color/navbarbackground"
         android:orientation="vertical">
         
-        <TextView
+        <ImageView
             android:id="@+id/btnFacebook"
             android:gravity="center"
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="F\na\nc\ne\nb\no\no\nk"/>
+            android:src="@drawable/facebook_small"
+            android:layout_gravity="center_horizontal" />
         <View
             android:layout_height="1dp"
             android:layout_width="match_parent"
             android:background="@color/navbarseparator"/>
-        <TextView
+        <ImageView
             android:id="@+id/btnTwitter"
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="T\nw\ni\nt\nt\ne\nr"/>
+            android:src="@drawable/twitter_small"
+            android:layout_gravity="center_horizontal" />
         <View
             android:layout_height="1dp"
             android:layout_width="match_parent"
             android:background="@color/navbarseparator"/>
-        <TextView
+        <ImageView
             android:id="@+id/btnYoutube"
             android:gravity="center"
             android:layout_width="30dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Y\no\nu\nt\nu\nb\ne"/>
+            android:src="@drawable/youtube_small"
+            android:layout_gravity="center_horizontal" />
     </LinearLayout>
 
     <include

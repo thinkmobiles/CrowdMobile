@@ -51,7 +51,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private static final String TAG = SocialFragment.class.getSimpleName();
     private static final String CHANNELID = "UCEeYPJ1GSYWf0RXS8nARHjg";
     private MainActivity activity;
-    private TextView facebook,twitter, youtube;
+    private ImageView facebook,twitter, youtube;
     private ImageView arrowRight;
     private LinearLayout tabsContainer;
     private SwipeRefreshLayout refreshLayout;
@@ -59,7 +59,10 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private ProgressBar progressBar;
     private SocialAdapter socialAdapter;
     private LinearLayoutManager mLayoutManager;
-    private ArrayList<SocialPost> postsList;
+    private ArrayList<SocialPost> postsList, feedFacebook, feedTwitter, feedYoutube;
+    private State state = State.FACEBOOK;
+
+    private enum State{FACEBOOK, TWITTER, YOUTUBE}
 
     @Override
     public void onRefresh() {
@@ -67,6 +70,27 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
             activity.executeFacebookGetPost();
         else
             activity.executeTwitterGetPost();
+    }
+
+    public void cancelRefresh(){
+        refreshLayout.setRefreshing(false);
+    }
+
+    public void updateFeedFacebook(ArrayList<SocialPost> list){
+        feedFacebook.addAll(list);
+        postsList = feedFacebook;
+        updateList(postsList);
+    }
+
+    public void updateFeedTwitter(ArrayList<SocialPost> list){
+        feedTwitter.addAll(list);
+        postsList = feedTwitter;
+        updateList(postsList);
+    }
+
+    public void updateFeedYoutube(ArrayList<SocialPost> list){
+        feedYoutube.addAll(list);
+        updateList(feedYoutube);
     }
 
 //    private SocialFragment(){
@@ -89,7 +113,9 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         findUI(root);
         setListener();
         setAdapter();
+        initFeeds();
         activity.executeYoutubeGetToken();
+        selectFacebook();
 
         return root;
     }
@@ -99,9 +125,9 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     }
 
     private void findUI(View v){
-        facebook = (TextView)v.findViewById(R.id.btnFacebook);
-        twitter = (TextView)v.findViewById(R.id.btnTwitter);
-        youtube = (TextView)v.findViewById(R.id.btnYoutube);
+        facebook = (ImageView)v.findViewById(R.id.btnFacebook);
+        twitter = (ImageView)v.findViewById(R.id.btnTwitter);
+        youtube = (ImageView)v.findViewById(R.id.btnYoutube);
         arrowRight = (ImageView) v.findViewById(R.id.btnArrowRight);
         refreshLayout = (SwipeRefreshLayout)v.findViewById(R.id.swipe_container);
         recyclerView = (RecyclerView)v.findViewById(R.id.rvFeed);
@@ -122,20 +148,33 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     }
 
     private void setAdapter(){
-        ArrayList<SocialPost> postsList=new ArrayList<>();
-        for(int i=0;i<10; i++){
-            PostOwner postOwner = new PostOwner(String.valueOf(i),"FN"+String.valueOf(i),null);
-            SocialPost socialPost = new SocialPost(String.valueOf(i),"desc"+String.valueOf(i),null, null, postOwner);
-            postsList.add(socialPost);
-        }
-
+        postsList=new ArrayList<>();
         socialAdapter = new SocialAdapter(activity, postsList);
         recyclerView.setAdapter(socialAdapter);
     }
 
-    public void updateList(ArrayList<SocialPost> list){
-        postsList.addAll(list);
-        socialAdapter.updateData(postsList);
+    private void initFeeds(){
+        feedFacebook = new ArrayList<>();
+        feedTwitter = new ArrayList<>();
+        feedYoutube = new ArrayList<>();
+    }
+
+    public void clearFeed(){
+        switch (state){
+            case FACEBOOK:
+                feedFacebook.clear();
+                break;
+            case TWITTER:
+                feedTwitter.clear();
+                break;
+            case YOUTUBE:
+                feedYoutube.clear();
+                break;
+        }
+    }
+
+    private void updateList(ArrayList<SocialPost> list){
+        socialAdapter.updateData(list);
     }
 
 
@@ -144,20 +183,13 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
 
         switch (v.getId()){
             case R.id.btnFacebook:
-                state = State.FACEBOOK;
-                activity.executeFacebookGetPost();
-                selectCurrentTab(facebook);
-
+                selectFacebook();
                 break;
             case R.id.btnTwitter:
-                state = State.TWITTER;
-                activity.executeTwitterGetPost();
-                selectCurrentTab(twitter);
-
+                selectTwitter();
                 break;
             case R.id.btnYoutube:
-                activity.executeYoutubeGetPost(this);
-                selectCurrentTab(youtube);
+                selectYoutube();
                 break;
             case R.id.btnArrowRight:
                 setTabsVisibility(true);
@@ -166,13 +198,44 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         }
     }
 
-    private void selectCurrentTab(TextView textView){
-        facebook.setTextColor(activity.getResources().getColor(R.color.black));
-        twitter.setTextColor(activity.getResources().getColor(R.color.black));
-        youtube.setTextColor(activity.getResources().getColor(R.color.black));
+    private void selectFacebook(){
+        state = State.FACEBOOK;
+        if(isFilledList(feedFacebook)){
+            updateList(feedFacebook);
+        } else {
+            activity.executeFacebookGetPost();
+        }
 
-        textView.setTextColor(activity.getResources().getColor(R.color.white));
+//        selectCurrentTab(facebook);
     }
+
+    private void selectTwitter(){
+        state = State.TWITTER;
+        if(isFilledList(feedTwitter)){
+            updateList(feedTwitter);
+        } else {
+            activity.executeTwitterGetPost();
+        }
+//        selectCurrentTab(twitter);
+    }
+
+    private void selectYoutube(){
+        state = State.YOUTUBE;
+        activity.executeYoutubeGetPost(this);
+//        selectCurrentTab(youtube);
+    }
+
+    private boolean isFilledList(ArrayList<SocialPost> list){
+        return (list != null && list.size() != 0);
+    }
+
+//    private void selectCurrentTab(TextView textView){
+//        facebook.setTextColor(activity.getResources().getColor(R.color.black));
+//        twitter.setTextColor(activity.getResources().getColor(R.color.black));
+//        youtube.setTextColor(activity.getResources().getColor(R.color.black));
+//
+//        textView.setTextColor(activity.getResources().getColor(R.color.white));
+//    }
 
     private void setTabsVisibility(boolean isVisible){
         if(isVisible){

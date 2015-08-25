@@ -37,7 +37,6 @@ public class YoutubeUtil {
 
     private static final String TAG = YoutubeUtil.class.getSimpleName();
     private static final String CHANNELID = "UCEeYPJ1GSYWf0RXS8nARHjg";
-    private ArrayList<SocialPost> socialPosts;
     private String nextPageToken;
     private AsynkYoutubeFeed youtubeTask;
     private MainActivity activity;
@@ -71,7 +70,6 @@ public class YoutubeUtil {
     }
 
     public void executeGetPosts(SocialFragment fragment){
-        socialPosts = new ArrayList<>();
         youtubeTask = new AsynkYoutubeFeed();
         youtubeTask.execute(
                 "https://www.googleapis.com/youtube/v3/channels?" +
@@ -88,8 +86,8 @@ public class YoutubeUtil {
                         "&access_token=" + PreferenceUtils.getYoutubeToken(activity)
         );
         try {
-            socialPosts.addAll(youtubeTask.get());
-            fragment.setCallbackData(socialPosts);
+//            fragment.updateFeedYoutube(youtubeTask.get());
+            fragment.setCallbackData(youtubeTask.get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -115,8 +113,8 @@ public class YoutubeUtil {
                             "&access_token=" + PreferenceUtils.getYoutubeToken(activity)
             );
             try {
-                socialPosts.addAll(youtubeTask.get());
-                fragment.setCallbackData(socialPosts);
+//                fragment.updateFeedYoutube(youtubeTask.get());
+                fragment.setCallbackData(youtubeTask.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -147,27 +145,33 @@ public class YoutubeUtil {
                 httpGet.setURI(URI.create(params[1]));
                 response = httpclient.execute(httpGet);
 
-                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                YoutubeResponse feedResponse = gson.fromJson(reader, YoutubeResponse.class);
-                reader.close();
-
-                pageToken = feedResponse.getNextPageToken();
-                List<YoutubeResponse.Items> list = feedResponse.getItems();
-                for(YoutubeResponse.Items item : list){
-                    PostOwner postOwner = new PostOwner(
-                            null,
-                            channelResponse.getItems().get(0).getSnippet().getTitle(),
-                            channelResponse.getItems().get(0).getSnippet().getThumbnails().getHigh().getUrl()
-                    );
-                    SocialPost socialPost = new SocialPost(
-                            null,
-                            "",
-                            item.getSnippet().getThumbnails().getHigh().getUrl(),
-                            item.getSnippet().getPublishedAt(),
-                            postOwner
-                    );
-                    socialPosts.add(socialPost);
+                BufferedReader reader2 = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+//                YoutubeResponse feedResponse = gson.fromJson(reader2, YoutubeResponse.class);
+                String temp, line = "";
+                while ((temp = reader2.readLine()) != null){
+                    line += temp;
                 }
+                reader2.close();
+
+                Log.d("resp", line);
+
+//                pageToken = feedResponse.getNextPageToken();
+//                List<YoutubeResponse.Items> list = feedResponse.getItems();
+//                for(YoutubeResponse.Items item : list){
+//                    PostOwner postOwner = new PostOwner(
+//                            null,
+//                            channelResponse.getItems().get(0).getSnippet().getTitle(),
+//                            channelResponse.getItems().get(0).getSnippet().getThumbnails().getHigh().getUrl()
+//                    );
+//                    SocialPost socialPost = new SocialPost(
+//                            null,
+//                            "",
+//                            item.getSnippet().getThumbnails().getHigh().getUrl(),
+//                            DateParser.dateParce(DateParser.getDateFacebook(item.getSnippet().getPublishedAt())),
+//                            postOwner
+//                    );
+//                    socialPosts.add(socialPost);
+//                }
 
 
             } catch (IOException e) {

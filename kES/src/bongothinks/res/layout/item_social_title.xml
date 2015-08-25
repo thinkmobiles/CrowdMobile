@@ -36,9 +36,9 @@
             android:paddingLeft="@dimen/item_header_sidepadding"
             android:text="35 min"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true" />
 
     </RelativeLayout>
     <RelativeLayout
@@ -47,7 +47,8 @@
         <View
             android:id="@+id/messagePlaceholder"
             android:layout_width="match_parent"
-            android:layout_height="20dp"/>
+            android:layout_height="20dp"
+            android:visibility="gone"/>
         <TextView
             android:padding="@dimen/item_header_icon_margin"
             android:textColor="@color/questionFont"
@@ -56,6 +57,7 @@
             android:ellipsize="end"
             android:textSize="@dimen/item_text_size"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
     </RelativeLayout>
 </LinearLayout>

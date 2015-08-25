@@ -299,6 +299,7 @@ public class TwitterUtil {
             List<Status> statuses;
             String user;
 
+
             statuses = twitterUtil.getTwitter().getUserTimeline(Long.valueOf(activity.getResources().getString(R.string.kardashian_id_twitter)));
 
             for (Status status : statuses) {

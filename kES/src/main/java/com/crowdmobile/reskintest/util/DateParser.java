@@ -32,7 +32,7 @@ public abstract class DateParser {
 
 
     public static String dateParce(Date _date) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
         String formatedDate = format.format(_date);
         return formatedDate;
     }
