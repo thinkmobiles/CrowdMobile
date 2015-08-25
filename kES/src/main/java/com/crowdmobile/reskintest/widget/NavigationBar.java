@@ -35,7 +35,7 @@ public class NavigationBar {
 		public NavigationBar getNavigationBar();
 	}
 
-	public enum Attached {Empty, Feed, MyFeed, Compose, Checkout, Social};
+	public enum Attached { Empty,Social, Feed, MyFeed, Compose, Checkout};
 	private ImageView btFeed,btMyFeed,btCompose,btCheckout, btnSocial;
 	private AppCompatActivity mActivity;
 	private Attached attached = Attached.Empty;
