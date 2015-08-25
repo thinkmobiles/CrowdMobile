@@ -52,5 +52,6 @@
     <string name="key_birthdate" translatable="false">key_birthdate</string>
     <string name="key_relationship" translatable="false">key_relationship</string>
     <string name="key_skip_nopic" translatable="false">key_skip_nopic</string>
+    <string name="key_youtube_token" translatable="false">key_youtube_token</string>
 
 </resources>

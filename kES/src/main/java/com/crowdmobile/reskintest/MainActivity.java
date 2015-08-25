@@ -1,5 +1,7 @@
 package com.crowdmobile.reskintest;
 
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -43,6 +45,7 @@ import com.crowdmobile.reskintest.util.FacebookLogin;
 import com.crowdmobile.reskintest.util.HockeyUtil;
 import com.crowdmobile.reskintest.util.PreferenceUtils;
 import com.crowdmobile.reskintest.util.TwitterUtil;
+import com.crowdmobile.reskintest.util.YoutubeUtil;
 import com.crowdmobile.reskintest.widget.NavigationBar;
 import com.kes.AccountManager;
 import com.kes.FeedManager;
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private ProgressDialog progressDialog;
     private AlertDialog alertDialog;
     private FacebookLogin facebookLogin;
+    private YoutubeUtil youtubeUtil;
     private TwitterUtil.LoginManager twitterLogin;
     TwitterUtil.TwitterLoginCallback twitterCallback;
     private SocialFragment socialFragment;
@@ -148,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
         facebookLogin = new FacebookLogin(this, fbCallback);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
+        youtubeUtil = new YoutubeUtil(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
@@ -225,8 +230,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     public void executeFacebookGetPost(){
         progressDialog.setMessage(getString(R.string.fb_login));
         facebookLogin.execute();
-
-
     }
 
     public void executeTwitterGetPost(){
@@ -234,6 +237,16 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         twitterLogin.login(this);
     }
 
+    public  void executeYoutubeGetToken(){
+        youtubeUtil.initYoutube();
+    }
+    public void executeYoutubeGetPost(SocialFragment fragment){
+        youtubeUtil.executeGetPosts(fragment);
+    }
+
+    public void executeYoutubeGetNextPost(SocialFragment fragment){
+        youtubeUtil.getNextPosts(fragment);
+    }
 
     private void initFacebookCallback() {
 

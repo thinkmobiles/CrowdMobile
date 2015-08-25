@@ -5,33 +5,58 @@
 
 
     <LinearLayout
-        android:id="@+id/tabLinear"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:id="@+id/tabsSocial"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/navbarbackground"
+        android:orientation="vertical">
         
         <TextView
             android:id="@+id/btnFacebook"
             android:gravity="center"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Facebook"/>
+            android:text="F\na\nc\ne\nb\no\no\nk"/>
+        <View
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:background="@color/navbarseparator"/>
         <TextView
             android:id="@+id/btnTwitter"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Twitter"/>
+            android:text="T\nw\ni\nt\nt\ne\nr"/>
+        <View
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:background="@color/navbarseparator"/>
+        <TextView
+            android:id="@+id/btnYoutube"
+            android:gravity="center"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Y\no\nu\nt\nu\nb\ne"/>
     </LinearLayout>
 
     <include
-        android:layout_below="@id/tabLinear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        layout="@layout/fragment_feed">
+        layout="@layout/fragment_feed"
+        android:layout_toRightOf="@+id/tabsSocial">
 
     </include>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnArrowRight"
+        android:layout_toRightOf="@+id/tabsSocial"
+        android:src="@drawable/arrow_right"
+        android:layout_margin="10dp"
+        android:visibility="gone" />
 
 </RelativeLayout>

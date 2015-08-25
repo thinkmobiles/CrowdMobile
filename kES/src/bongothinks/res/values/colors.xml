@@ -8,6 +8,7 @@
     <!-- Compose -->
 
     <item name="white" type="color">#fff</item>
+    <item name="black" type="color">#000</item>
     <item name="appTitleColor" type="color">#0a93ff</item>
     <item name="colorPrimary" type="color">#096fc2</item>
 

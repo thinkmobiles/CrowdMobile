@@ -91,5 +91,16 @@ public class PreferenceUtils {
                 .getBoolean(context.getString(R.string.key_skip_nopic), false);
     }
 
+    public static void setYoutubeToken(Context context, String token){
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putString(context.getString(R.string.key_youtube_token), token)
+                .commit();
+    }
+
+    public static String getYoutubeToken(Context context){
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(context.getString(R.string.key_youtube_token), null);
+    }
+
 
 }
