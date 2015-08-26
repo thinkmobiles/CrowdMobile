@@ -2,46 +2,26 @@ package com.crowdmobile.reskintest.fragment;
 
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.crowdmobile.reskintest.MainActivity;
 import com.crowdmobile.reskintest.R;
 import com.crowdmobile.reskintest.adapter.SocialAdapter;
-import com.crowdmobile.reskintest.model.PostOwner;
 import com.crowdmobile.reskintest.model.SocialPost;
-import com.crowdmobile.reskintest.model.YoutubeResponse;
 import com.crowdmobile.reskintest.util.AnimationUtils;
-import com.crowdmobile.reskintest.util.PreferenceUtils;
-import com.crowdmobile.reskintest.util.YoutubeUtil;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by john on 18.08.15.
@@ -61,15 +41,20 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private LinearLayoutManager mLayoutManager;
     private ArrayList<SocialPost> postsList, feedFacebook, feedTwitter, feedYoutube;
     private State state = State.FACEBOOK;
+    private int twittre_paging =1;
 
     private enum State{FACEBOOK, TWITTER, YOUTUBE}
 
     @Override
     public void onRefresh() {
-        if(state == State.FACEBOOK)
+        if(state == State.FACEBOOK) {
+            activity.clearFacebookNextInfo();
             activity.executeFacebookGetPost();
-        else
-            activity.executeTwitterGetPost();
+        }
+        else {
+            activity.clearTwitterNextInfo();
+            activity.executeTwitterGetPost(twittre_paging);
+        }
     }
 
     public void cancelRefresh(){
@@ -214,7 +199,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         if(isFilledList(feedTwitter)){
             updateList(feedTwitter);
         } else {
-            activity.executeTwitterGetPost();
+            activity.executeTwitterGetPost(twittre_paging);
         }
 //        selectCurrentTab(twitter);
     }

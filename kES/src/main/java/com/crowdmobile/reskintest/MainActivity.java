@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private boolean layerVisible = false;
     private FacebookUtil.FacebookCallback fbCallback;
     private ProgressDialog progressDialog;
+    private ProgressDialog progDialog;
     private AlertDialog alertDialog;
 //    private FacebookLogin facebookLogin;
     private YoutubeUtil youtubeUtil;
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private TwitterUtil.LoginManager twitterLogin;
     TwitterUtil.TwitterLoginCallback twitterCallback;
     private SocialFragment socialFragment;
+    private  int paging=1;
 
 
     public static void open(Context context)
@@ -232,13 +234,24 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
     }
 
-    public void executeTwitterGetPost(){
+    public void clearTwitterNextInfo(){
+        TwitterUtil.getInstance(getApplicationContext()).clearPaging();
+    }
+
+    public void clearFacebookNextInfo(){
+        facebookUtil.clearNextToken();
+    }
+
+    public void executeTwitterGetPost(int paging){
+        this.paging =paging;
         progressDialog.setMessage(getString(R.string.twitter_login));
 
-        if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated())
-            new AsyncTwitterPosts().execute();
-        else
+        if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated()) {
+            new AsyncTwitterPosts(progressDialog, paging).execute();
+        } else {
+            progressDialog.show();
             twitterLogin.login(this);
+        }
     }
 
     public  void executeYoutubeGetToken(){
@@ -282,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
             @Override
             public void onSuccess(String token, String secret, long uid) {
-                new AsyncTwitterPosts().execute();
+                new AsyncTwitterPosts(progressDialog,paging).execute();
             }
 
             @Override
@@ -294,7 +307,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
             @Override
             public void onCanceled() {
-
                 progressDialog.hide();
             }
         };
@@ -317,8 +329,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         @Override
         protected void onPostExecute(ArrayList<SocialPost> result) {
             Log.i(TAG, "onPostExecute");
-            socialFragment.setCallbackData(result);
-//            socialFragment.updateFeedFacebook(result);
+//            socialFragment.setCallbackData(result);
+            socialFragment.updateFeedFacebook(result);
             progressDialog.dismiss();
             socialFragment.cancelRefresh();
         }
@@ -349,6 +361,12 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     }
 
     private class AsyncTwitterPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
+        ProgressDialog dialog;
+        int pagin;
+        AsyncTwitterPosts(ProgressDialog progressDialog, int pagin){
+            dialog= progressDialog;
+            this.pagin = pagin;
+        }
 
         ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
 
@@ -362,15 +380,16 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         @Override
         protected void onPostExecute(ArrayList<SocialPost> result) {
             Log.i(TAG, "onPostExecute");
-            socialFragment.setCallbackData(result);
-//            socialFragment.updateFeedTwitter(result);
+//            socialFragment.setCallbackData(result);
+            socialFragment.updateFeedTwitter(result);
             progressDialog.dismiss();
+            dialog.dismiss();
             socialFragment.cancelRefresh();
         }
 
         @Override
         protected ArrayList<SocialPost> doInBackground(Void... params) {
-            return  TwitterUtil.getInstance(MainActivity.this).getTwitterStatuses(MainActivity.this);
+            return  TwitterUtil.getInstance(MainActivity.this).getTwitterStatuses(MainActivity.this, pagin);
         }
 
         @Override
@@ -388,8 +407,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     }
 
     private void createProgressDialog(){
+        progDialog = new ProgressDialog(this);
+        progDialog.setCancelable(false);
+        progDialog.setIndeterminate(true);
         progressDialog = new ProgressDialog(this);
-        progressDialog.setTitle(R.string.wait);
+//        progressDialog.setTitle(R.string.wait);
         progressDialog.setCancelable(false);
         progressDialog.setIndeterminate(true);
 

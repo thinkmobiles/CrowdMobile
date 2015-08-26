@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,12 +27,22 @@ import com.facebook.model.GraphUser;
 import com.google.gson.Gson;
 
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FacebookUtil {
 
@@ -65,6 +76,13 @@ public class FacebookUtil {
 	private FacebookCallback callback;
 	private Session session;
 	private boolean userInfoCalled;
+	private String nextToken="";
+	private String until="";
+
+	public  void clearNextToken(){
+		nextToken="";
+		until="";
+	}
 
 	public void logout(Context context)
 	{
@@ -129,9 +147,10 @@ public class FacebookUtil {
 	}
 
 	public void executeGetPosts(){
+
 		session = Session.getActiveSession();
 		if(session!=null){
-			makeGetPostRequest(session);
+			makeGetPostRequest(session, nextToken, until);
 		}else{
 			try {
 				session = new Session(mActivity);
@@ -197,7 +216,7 @@ public class FacebookUtil {
 		public void call(Session session, SessionState state, Exception exception) {
 			if(state == SessionState.OPENED)
 			{
-				makeGetPostRequest(session);
+				makeGetPostRequest(session, nextToken, until);
 			}
 			if (exception != null || state.isClosed()) {
 				closeSession();
@@ -218,7 +237,7 @@ public class FacebookUtil {
 		}
 	}
 
-	public void makeGetPostRequest(Session session){
+	public void makeGetPostRequest(Session session, String nextPaginToken, String until ){
 		Request request = new Request(
 				session,
 				"/"+ KARDASHIAN_ID +"/feed",
@@ -229,6 +248,9 @@ public class FacebookUtil {
 
 		Bundle parameters = new Bundle();
 		parameters.putString("fields", "id,message,full_picture, created_time,from");
+		parameters.putString("paging_token", nextPaginToken);
+		parameters.putString("limit", "10");
+		parameters.putString("until", until);
 		request.setParameters(parameters);
 		request.executeAsync();
 	}
@@ -238,10 +260,22 @@ public class FacebookUtil {
 	public ArrayList<SocialPost> getListPosts(Response graphResponse) throws JSONException {
 		socialPosts = new ArrayList<>();
 
+
 		JSONArray jsonArray = graphResponse.getGraphObject().getInnerJSONObject().getJSONArray("data");
+		JSONObject nextToken = graphResponse.getGraphObject().getInnerJSONObject().getJSONObject("paging");
+		String url = nextToken.getString("next");
+		Log.e("URL", url);
+
+		try {
+			this.nextToken = extractParamsFromURL(url).get("__paging_token");
+			this.until = extractParamsFromURL(url).get("until");
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+
 		Gson gson = new Gson();
 
-		for (int i = 0; i < jsonArray.length(); i++) {
+		for (int i = 0; i < jsonArray.length()-1; i++) {
 			String json = String.valueOf(jsonArray.getJSONObject(i));
 			SocialPost post = gson.fromJson(json, SocialPost.class);
 
@@ -266,6 +300,14 @@ public class FacebookUtil {
 //		pagerAdapter.notifyDataSetChanged();
 
 		return socialPosts;
+	}
+	private Map<String, String> extractParamsFromURL(final String url) throws URISyntaxException {
+		return new HashMap<String, String>() {{
+			for(NameValuePair p : URLEncodedUtils.parse(new URI(url), "UTF-8")) {
+				put(p.getName(), p.getValue());
+				Log.e("MAP",p.getName() + " " + p.getValue());
+			}
+		}};
 	}
 
 	class GraphUserCallback implements Request.GraphUserCallback {
