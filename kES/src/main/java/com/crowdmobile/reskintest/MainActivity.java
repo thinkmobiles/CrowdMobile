@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     }
 
     public void executeTwitterGetPost(int paging){
-        this.paging =paging;
+        this.paging = paging;
         progressDialog.setMessage(getString(R.string.twitter_login));
 
         if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated()) {
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         AsyncFacebookPosts(Response response){
             this.response =response;
         }
-//        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
 
 //        @Override
 //        protected ArrayList<SocialPost> InBackground(Void... params) {
@@ -327,9 +327,9 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         protected void onPostExecute(ArrayList<SocialPost> result) {
             Log.i(TAG, "onPostExecute");
 //            socialFragment.setCallbackData(result);
-//            socialFragment.clearFeed();
+            socialFragment.clearFeed();
             socialFragment.updateFeedFacebook(result);
-//            progressDialog.dismiss();
+            progressDialog.dismiss();
             socialFragment.cancelRefresh();
         }
 
@@ -379,6 +379,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         protected void onPostExecute(ArrayList<SocialPost> result) {
             Log.i(TAG, "onPostExecute");
 //            socialFragment.setCallbackData(result);
+            socialFragment.clearFeed();
             socialFragment.updateFeedTwitter(result);
 //            progressDialog.dismiss();
             dialog.dismiss();

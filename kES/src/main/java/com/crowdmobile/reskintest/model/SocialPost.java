@@ -8,6 +8,11 @@ public class SocialPost {
     private String id, message, full_picture, created_time;
     private PostOwner postOwner;
 
+    public SocialPost() {
+        this.postOwner = new PostOwner();
+        this.id = "-1";
+    }
+
     public SocialPost(String id, String description, String image, String create_date, PostOwner postOwner) {
         this.id = id;
         this.message = description;

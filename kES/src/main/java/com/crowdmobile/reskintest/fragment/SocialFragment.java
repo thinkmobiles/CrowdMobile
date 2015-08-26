@@ -2,25 +2,60 @@ package com.crowdmobile.reskintest.fragment;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.crowdmobile.reskintest.MainActivity;
 import com.crowdmobile.reskintest.R;
 import com.crowdmobile.reskintest.adapter.SocialAdapter;
+import com.crowdmobile.reskintest.model.PostOwner;
 import com.crowdmobile.reskintest.model.SocialPost;
+import com.crowdmobile.reskintest.model.YoutubeResponse;
 import com.crowdmobile.reskintest.util.AnimationUtils;
+import com.crowdmobile.reskintest.util.PreferenceUtils;
+import com.crowdmobile.reskintest.util.YoutubeUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by john on 18.08.15.
@@ -39,21 +74,27 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private SocialAdapter socialAdapter;
     private LinearLayoutManager mLayoutManager;
     private ArrayList<SocialPost> postsList, feedFacebook, feedTwitter, feedYoutube;
+    private View footer;
+    private Button btnRetry;
+    private ProgressBar progress;
     private State state = State.FACEBOOK;
     private int twittre_paging = 1;
+    private int twittre_paging = 1;
+    private boolean isRefresh = false;
 
     private enum State {FACEBOOK, TWITTER, YOUTUBE}
 
     @Override
     public void onRefresh() {
-        switch (state) {
+        isRefresh = true;
+        switch (state){
             case FACEBOOK:
                 activity.clearFacebookNextInfo();
                 activity.executeFacebookGetPost();
                 break;
             case TWITTER:
                 activity.clearTwitterNextInfo();
-                activity.executeTwitterGetPost(twittre_paging);
+                activity.executeTwitterGetPost(1);
                 break;
             case YOUTUBE:
                 activity.executeYoutubeGetPost(this);
@@ -65,7 +106,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         refreshLayout.setRefreshing(false);
     }
 
-    public void updateFeedFacebook(ArrayList<SocialPost> list) {
+    public void updateFeedFacebook(ArrayList<SocialPost> list){
         feedFacebook.addAll(list);
         postsList = feedFacebook;
         updateList(postsList);
@@ -79,6 +120,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
 
     public void updateFeedYoutube(ArrayList<SocialPost> list) {
         feedYoutube.addAll(list);
+        postsList = feedYoutube;
         updateList(feedYoutube);
     }
 
@@ -95,23 +137,19 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         setListener();
         setAdapter();
         initFeeds();
-        selectFacebook();
+        selectTab(State.FACEBOOK, feedFacebook);
 
         return root;
     }
 
-    public void setCallbackData(ArrayList<SocialPost> data) {
+    public void setCallbackData(ArrayList<SocialPost> data){
         socialAdapter.updateData(data);
     }
 
-    public void iniFooter() {
-
-    }
-
-    private void findUI(View v) {
-        facebook = (ImageView) v.findViewById(R.id.btnFacebook);
-        twitter = (ImageView) v.findViewById(R.id.btnTwitter);
-        youtube = (ImageView) v.findViewById(R.id.btnYoutube);
+    private void findUI(View v){
+        facebook = (ImageView)v.findViewById(R.id.btnFacebook);
+        twitter = (ImageView)v.findViewById(R.id.btnTwitter);
+        youtube = (ImageView)v.findViewById(R.id.btnYoutube);
         arrowRight = (ImageView) v.findViewById(R.id.btnArrowRight);
         refreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_container);
         recyclerView = (RecyclerView) v.findViewById(R.id.rvFeed);
@@ -143,22 +181,147 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         feedYoutube = new ArrayList<>();
     }
 
-    public void clearFeed() {
-        switch (state) {
-            case FACEBOOK:
-                feedFacebook.clear();
+    public void clearFeed(){
+        if(isRefresh) {
+            switch (state) {
+                case FACEBOOK:
+                    feedFacebook.clear();
+                    break;
+                case TWITTER:
+                    feedTwitter.clear();
+                    break;
+                case YOUTUBE:
+                    feedYoutube.clear();
+                    break;
+            }
+        }
+    }
+
+    private void updateList(ArrayList<SocialPost> list){
+        socialAdapter.updateData(list);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.btnFacebook:
+                selectTab(State.FACEBOOK, feedFacebook);
                 break;
-            case TWITTER:
-                feedTwitter.clear();
+            case R.id.btnTwitter:
+                selectTab(State.TWITTER, feedTwitter);
                 break;
-            case YOUTUBE:
-                feedYoutube.clear();
+            case R.id.btnYoutube:
+                selectTab(State.YOUTUBE, feedYoutube);
+                break;
+            case R.id.btnArrowRight:
+                setTabsVisibility(true);
                 break;
         }
     }
 
-    public void loadMoarePost() {
-        switch (state) {
+    private void selectTab(State _state, ArrayList<SocialPost> feedList){
+        state = _state;
+        if(isFilledList(feedList)){
+            updateList(feedList);
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+            switch (state) {
+                case FACEBOOK:
+                    activity.executeFacebookGetPost();
+                    break;
+                case TWITTER:
+                    activity.executeTwitterGetPost(twittre_paging);
+                    break;
+                case YOUTUBE:
+                    activity.executeYoutubeGetPost(this);
+                    break;
+            }
+        }
+    }
+
+    private void selectTwitter(){
+        state = State.TWITTER;
+        if(isFilledList(feedTwitter)){
+            updateList(feedTwitter);
+        } else {
+            activity.executeTwitterGetPost(twittre_paging);
+        }
+//        selectCurrentTab(twitter);
+    }
+
+    private void selectYoutube(){
+        state = State.YOUTUBE;
+        activity.executeYoutubeGetPost(this);
+//        selectCurrentTab(youtube);
+    }
+
+    private boolean isFilledList(ArrayList<SocialPost> list){
+        return (list != null && list.size() != 0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        activity.setFragment(this);
+    }
+
+    private void setTabsVisibility(boolean isVisible){
+        if(isVisible){
+            AnimationUtils.expand(tabsContainer, 90, 300);
+            AnimationUtils.collapse(arrowRight, 150, 300, true);
+        } else {
+            if (arrowRight.getVisibility() != View.VISIBLE) {
+                AnimationUtils.collapse(tabsContainer, 90, 300, true);
+                AnimationUtils.expand(arrowRight, 150, 300);
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        activity.setFragment(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+//        activity.closeSession();
+    }
+
+    RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            setTabsVisibility(false);
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            Log.e("pos", mLayoutManager.findLastVisibleItemPosition() + " " + socialAdapter.getItemCount());
+            if(mLayoutManager.findLastVisibleItemPosition() == socialAdapter.getItemCount() - 2 && !socialAdapter.isLoading()){
+                socialAdapter.setIsLoading(true);
+                loadMorePosts();
+            }
+        }
+    };
+
+    private void loadMorePosts(){
+        isRefresh = false;
+        switch (state){
             case FACEBOOK:
                 activity.executeFacebookGetPost();
                 break;
@@ -170,91 +333,4 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
                 break;
         }
     }
-
-    private void updateList(ArrayList<SocialPost> list) {
-        socialAdapter.updateData(list);
-    }
-
-    @Override
-    public void onClick(View v) {
-
-        switch (v.getId()) {
-            case R.id.btnFacebook:
-                selectFacebook();
-                break;
-            case R.id.btnTwitter:
-                selectTwitter();
-                break;
-            case R.id.btnYoutube:
-                selectYoutube();
-                break;
-            case R.id.btnArrowRight:
-                setTabsVisibility(true);
-                break;
-
-        }
-    }
-
-    private void selectFacebook() {
-        state = State.FACEBOOK;
-        if (isFilledList(feedFacebook)) {
-            updateList(feedFacebook);
-        } else {
-            activity.executeFacebookGetPost();
-        }
-    }
-
-    private void selectTwitter() {
-        state = State.TWITTER;
-        if (isFilledList(feedTwitter)) {
-            updateList(feedTwitter);
-        } else {
-            activity.executeTwitterGetPost(twittre_paging);
-        }
-    }
-
-    private void selectYoutube() {
-        state = State.YOUTUBE;
-        activity.executeYoutubeGetPost(this);
-    }
-
-    private boolean isFilledList(ArrayList<SocialPost> list) {
-        return (list != null && list.size() != 0);
-    }
-
-    private void setTabsVisibility(boolean isVisible) {
-        if (isVisible) {
-            AnimationUtils.expand(tabsContainer, 90, 300);
-            AnimationUtils.collapse(arrowRight, 150, 300, true);
-        } else {
-            if (arrowRight.getVisibility() != View.VISIBLE) {
-                AnimationUtils.collapse(tabsContainer, 90, 300, true);
-                AnimationUtils.expand(arrowRight, 150, 300);
-            }
-        }
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        activity.setFragment(this);
-    }
-
-    RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            setTabsVisibility(false);
-
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            super.onScrolled(recyclerView, dx, dy);
-            if (socialAdapter.getItemCount() - 1 == mLayoutManager.findFirstCompletelyVisibleItemPosition())
-                loadMoarePost();
-            ;
-        }
-    };
 }

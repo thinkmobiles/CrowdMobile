@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.crowdmobile.reskintest.R;
@@ -19,66 +20,110 @@ import java.util.ArrayList;
  */
 public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder> {
 
+    private static final int TYPE_FOOTER = 0;
+    private static final int TYPE_ITEM = 1;
+
     private Activity activity;
     private ArrayList<SocialPost> items;
+    private Bitmap avatar;
+    private boolean isLoading = false;
+    private int countItems = 0;
 
     public SocialAdapter(Activity activity, ArrayList<SocialPost> data) {
         this.activity = activity;
         items = data;
+        countItems = items.size();
+    }
+
+    public void setIsLoading(boolean isLoading) {
+        this.isLoading = isLoading;
+    }
+
+    public boolean isLoading() {
+        return isLoading;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_social, parent, false);
-        return new ViewHolder(view);
+        View view;
+        if(viewType == TYPE_ITEM)
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_social, parent, false);
+        else
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.footer_feed, parent, false);
+        return new ViewHolder(view, viewType);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if(items.get(position).getId().equals("-1"))
+            return TYPE_FOOTER;
+        return TYPE_ITEM;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        SocialPost post = items.get(position);
-        holder.ownerName.setText(post.getPostOwner().getName());
+        if(getItemViewType(position) == TYPE_FOOTER){
+            Log.e("adapter", "footer");
+            if(isLoading){
+                holder.progressBar.setVisibility(View.VISIBLE);
+            } else {
+                holder.progressBar.setVisibility(View.GONE);
+            }
+        } else {
 
         Picasso.with(activity.getApplicationContext())
                 .load(post.getPostOwner().getIcon()).into(holder.avatar);
-        if (post.getCreate_date() != null)
+        if(post.getCreate_date() != null)
             holder.create_time.setText(post.getCreate_date());
         else
             holder.create_time.setText("2112-08-10");
 
-        if (post.getImage() != null) {
+        if(post.getImage()!= null) {
             holder.image.setVisibility(View.VISIBLE);
             Picasso.with(activity.getApplicationContext())
                     .load(post.getImage()).resize(600, 600).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
-        } else
+        }
+        else
             holder.image.setVisibility(View.GONE);
+
+
+//        Picasso.with(activity.getApplicationContext())
+//                .load("http://graph.facebook.com/" + FacebookUtil.KARDASJAN_ID + "/picture?type=large")
+//                .fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
 
         holder.description.setText(post.getDescription());
 
     }
 
-    public void updateData(ArrayList<SocialPost> socialPosts) {
-        items = socialPosts;
+    public void updateData(ArrayList<SocialPost>socialPosts){
+        items =socialPosts;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return countItems;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView ownerName, description, create_time;
         ImageView avatar, image;
+        ProgressBar progressBar;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, int type) {
             super(itemView);
-            ownerName = (TextView) itemView.findViewById(R.id.tvNameOwner);
-            description = (TextView) itemView.findViewById(R.id.tvDescription);
-            avatar = (ImageView) itemView.findViewById(R.id.imgAvatar);
-            image = (ImageView) itemView.findViewById(R.id.imgFeedPic);
-            create_time = (TextView) itemView.findViewById(R.id.createDate);
+            if(type == TYPE_ITEM) {
+                ownerName = (TextView) itemView.findViewById(R.id.tvNameOwner);
+                description = (TextView) itemView.findViewById(R.id.tvDescription);
+                avatar = (ImageView) itemView.findViewById(R.id.imgAvatar);
+                image = (ImageView) itemView.findViewById(R.id.imgFeedPic);
+                create_time = (TextView) itemView.findViewById(R.id.createDate);
+            } else {
+                progressBar = (ProgressBar) itemView.findViewById(R.id.progress);
+                itemView.findViewById(R.id.btRetry).setVisibility(View.GONE);
+            }
         }
 
 
