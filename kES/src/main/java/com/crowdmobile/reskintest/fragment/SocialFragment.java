@@ -3,17 +3,23 @@ package com.crowdmobile.reskintest.fragment;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -37,9 +43,17 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,16 +74,30 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private SocialAdapter socialAdapter;
     private LinearLayoutManager mLayoutManager;
     private ArrayList<SocialPost> postsList, feedFacebook, feedTwitter, feedYoutube;
+    private View footer;
+    private Button btnRetry;
+    private ProgressBar progress;
     private State state = State.FACEBOOK;
 
     private enum State{FACEBOOK, TWITTER, YOUTUBE}
 
     @Override
     public void onRefresh() {
-        if(state == State.FACEBOOK)
-            activity.executeFacebookGetPost();
-        else
-            activity.executeTwitterGetPost();
+        switch (state){
+            case FACEBOOK:
+                activity.executeFacebookGetPost();
+                break;
+            case TWITTER:
+                activity.executeTwitterGetPost();
+                break;
+            case YOUTUBE:
+                activity.executeYoutubeGetPost(this);
+                break;
+        }
+//        if(state == State.FACEBOOK)
+//            activity.executeFacebookGetPost();
+//        else
+//            activity.executeTwitterGetPost();
     }
 
     public void cancelRefresh(){
@@ -114,7 +142,6 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         setListener();
         setAdapter();
         initFeeds();
-        activity.executeYoutubeGetToken();
         selectFacebook();
 
         return root;
@@ -277,6 +304,12 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             setTabsVisibility(false);
+
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
         }
     };
 }

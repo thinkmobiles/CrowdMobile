@@ -50,7 +50,10 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
 
         SocialPost post = items.get(position);
         holder.ownerName.setText(post.getPostOwner().getName());
-        downloadAvatar(holder);
+//        downloadAvatar(holder, post);
+
+        Picasso.with(activity.getApplicationContext())
+                .load(post.getPostOwner().getIcon()).into(holder.avatar);
         if(post.getCreate_date() != null)
             holder.create_time.setText(post.getCreate_date());
         else
@@ -72,39 +75,6 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
         holder.description.setText(post.getDescription());
 
     }
-
-    private synchronized void downloadAvatar(final ViewHolder viewHolder) {
-        AsyncTask<Void, Void, Bitmap> task = new AsyncTask<Void, Void, Bitmap>() {
-
-            @Override
-            public Bitmap doInBackground(Void... params) {
-                URL fbAvatarUrl = null;
-                Bitmap fbAvatarBitmap = null;
-                try {
-                    fbAvatarUrl = new URL("https://graph.facebook.com/"+ FacebookUtil.KARDASHIAN_ID +"/picture?type=large");
-                    fbAvatarBitmap = BitmapFactory.decodeStream(fbAvatarUrl.openConnection().getInputStream());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Log.d("AVA", "http://graph.facebook.com/"+ FacebookUtil.KARDASHIAN_ID+"/picture");
-                return fbAvatarBitmap;
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap result) {
-                viewHolder.avatar.setImageBitmap(result);
-            }
-
-        };
-        task.execute();
-    }
-
-
-
-
-
 
     public void updateData(ArrayList<SocialPost>socialPosts){
         items =socialPosts;

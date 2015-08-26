@@ -36,64 +36,45 @@ import java.util.concurrent.ExecutionException;
 public class YoutubeUtil {
 
     private static final String TAG = YoutubeUtil.class.getSimpleName();
+    private static final String API_KEY = "AIzaSyDxcOyknQ5yWoK60YODjRdVkD_t5sSLQJs";
     private static final String CHANNELID = "UCEeYPJ1GSYWf0RXS8nARHjg";
     private String nextPageToken;
     private AsynkYoutubeFeed youtubeTask;
     private MainActivity activity;
+    private SocialFragment fragment;
 
     public YoutubeUtil(MainActivity activity) {
         this.activity = activity;
     }
 
-    public void initYoutube(){
-        if(PreferenceUtils.getYoutubeToken(activity) == null) {
-            android.accounts.AccountManager.get(activity).getAuthTokenByFeatures(
-                    "com.google",
-                    "oauth2:https://gdata.youtube.com",
-                    null,
-                    activity,
-                    null,
-                    null,
-                    new AccountManagerCallback<Bundle>() {
-                        @Override
-                        public void run(AccountManagerFuture<Bundle> future) {
-                            try {
-                                PreferenceUtils.setYoutubeToken(activity.getApplicationContext(), future.getResult().getString(android.accounts.AccountManager.KEY_AUTHTOKEN));
-                            } catch (Exception e) {
-                                Log.e(TAG, e.getClass().getSimpleName() + ": " + e.getMessage());
-                            }
-                        }
-                    },
-                    null
-            );
-        }
-    }
-
     public void executeGetPosts(SocialFragment fragment){
+        this.fragment = fragment;
         youtubeTask = new AsynkYoutubeFeed();
         youtubeTask.execute(
                 "https://www.googleapis.com/youtube/v3/channels?" +
                         "part=snippet" +
                         "&id=" + CHANNELID +
                         "&fields=items%2Fsnippet" +
-                        "&access_token=" + PreferenceUtils.getYoutubeToken(activity),
+                        "&key=" + API_KEY,
                 "https://www.googleapis.com/youtube/v3/search?" +
                         "part=snippet" +
                         "&maxResults=20" +
                         "&channelId=" + CHANNELID +
                         "&order=date" +
                         "&fields=items(id%2Csnippet)%2CnextPageToken" +
-                        "&access_token=" + PreferenceUtils.getYoutubeToken(activity)
+                        "&key=" + API_KEY
         );
         try {
-//            fragment.updateFeedYoutube(youtubeTask.get());
-            fragment.setCallbackData(youtubeTask.get());
+            fragment.clearFeed();
+            fragment.updateFeedYoutube(youtubeTask.get());
+//            fragment.setCallbackData(youtubeTask.get());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
 
     public void getNextPosts(SocialFragment fragment){
+        this.fragment = fragment;
         nextPageToken = youtubeTask.getPageToken();
         youtubeTask = new AsynkYoutubeFeed();
         if(nextPageToken != null) {
@@ -102,7 +83,7 @@ public class YoutubeUtil {
                             "part=snippet" +
                             "&id=" + CHANNELID +
                             "&fields=items%2Fsnippet" +
-                            "&access_token=" + PreferenceUtils.getYoutubeToken(activity),
+                            "&key=" + API_KEY,
                     "https://www.googleapis.com/youtube/v3/search?" +
                             "part=snippet" +
                             "&maxResults=20" +
@@ -110,11 +91,11 @@ public class YoutubeUtil {
                             "&order=date" +
                             "&pageToken=" + nextPageToken +
                             "&fields=items(id%2Csnippet)%2CnextPageToken" +
-                            "&access_token=" + PreferenceUtils.getYoutubeToken(activity)
+                            "&key=" + API_KEY
             );
             try {
-//                fragment.updateFeedYoutube(youtubeTask.get());
-                fragment.setCallbackData(youtubeTask.get());
+                fragment.updateFeedYoutube(youtubeTask.get());
+//                fragment.setCallbackData(youtubeTask.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -132,51 +113,46 @@ public class YoutubeUtil {
         protected ArrayList<SocialPost> doInBackground(String... params) {
             ArrayList<SocialPost> socialPosts = new ArrayList<>();
             HttpClient httpclient = new DefaultHttpClient();
+            Gson gson = new GsonBuilder().create();
             HttpResponse response;
             try {
                 HttpGet httpGet = new HttpGet(params[0]);
                 response = httpclient.execute(httpGet);
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                Gson gson = new GsonBuilder().create();
                 YoutubeResponse channelResponse = gson.fromJson(reader, YoutubeResponse.class);
                 reader.close();
 
                 httpGet.setURI(URI.create(params[1]));
                 response = httpclient.execute(httpGet);
 
-                BufferedReader reader2 = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-//                YoutubeResponse feedResponse = gson.fromJson(reader2, YoutubeResponse.class);
-                String temp, line = "";
-                while ((temp = reader2.readLine()) != null){
-                    line += temp;
+                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                YoutubeResponse feedResponse = gson.fromJson(reader, YoutubeResponse.class);
+                reader.close();
+
+                pageToken = feedResponse.getNextPageToken();
+                List<YoutubeResponse.Items> list = feedResponse.getItems();
+                YoutubeResponse.Snippet channelSnippet = channelResponse.getItems().get(0).getSnippet();
+                for(YoutubeResponse.Items item : list){
+                    PostOwner postOwner = new PostOwner(
+                            channelSnippet.getThumbnails().getDefault().getUrl(),
+                            channelSnippet.getTitle(),
+                            channelSnippet.getThumbnails().getHigh().getUrl()
+                    );
+                    SocialPost socialPost = new SocialPost(
+                            null,
+                            item.getSnippet().getTitle(),
+                            item.getSnippet().getThumbnails().getHigh().getUrl(),
+                            DateParser.dateParce(DateParser.getDateFormatYoutube(item.getSnippet().getPublishedAt())),
+                            postOwner
+                    );
+                    socialPosts.add(socialPost);
                 }
-                reader2.close();
-
-                Log.d("resp", line);
-
-//                pageToken = feedResponse.getNextPageToken();
-//                List<YoutubeResponse.Items> list = feedResponse.getItems();
-//                for(YoutubeResponse.Items item : list){
-//                    PostOwner postOwner = new PostOwner(
-//                            null,
-//                            channelResponse.getItems().get(0).getSnippet().getTitle(),
-//                            channelResponse.getItems().get(0).getSnippet().getThumbnails().getHigh().getUrl()
-//                    );
-//                    SocialPost socialPost = new SocialPost(
-//                            null,
-//                            "",
-//                            item.getSnippet().getThumbnails().getHigh().getUrl(),
-//                            DateParser.dateParce(DateParser.getDateFacebook(item.getSnippet().getPublishedAt())),
-//                            postOwner
-//                    );
-//                    socialPosts.add(socialPost);
-//                }
 
 
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "get YoutubeResponse error");
+                Log.e(TAG, "getYoutubeResponse error");
             }
 
             return socialPosts;
@@ -185,6 +161,7 @@ public class YoutubeUtil {
         @Override
         protected void onPostExecute(ArrayList<SocialPost> socialPosts) {
             super.onPostExecute(socialPosts);
+            fragment.cancelRefresh();
         }
     }
 }

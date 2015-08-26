@@ -1,5 +1,7 @@
 package com.crowdmobile.reskintest.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 /**
@@ -78,6 +80,8 @@ public class YoutubeResponse {
 
         private Quality medium;
         private Quality high;
+        @SerializedName("default")
+        private Quality def;
 
         public Quality getMedium() {
             return medium;
@@ -93,6 +97,14 @@ public class YoutubeResponse {
 
         public void setHigh(Quality high) {
             this.high = high;
+        }
+
+        public Quality getDefault() {
+            return def;
+        }
+
+        public void setDefault(Quality def) {
+            this.def = def;
         }
     }
 

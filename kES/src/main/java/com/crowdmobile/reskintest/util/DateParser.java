@@ -30,6 +30,17 @@ public abstract class DateParser {
         return date;
     }
 
+    public static Date getDateFormatYoutube(String _date) {
+        Date date = null;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            date = format.parse(_date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
 
     public static String dateParce(Date _date) {
         SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");

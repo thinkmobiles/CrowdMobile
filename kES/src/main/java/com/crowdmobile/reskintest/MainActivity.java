@@ -241,9 +241,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
             twitterLogin.login(this);
     }
 
-    public  void executeYoutubeGetToken(){
-        youtubeUtil.initYoutube();
-    }
     public void executeYoutubeGetPost(SocialFragment fragment){
         youtubeUtil.executeGetPosts(fragment);
     }
