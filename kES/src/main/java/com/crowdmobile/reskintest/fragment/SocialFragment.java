@@ -78,26 +78,20 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private Button btnRetry;
     private ProgressBar progress;
     private State state = State.FACEBOOK;
+    private int twittre_paging =1;
 
     private enum State{FACEBOOK, TWITTER, YOUTUBE}
 
     @Override
     public void onRefresh() {
-        switch (state){
-            case FACEBOOK:
-                activity.executeFacebookGetPost();
-                break;
-            case TWITTER:
-                activity.executeTwitterGetPost();
-                break;
-            case YOUTUBE:
-                activity.executeYoutubeGetPost(this);
-                break;
+        if(state == State.FACEBOOK) {
+            activity.clearFacebookNextInfo();
+            activity.executeFacebookGetPost();
         }
-//        if(state == State.FACEBOOK)
-//            activity.executeFacebookGetPost();
-//        else
-//            activity.executeTwitterGetPost();
+        else {
+            activity.clearTwitterNextInfo();
+            activity.executeTwitterGetPost(twittre_paging);
+        }
     }
 
     public void cancelRefresh(){
@@ -241,7 +235,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         if(isFilledList(feedTwitter)){
             updateList(feedTwitter);
         } else {
-            activity.executeTwitterGetPost();
+            activity.executeTwitterGetPost(twittre_paging);
         }
 //        selectCurrentTab(twitter);
     }
