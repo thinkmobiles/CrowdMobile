@@ -311,9 +311,19 @@ public class TwitterUtil {
                         image_data= status.getMediaEntities()[0].getMediaURLHttps();
 
                 String date = DateParser.dateParce(status.getCreatedAt());
+                String str = status.getText();
+                String desc = "";
+                if(str.lastIndexOf("http") == 0)
+                    desc = str;
+                 else
+                    desc = str.substring(0, ((str.lastIndexOf("http") != -1) ? str.lastIndexOf("http") : str.length() - 1));
+
+
+//                desc = str.substring(0, ((str.lastIndexOf("http") != -1) ? str.lastIndexOf("http") : str.length() - 1));
+//                Log.e("SUBSTR", desc);
 
                 PostOwner postOwner = new PostOwner(String.valueOf(status.getUser().getId()),status.getUser().getScreenName(),status.getUser().getProfileImageURLHttps());
-                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()),status.getText(), image_data , date ,postOwner);
+                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()),desc, image_data , date ,postOwner);
 //                Log.e("TWITTER_TEXT", status.getUser().getScreenName() + " - " + status.getText() + status.getCreatedAt());
 
                 socialPosts.add(socialPost);
