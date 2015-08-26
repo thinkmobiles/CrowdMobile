@@ -84,13 +84,18 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
 
     @Override
     public void onRefresh() {
-        if(state == State.FACEBOOK) {
-            activity.clearFacebookNextInfo();
-            activity.executeFacebookGetPost();
-        }
-        else {
-            activity.clearTwitterNextInfo();
-            activity.executeTwitterGetPost(twittre_paging);
+        switch (state){
+            case FACEBOOK:
+                activity.clearFacebookNextInfo();
+                activity.executeFacebookGetPost();
+                break;
+            case TWITTER:
+                activity.clearTwitterNextInfo();
+                activity.executeTwitterGetPost(twittre_paging);
+                break;
+            case YOUTUBE:
+                activity.executeYoutubeGetPost(this);
+                break;
         }
     }
 
@@ -131,7 +136,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_social,container,false);
+        View root = inflater.inflate(R.layout.fragment_social,container, false);
         findUI(root);
         setListener();
         setAdapter();
