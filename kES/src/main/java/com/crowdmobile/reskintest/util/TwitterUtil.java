@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import twitter4j.MediaEntity;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -31,7 +30,6 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
-import com.crowdmobile.reskintest.util.DateParser;
 
 /**
  * Created on 9/3/14.
@@ -39,7 +37,7 @@ import com.crowdmobile.reskintest.util.DateParser;
 public class TwitterUtil {
     private static final String TAG = "TwitterManager";
     private final int REQUESTCODE = 65535;
-    private int paging =1;
+    private int paging = 1;
 
     public interface TwitterLoginCallback {
 
@@ -70,52 +68,47 @@ public class TwitterUtil {
     private AsyncTask tokenTask;
     private static TwitterUtil sInstance;
 
-    public void clearPaging(){
-        paging=1;
+    public void clearPaging() {
+        paging = 1;
     }
 
-    public static TwitterUtil getInstance(Context context)
-    {
+    public static TwitterUtil getInstance(Context context) {
         if (sInstance == null)
             sInstance = new TwitterUtil(context);
         return sInstance;
     }
 
-    public LoginManager getLoginManager(TwitterLoginCallback callback)
-    {
+    public LoginManager getLoginManager(TwitterLoginCallback callback) {
         return new LoginManager(callback);
     }
 
-    public void logout()
-    {
+    public void logout() {
         twitter.setOAuthAccessToken(null);
     }
 
-    public class LoginManager
-    {
+    public class LoginManager {
         private TwitterLoginCallback callback;
         private RelativeLayout.LayoutParams params;
         private String token = null;
         private String secret = null;
 
-        public LoginManager(TwitterLoginCallback callback)
-        {
+        public LoginManager(TwitterLoginCallback callback) {
             this.callback = callback;
-            params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
+            params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         }
 
-        public void handleLoginResponse(String url){
+        public void handleLoginResponse(String url) {
             Uri uri = Uri.parse(url);
 
             if (uri != null && ((Object) uri).toString().startsWith(callbackUrl)) {
                 String denied = uri.getQueryParameter(TWITTER_OAUTH_DENIED);
                 String t = uri.getQueryParameter(TWITTER_OAUTH_TOKEN);
                 String verifier = uri.getQueryParameter(TWITTER_OAUTH_VERIFIER);
-                if(denied != null){
+                if (denied != null) {
                     callback.onCanceled();
                     return;
                 }
-                if(verifier == null){
+                if (verifier == null) {
                     return;
                 }
                 tokenTask = new AsyncTask<String, Void, AccessToken>() {
@@ -133,7 +126,7 @@ public class TwitterUtil {
 
                     @Override
                     protected void onPostExecute(AccessToken accessToken) {
-                        if(callback != null && !isCancelled()) {
+                        if (callback != null && !isCancelled()) {
                             if (accessToken != null) {
                                 twitter.setOAuthAccessToken(accessToken);
                                 callback.onSuccess(accessToken.getToken(), accessToken.getTokenSecret(), accessToken.getUserId());
@@ -173,15 +166,14 @@ public class TwitterUtil {
                         Intent intent = new Intent(activity, TwitterActivity.class);
                         intent.putExtra(TwitterActivity.AUTH_URL, requestToken.getAuthenticationURL());
                         intent.putExtra(TwitterActivity.CALLBACK_URL, callbackUrl);
-                        activity.startActivityForResult(intent,REQUESTCODE);
+                        activity.startActivityForResult(intent, REQUESTCODE);
                     }
                 }
             }.execute();
         }
 
         public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-            if (requestCode == REQUESTCODE)
-            {
+            if (requestCode == REQUESTCODE) {
                 if (resultCode == TwitterActivity.RESULT_ERROR) {
                     callback.onFailed("Can't login");
                     return true;
@@ -197,10 +189,9 @@ public class TwitterUtil {
                 }
             }
             return false;
-        };
+        }
 
     }
-
 
     private TwitterUtil(Context context) {
         this.context = context;
@@ -214,13 +205,12 @@ public class TwitterUtil {
     }
 
 
-
-    public void release(){
+    public void release() {
         dropTasks();
         context = null;
     }
 
-    public boolean isAuthenticated(){
+    public boolean isAuthenticated() {
         try {
             return twitter.getOAuthAccessToken() != null;
         } catch (Exception e) {
@@ -229,21 +219,20 @@ public class TwitterUtil {
         return false;
     }
 
-    public void clearAccessToken(){
+    public void clearAccessToken() {
         twitter.setOAuthAccessToken(null);
     }
 
 
-
-    public void share(String text, String photoUrl){
-        new AsyncTask<String, Void, Status>(){
+    public void share(String text, String photoUrl) {
+        new AsyncTask<String, Void, Status>() {
             @Override
             protected twitter4j.Status doInBackground(String... params) {
                 InputStream imageInput = getStreamFor(params[1]);
 
                 try {
                     StatusUpdate su = new StatusUpdate(params[0]);
-                    if(imageInput != null) {
+                    if (imageInput != null) {
                         su.setMedia("image", imageInput);
                     } else {
                         Log.d(TAG, "input stream is NULL");
@@ -252,7 +241,7 @@ public class TwitterUtil {
                 } catch (TwitterException e) {
                     e.printStackTrace();
                 } finally {
-                    if(imageInput != null){
+                    if (imageInput != null) {
                         try {
                             imageInput.close();
                         } catch (IOException e) {
@@ -270,7 +259,7 @@ public class TwitterUtil {
         }.execute(text, photoUrl);
     }
 
-    private InputStream getStreamFor(String url){
+    private InputStream getStreamFor(String url) {
         InputStream input = null;
         /*
         if(url != null) {
@@ -286,59 +275,47 @@ public class TwitterUtil {
         return input;
     }
 
-    private void dropTasks(){
-        if(oAuthTask != null){
+    private void dropTasks() {
+        if (oAuthTask != null) {
             oAuthTask.cancel(true);
             oAuthTask = null;
         }
-        if(tokenTask != null){
+        if (tokenTask != null) {
             tokenTask.cancel(true);
             tokenTask = null;
         }
     }
 
-    public ArrayList<SocialPost> getTwitterStatuses(MainActivity activity, int pagin){
+    public ArrayList<SocialPost> getTwitterStatuses(MainActivity activity, int pagin) {
         this.paging = pagin;
         TwitterUtil twitterUtil = TwitterUtil.getInstance(activity);
         ArrayList<SocialPost> socialPosts = new ArrayList<>();
 
         try {
             List<Status> statuses;
-            Paging paging = new Paging(this.paging,10);
+            Paging paging = new Paging(this.paging, 10);
 
-
-            statuses = twitterUtil.getTwitter().getUserTimeline(Long.valueOf(activity.getResources().getString(R.string.kardashian_id_twitter)),paging);
+            statuses = twitterUtil.getTwitter().getUserTimeline(Long.valueOf(activity.getResources().getString(R.string.kardashian_id_twitter)), paging);
 
             for (Status status : statuses) {
-                String image_data =null;
+                String image_data = null;
 
-
-                if(status.getMediaEntities()!=null&& status.getMediaEntities().length != 0)
-                    if(status.getMediaEntities()[0].getType().equals("photo"))
-                        image_data= status.getMediaEntities()[0].getMediaURLHttps();
+                if (status.getMediaEntities() != null && status.getMediaEntities().length != 0)
+                    if (status.getMediaEntities()[0].getType().equals("photo"))
+                        image_data = status.getMediaEntities()[0].getMediaURLHttps();
 
                 String date = DateParser.dateParce(status.getCreatedAt());
                 String str = status.getText();
                 String desc = "";
-                if(str.lastIndexOf("http") == 0)
+
+                if (str.lastIndexOf("http") == 0)
                     desc = str;
-                 else
+                else
                     desc = str.substring(0, ((str.lastIndexOf("http") != -1) ? str.lastIndexOf("http") : str.length() - 1));
 
-
-//                desc = str.substring(0, ((str.lastIndexOf("http") != -1) ? str.lastIndexOf("http") : str.length() - 1));
-//                Log.e("SUBSTR", desc);
-
-                PostOwner postOwner = new PostOwner(String.valueOf(status.getUser().getId()),status.getUser().getScreenName(),status.getUser().getProfileImageURLHttps());
-                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()),desc, image_data , date ,postOwner);
-//                Log.e("TWITTER_TEXT", status.getUser().getScreenName() + " - " + status.getText() + status.getCreatedAt());
-
+                PostOwner postOwner = new PostOwner(String.valueOf(status.getUser().getId()), status.getUser().getScreenName(), status.getUser().getOriginalProfileImageURLHttps());
+                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()), desc, image_data, date, postOwner);
                 socialPosts.add(socialPost);
-                for (MediaEntity entity: status.getMediaEntities()){
-//                    Log.e("TWITTER_IMAGE", entity.getType() + ": " +entity.getMediaURLHttps());
-                }
-                Log.e("TWIT", socialPost.toString());
-
             }
         } catch (TwitterException te) {
             te.printStackTrace();
@@ -347,8 +324,6 @@ public class TwitterUtil {
 
         return socialPosts;
     }
-
-
 
 
 }

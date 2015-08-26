@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         AsyncFacebookPosts(Response response){
             this.response =response;
         }
-        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+//        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
 
 //        @Override
 //        protected ArrayList<SocialPost> InBackground(Void... params) {
@@ -327,8 +327,9 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         protected void onPostExecute(ArrayList<SocialPost> result) {
             Log.i(TAG, "onPostExecute");
 //            socialFragment.setCallbackData(result);
+//            socialFragment.clearFeed();
             socialFragment.updateFeedFacebook(result);
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
             socialFragment.cancelRefresh();
         }
 
@@ -346,8 +347,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         @Override
         protected void onPreExecute() {
             Log.i(TAG, "onPreExecute");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.show();
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDialog.show();
         }
 
         @Override
@@ -365,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
             this.pagin = pagin;
         }
 
-        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+//        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
 
 //        @Override
 //        protected ArrayList<SocialPost> InBackground(Void... params) {
@@ -379,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
             Log.i(TAG, "onPostExecute");
 //            socialFragment.setCallbackData(result);
             socialFragment.updateFeedTwitter(result);
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
             dialog.dismiss();
             socialFragment.cancelRefresh();
         }
@@ -392,8 +393,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         @Override
         protected void onPreExecute() {
             Log.i(TAG, "onPreExecute");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.show();
+//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDialog.show();
         }
 
         @Override
