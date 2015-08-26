@@ -37,7 +37,7 @@ public class YoutubeUtil {
 
     private static final String TAG = YoutubeUtil.class.getSimpleName();
     private static final String API_KEY = "AIzaSyDxcOyknQ5yWoK60YODjRdVkD_t5sSLQJs";
-    private static final String CHANNELID = "UCEeYPJ1GSYWf0RXS8nARHjg";
+    private static final String CHANNELID = "UC1UHSsR2ZL52UExsJAQaGzg";
     private String nextPageToken;
     private AsynkYoutubeFeed youtubeTask;
     private MainActivity activity;

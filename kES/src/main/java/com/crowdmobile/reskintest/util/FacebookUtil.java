@@ -245,7 +245,7 @@ public class FacebookUtil {
                     + postOwner.getId() + mActivity.getResources().getString(R.string.second_url_facebook_avatar));
             post.setPostOwner(postOwner);
             post.setCreate_date(date);
-            Log.e("ZZZZ ", post.toString());
+
             socialPosts.add(post);
         }
 

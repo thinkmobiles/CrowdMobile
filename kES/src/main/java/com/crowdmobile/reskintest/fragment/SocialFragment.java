@@ -79,7 +79,6 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private ProgressBar progress;
     private State state = State.FACEBOOK;
     private int twittre_paging = 1;
-    private int twittre_paging = 1;
     private boolean isRefresh = false;
 
     private enum State {FACEBOOK, TWITTER, YOUTUBE}
@@ -198,6 +197,8 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     }
 
     private void updateList(ArrayList<SocialPost> list){
+        socialAdapter.setIsLoading(false);
+        progressBar.setVisibility(View.GONE);
         socialAdapter.updateData(list);
     }
 
@@ -213,8 +214,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
                 break;
             case R.id.btnYoutube:
                 selectTab(State.YOUTUBE, feedYoutube);
-                break;
-            case R.id.btnArrowRight:
+                break;            case R.id.btnArrowRight:
                 setTabsVisibility(true);
                 break;
         }
@@ -224,6 +224,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         state = _state;
         if(isFilledList(feedList)){
             updateList(feedList);
+            mLayoutManager.scrollToPositionWithOffset(0,0);
         } else {
             progressBar.setVisibility(View.VISIBLE);
             switch (state) {
@@ -237,24 +238,11 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
                     activity.executeYoutubeGetPost(this);
                     break;
             }
+
         }
     }
 
-    private void selectTwitter(){
-        state = State.TWITTER;
-        if(isFilledList(feedTwitter)){
-            updateList(feedTwitter);
-        } else {
-            activity.executeTwitterGetPost(twittre_paging);
-        }
-//        selectCurrentTab(twitter);
-    }
 
-    private void selectYoutube(){
-        state = State.YOUTUBE;
-        activity.executeYoutubeGetPost(this);
-//        selectCurrentTab(youtube);
-    }
 
     private boolean isFilledList(ArrayList<SocialPost> list){
         return (list != null && list.size() != 0);
@@ -281,24 +269,6 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        activity.setFragment(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-//        activity.closeSession();
     }
 
     RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {

@@ -25,7 +25,6 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
 
     private Activity activity;
     private ArrayList<SocialPost> items;
-    private Bitmap avatar;
     private boolean isLoading = false;
     private int countItems = 0;
 
@@ -64,7 +63,6 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
 
         if(getItemViewType(position) == TYPE_FOOTER){
-            Log.e("adapter", "footer");
             if(isLoading){
                 holder.progressBar.setVisibility(View.VISIBLE);
             } else {
@@ -72,32 +70,32 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
             }
         } else {
 
-        Picasso.with(activity.getApplicationContext())
-                .load(post.getPostOwner().getIcon()).into(holder.avatar);
-        if(post.getCreate_date() != null)
-            holder.create_time.setText(post.getCreate_date());
-        else
-            holder.create_time.setText("2112-08-10");
-
-        if(post.getImage()!= null) {
-            holder.image.setVisibility(View.VISIBLE);
+            SocialPost post = items.get(position);
+            holder.ownerName.setText(post.getPostOwner().getName());
             Picasso.with(activity.getApplicationContext())
-                    .load(post.getImage()).resize(600, 600).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
+                    .load(post.getPostOwner().getIcon()).into(holder.avatar);
+            if (post.getCreate_date() != null)
+                holder.create_time.setText(post.getCreate_date());
+            else
+                holder.create_time.setText("2112-08-10");
+
+            if (post.getImage() != null) {
+                holder.image.setVisibility(View.VISIBLE);
+                Picasso.with(activity.getApplicationContext())
+                        .load(post.getImage()).resize(600, 600).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
+            } else
+                holder.image.setVisibility(View.GONE);
+
+            holder.description.setText(post.getDescription());
         }
-        else
-            holder.image.setVisibility(View.GONE);
-
-
-//        Picasso.with(activity.getApplicationContext())
-//                .load("http://graph.facebook.com/" + FacebookUtil.KARDASJAN_ID + "/picture?type=large")
-//                .fit().centerCrop().placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
-
-        holder.description.setText(post.getDescription());
-
     }
 
+    SocialPost footer = new SocialPost();
+
     public void updateData(ArrayList<SocialPost>socialPosts){
-        items =socialPosts;
+        socialPosts.add(footer);
+        items = socialPosts;
+        countItems = items.size();
         notifyDataSetChanged();
     }
 

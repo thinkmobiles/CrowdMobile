@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated()) {
             new AsyncTwitterPosts(progressDialog, paging).execute();
         } else {
-            progressDialog.show();
+//            progressDialog.show();
             twitterLogin.login(this);
         }
     }
@@ -329,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 //            socialFragment.setCallbackData(result);
             socialFragment.clearFeed();
             socialFragment.updateFeedFacebook(result);
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
             socialFragment.cancelRefresh();
         }
 
