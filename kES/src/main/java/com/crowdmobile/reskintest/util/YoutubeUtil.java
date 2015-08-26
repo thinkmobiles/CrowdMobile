@@ -58,7 +58,7 @@ public class YoutubeUtil {
                         "&key=" + API_KEY,
                 "https://www.googleapis.com/youtube/v3/search?" +
                         "part=snippet" +
-                        "&maxResults=20" +
+                        "&maxResults=10" +
                         "&channelId=" + CHANNELID +
                         "&order=date" +
                         "&fields=items(id%2Csnippet)%2CnextPageToken" +
@@ -86,7 +86,7 @@ public class YoutubeUtil {
                             "&key=" + API_KEY,
                     "https://www.googleapis.com/youtube/v3/search?" +
                             "part=snippet" +
-                            "&maxResults=20" +
+                            "&maxResults=10" +
                             "&channelId=" + CHANNELID +
                             "&order=date" +
                             "&pageToken=" + nextPageToken +
@@ -95,10 +95,11 @@ public class YoutubeUtil {
             );
             try {
                 fragment.updateFeedYoutube(youtubeTask.get());
-//                fragment.setCallbackData(youtubeTask.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
+        } else {
+            fragment.updateFeedYoutube(new ArrayList<SocialPost>());
         }
     }
 
@@ -133,20 +134,22 @@ public class YoutubeUtil {
                 pageToken = feedResponse.getNextPageToken();
                 List<YoutubeResponse.Items> list = feedResponse.getItems();
                 YoutubeResponse.Snippet channelSnippet = channelResponse.getItems().get(0).getSnippet();
-                for(YoutubeResponse.Items item : list){
-                    PostOwner postOwner = new PostOwner(
-                            channelSnippet.getThumbnails().getDefault().getUrl(),
-                            channelSnippet.getTitle(),
-                            channelSnippet.getThumbnails().getHigh().getUrl()
-                    );
-                    SocialPost socialPost = new SocialPost(
-                            null,
-                            item.getSnippet().getTitle(),
-                            item.getSnippet().getThumbnails().getHigh().getUrl(),
-                            DateParser.dateParce(DateParser.getDateFormatYoutube(item.getSnippet().getPublishedAt())),
-                            postOwner
-                    );
-                    socialPosts.add(socialPost);
+                if(list != null) {
+                    for (YoutubeResponse.Items item : list) {
+                        PostOwner postOwner = new PostOwner(
+                                channelSnippet.getThumbnails().getDefault().getUrl(),
+                                channelSnippet.getTitle(),
+                                channelSnippet.getThumbnails().getHigh().getUrl()
+                        );
+                        SocialPost socialPost = new SocialPost(
+                                "0",
+                                item.getSnippet().getTitle(),
+                                item.getSnippet().getThumbnails().getHigh().getUrl(),
+                                DateParser.dateParce(DateParser.getDateFormatYoutube(item.getSnippet().getPublishedAt())),
+                                postOwner
+                        );
+                        socialPosts.add(socialPost);
+                    }
                 }
 
 

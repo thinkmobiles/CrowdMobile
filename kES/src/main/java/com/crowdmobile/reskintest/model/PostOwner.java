@@ -7,6 +7,9 @@ public class PostOwner {
 
     private String id, name, avatar;
 
+    public PostOwner() {
+    }
+
     public PostOwner(String id, String name,String avatar) {
         this.id = id;
         this.name = name;

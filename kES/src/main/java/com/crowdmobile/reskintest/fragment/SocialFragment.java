@@ -74,16 +74,15 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private SocialAdapter socialAdapter;
     private LinearLayoutManager mLayoutManager;
     private ArrayList<SocialPost> postsList, feedFacebook, feedTwitter, feedYoutube;
-    private View footer;
-    private Button btnRetry;
-    private ProgressBar progress;
     private State state = State.FACEBOOK;
-    private int twittre_paging =1;
+    private int twittre_paging = 1;
+    private boolean isRefresh = false;
 
     private enum State{FACEBOOK, TWITTER, YOUTUBE}
 
     @Override
     public void onRefresh() {
+        isRefresh = true;
         switch (state){
             case FACEBOOK:
                 activity.clearFacebookNextInfo();
@@ -91,7 +90,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
                 break;
             case TWITTER:
                 activity.clearTwitterNextInfo();
-                activity.executeTwitterGetPost(twittre_paging);
+                activity.executeTwitterGetPost(1);
                 break;
             case YOUTUBE:
                 activity.executeYoutubeGetPost(this);
@@ -117,16 +116,9 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
 
     public void updateFeedYoutube(ArrayList<SocialPost> list){
         feedYoutube.addAll(list);
+        postsList = feedYoutube;
         updateList(feedYoutube);
     }
-
-//    private SocialFragment(){
-//    }
-//
-//    public static SocialFragment getInstance(){
-//        if
-//        SocialFragment socialFragment = new SocialFragment()
-//    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -141,7 +133,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         setListener();
         setAdapter();
         initFeeds();
-        selectFacebook();
+        selectTab(State.FACEBOOK, feedFacebook);
 
         return root;
     }
@@ -186,82 +178,74 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     }
 
     public void clearFeed(){
-        switch (state){
-            case FACEBOOK:
-                feedFacebook.clear();
-                break;
-            case TWITTER:
-                feedTwitter.clear();
-                break;
-            case YOUTUBE:
-                feedYoutube.clear();
-                break;
+        if(isRefresh) {
+            switch (state) {
+                case FACEBOOK:
+                    feedFacebook.clear();
+                    break;
+                case TWITTER:
+                    feedTwitter.clear();
+                    break;
+                case YOUTUBE:
+                    feedYoutube.clear();
+                    break;
+            }
         }
     }
 
     private void updateList(ArrayList<SocialPost> list){
+        socialAdapter.setIsLoading(false);
+        progressBar.setVisibility(View.GONE);
         socialAdapter.updateData(list);
     }
 
-
     @Override
     public void onClick(View v) {
-
         switch (v.getId()){
             case R.id.btnFacebook:
-                selectFacebook();
+                selectTab(State.FACEBOOK, feedFacebook);
                 break;
             case R.id.btnTwitter:
-                selectTwitter();
+                selectTab(State.TWITTER, feedTwitter);
                 break;
             case R.id.btnYoutube:
-                selectYoutube();
+                selectTab(State.YOUTUBE, feedYoutube);
                 break;
             case R.id.btnArrowRight:
                 setTabsVisibility(true);
                 break;
-
         }
     }
 
-    private void selectFacebook(){
-        state = State.FACEBOOK;
-        if(isFilledList(feedFacebook)){
-            updateList(feedFacebook);
+    private void selectTab(State _state, ArrayList<SocialPost> feedList){
+        state = _state;
+        if(isFilledList(feedList)){
+            updateList(feedList);
         } else {
-            activity.executeFacebookGetPost();
+            progressBar.setVisibility(View.VISIBLE);
+            switch (state) {
+                case FACEBOOK:
+                    activity.executeFacebookGetPost();
+                    break;
+                case TWITTER:
+                    activity.executeTwitterGetPost(twittre_paging);
+                    break;
+                case YOUTUBE:
+                    activity.executeYoutubeGetPost(this);
+                    break;
+            }
         }
-
-//        selectCurrentTab(facebook);
-    }
-
-    private void selectTwitter(){
-        state = State.TWITTER;
-        if(isFilledList(feedTwitter)){
-            updateList(feedTwitter);
-        } else {
-            activity.executeTwitterGetPost(twittre_paging);
-        }
-//        selectCurrentTab(twitter);
-    }
-
-    private void selectYoutube(){
-        state = State.YOUTUBE;
-        activity.executeYoutubeGetPost(this);
-//        selectCurrentTab(youtube);
     }
 
     private boolean isFilledList(ArrayList<SocialPost> list){
         return (list != null && list.size() != 0);
     }
 
-//    private void selectCurrentTab(TextView textView){
-//        facebook.setTextColor(activity.getResources().getColor(R.color.black));
-//        twitter.setTextColor(activity.getResources().getColor(R.color.black));
-//        youtube.setTextColor(activity.getResources().getColor(R.color.black));
-//
-//        textView.setTextColor(activity.getResources().getColor(R.color.white));
-//    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        activity.setFragment(this);
+    }
 
     private void setTabsVisibility(boolean isVisible){
         if(isVisible){
@@ -275,40 +259,36 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        activity.setFragment(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-//        activity.closeSession();
-    }
-
     RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             setTabsVisibility(false);
-
         }
 
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
+            Log.e("pos", mLayoutManager.findLastVisibleItemPosition() + " " + socialAdapter.getItemCount());
+            if(mLayoutManager.findLastVisibleItemPosition() == socialAdapter.getItemCount() - 2 && !socialAdapter.isLoading()){
+                socialAdapter.setIsLoading(true);
+                loadMorePosts();
+            }
         }
     };
+
+    private void loadMorePosts(){
+        isRefresh = false;
+        switch (state){
+            case FACEBOOK:
+                activity.executeFacebookGetPost();
+                break;
+            case TWITTER:
+                activity.executeTwitterGetPost(++twittre_paging);
+                break;
+            case YOUTUBE:
+                activity.executeYoutubeGetNextPost(this);
+                break;
+        }
+    }
 }
