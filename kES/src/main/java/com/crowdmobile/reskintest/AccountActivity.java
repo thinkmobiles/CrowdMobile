@@ -45,7 +45,17 @@ public class AccountActivity extends Activity {
         TwitterUtil.getInstance(activity.getApplicationContext()).logout();
 
         if (facebookUtil == null)
-            facebookUtil =new FacebookUtil(activity);
+            facebookUtil =new FacebookUtil(activity, new FacebookUtil.FacebookCallback() {
+                @Override
+                public void onFail(FacebookUtil.Fail fail) {
+
+                }
+
+                @Override
+                public void onUserInfo(FacebookUtil.UserInfo userInfo) {
+
+                }
+            });
 
         facebookUtil.logout(activity.getApplicationContext());
 
@@ -86,7 +96,7 @@ public class AccountActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_login);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
-		facebookUtil = new FacebookUtil(this);
+		facebookUtil = new FacebookUtil(this, fbCallback);
         btFacebook = findViewById(R.id.btFacebook);
 		btFacebook.setOnClickListener(onClickListener);
         btTwitter = findViewById(R.id.btTwitter);
