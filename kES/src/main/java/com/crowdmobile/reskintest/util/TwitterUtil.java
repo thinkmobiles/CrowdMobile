@@ -1,6 +1,7 @@
 package com.crowdmobile.reskintest.util;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import com.crowdmobile.reskintest.AppCfg;
 import com.crowdmobile.reskintest.MainActivity;
 import com.crowdmobile.reskintest.R;
 import com.crowdmobile.reskintest.TwitterActivity;
+import com.crowdmobile.reskintest.fragment.SocialFragment;
 import com.crowdmobile.reskintest.model.PostOwner;
 import com.crowdmobile.reskintest.model.SocialPost;
 
@@ -27,6 +29,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
+import twitter4j.auth.OAuth2Token;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
@@ -35,6 +38,7 @@ import twitter4j.conf.ConfigurationBuilder;
  * Created on 9/3/14.
  */
 public class TwitterUtil {
+    public static long KARDASHIAN_ID = 25365536;
     private static final String TAG = "TwitterManager";
     private final int REQUESTCODE = 65535;
     private int paging = 1;
@@ -67,6 +71,7 @@ public class TwitterUtil {
     private AsyncTask oAuthTask;
     private AsyncTask tokenTask;
     private static TwitterUtil sInstance;
+    private SocialFragment socialFragment;
 
     public void clearPaging() {
         paging = 1;
@@ -286,16 +291,33 @@ public class TwitterUtil {
         }
     }
 
-    public ArrayList<SocialPost> getTwitterStatuses(MainActivity activity, int pagin) {
-        this.paging = pagin;
-        TwitterUtil twitterUtil = TwitterUtil.getInstance(activity);
+    public Twitter getTwitterWithoutAuth(){
+        Twitter twitter;
+        Configuration configuration = new ConfigurationBuilder()
+                .setOAuthConsumerKey(AppCfg.TwitterKey)
+                .setOAuthConsumerSecret(AppCfg.TwitterSecret)
+                .setOAuthAccessToken(AppCfg.TwitterAccessToken)
+                .setOAuthAccessTokenSecret(AppCfg.TwitterAccessTokenSecret)
+                .setApplicationOnlyAuthEnabled(true)
+                .build();
+        twitter = new TwitterFactory(configuration).getInstance();
+        try {
+            OAuth2Token token = twitter.getOAuth2Token();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+        return twitter;
+    }
+
+    public ArrayList<SocialPost> getTwitterStatuses() {
+
         ArrayList<SocialPost> socialPosts = new ArrayList<>();
 
         try {
             List<Status> statuses;
             Paging paging = new Paging(this.paging, 10);
 
-            statuses = twitterUtil.getTwitter().getUserTimeline(Long.valueOf(activity.getResources().getString(R.string.kardashian_id_twitter)), paging);
+            statuses = getTwitterWithoutAuth().getUserTimeline(KARDASHIAN_ID, paging);
 
             for (Status status : statuses) {
                 String image_data = null;
@@ -323,6 +345,32 @@ public class TwitterUtil {
         }
 
         return socialPosts;
+    }
+
+    public void executeGetPosts(SocialFragment socialFragment, int paging){
+        this.socialFragment = socialFragment;
+        this.paging = paging;
+        new AsyncTwitterPosts().execute();
+    }
+
+    private class AsyncTwitterPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
+
+        @Override
+        protected void onPostExecute(ArrayList<SocialPost> result) {
+
+//            socialFragment.setCallbackData(result);
+            socialFragment.clearFeed();
+            socialFragment.updateFeedTwitter(result);
+//            progressDialog.dismiss();
+//            dialog.dismiss();
+            socialFragment.cancelRefresh();
+        }
+
+        @Override
+        protected ArrayList<SocialPost> doInBackground(Void... params) {
+            return  getTwitterStatuses();
+        }
+
     }
 
 

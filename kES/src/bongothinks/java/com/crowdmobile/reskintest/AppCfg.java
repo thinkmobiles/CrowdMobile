@@ -17,6 +17,8 @@ public class AppCfg {
 
     public static final String TwitterKey = "aM5iuM7nhCyyMTmNtRKHbaxbD";
     public static final String TwitterSecret = "OBjkkelLjBuORQQYSKa9rQqgYCryoT8orSeYKec4SDSHGtDS8q";
+    public static final String TwitterAccessToken = "3088938005-Mhz4MK0LRJ9mmfy8MNw1Vd3rc3F63rAaFioYySt";
+    public static final String TwitterAccessTokenSecret = "QKFVgCh0tuO2N0MjLnKaxhIb7CJzWImtrsDMXKbkOXcdd";
 
 }
 

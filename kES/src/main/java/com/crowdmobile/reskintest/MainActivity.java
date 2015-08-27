@@ -91,16 +91,13 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private ImageView thumbView;
     private boolean layerVisible = false;
     private FacebookUtil.FacebookCallback fbCallback;
-    private ProgressDialog progressDialog;
-    private ProgressDialog progDialog;
-    private AlertDialog alertDialog;
 //    private FacebookLogin facebookLogin;
     private YoutubeUtil youtubeUtil;
     private FacebookUtil facebookUtil;
     private TwitterUtil.LoginManager twitterLogin;
     TwitterUtil.TwitterLoginCallback twitterCallback;
     private SocialFragment socialFragment;
-    private  int paging=1;
+//    private  int paging=1;
 
 
     public static void open(Context context)
@@ -145,9 +142,9 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 	protected void onCreate(Bundle savedInstanceState) {
 //        Configuration configuration = getResources().getConfiguration();
 //        Log.d("HEIGHT",Float.toString(configuration.screenHeightDp));
-        createProgressDialog();
+//        createProgressDialog();
         initFacebookCallback();
-        initTwitterCallback();
+//        initTwitterCallback();
 
         facebookUtil = new FacebookUtil(this, fbCallback);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
@@ -227,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     }
 
     public void executeFacebookGetPost(){
-        progressDialog.setMessage(getString(R.string.fb_login));
+//        progressDialog.setMessage(getString(R.string.fb_login));
 //        facebookLogin.execute();
         facebookUtil.executeGetPosts();
 
@@ -243,15 +240,16 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     }
 
     public void executeTwitterGetPost(int paging){
-        this.paging = paging;
-        progressDialog.setMessage(getString(R.string.twitter_login));
+//        this.paging = paging;
+//        progressDialog.setMessage(getString(R.string.twitter_login));
 
-        if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated()) {
-            new AsyncTwitterPosts(progressDialog, paging).execute();
-        } else {
-//            progressDialog.show();
-            twitterLogin.login(this);
-        }
+//        if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated()) {
+         TwitterUtil.getInstance(getApplicationContext()).executeGetPosts(socialFragment,paging);
+//            new AsyncTwitterPosts(progressDialog, paging).execute();
+//        } else {
+////            progressDialog.show();
+//            twitterLogin.login(this);
+//        }
     }
 
     public void executeYoutubeGetPost(SocialFragment fragment){
@@ -269,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
             public void onFail(FacebookUtil.Fail fail) {
                 //Log.d(TAG,"Facebook fail");
 
-                progressDialog.hide();
+//                progressDialog.hide();
                 //if (fail == FacebookUtil.Fail.SessionOpen)
 //                showError(R.string.error_fb_login);
             }
@@ -287,41 +285,11 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         };
     }
 
-    private void initTwitterCallback(){
-        twitterCallback = new TwitterUtil.TwitterLoginCallback() {
-
-            @Override
-            public void onSuccess(String token, String secret, long uid) {
-                new AsyncTwitterPosts(progressDialog,paging).execute();
-            }
-
-            @Override
-            public void onFailed(String message) {
-                progressDialog.hide();
-                alertDialog.setMessage(message);
-                alertDialog.show();
-            }
-
-            @Override
-            public void onCanceled() {
-                progressDialog.hide();
-            }
-        };
-    }
-
     private class AsyncFacebookPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
         Response response;
         AsyncFacebookPosts(Response response){
             this.response =response;
         }
-        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-
-//        @Override
-//        protected ArrayList<SocialPost> InBackground(Void... params) {
-//            Log.i(TAG, "doInBackground");
-//
-//            return null;
-//        }
 
         @Override
         protected void onPostExecute(ArrayList<SocialPost> result) {
@@ -343,88 +311,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
             }
             return socialPosts;
         }
-
-        @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "onPreExecute");
-//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            progressDialog.show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            Log.i(TAG, "onProgressUpdate");
-        }
-
-    }
-
-    private class AsyncTwitterPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
-        ProgressDialog dialog;
-        int pagin;
-        AsyncTwitterPosts(ProgressDialog progressDialog, int pagin){
-            dialog= progressDialog;
-            this.pagin = pagin;
-        }
-
-//        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
-
-//        @Override
-//        protected ArrayList<SocialPost> InBackground(Void... params) {
-//            Log.i(TAG, "doInBackground");
-//
-//            return null;
-//        }
-
-        @Override
-        protected void onPostExecute(ArrayList<SocialPost> result) {
-            Log.i(TAG, "onPostExecute");
-//            socialFragment.setCallbackData(result);
-            socialFragment.clearFeed();
-            socialFragment.updateFeedTwitter(result);
-//            progressDialog.dismiss();
-            dialog.dismiss();
-            socialFragment.cancelRefresh();
-        }
-
-        @Override
-        protected ArrayList<SocialPost> doInBackground(Void... params) {
-            return  TwitterUtil.getInstance(MainActivity.this).getTwitterStatuses(MainActivity.this, pagin);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            Log.i(TAG, "onPreExecute");
-//            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-//            progressDialog.show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            Log.i(TAG, "onProgressUpdate");
-        }
-
-    }
-
-    private void createProgressDialog(){
-        progDialog = new ProgressDialog(this);
-        progDialog.setCancelable(false);
-        progDialog.setIndeterminate(true);
-        progressDialog = new ProgressDialog(this);
-//        progressDialog.setTitle(R.string.wait);
-        progressDialog.setCancelable(false);
-        progressDialog.setIndeterminate(true);
-
-        alertDialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.error)
-                .setPositiveButton(R.string.ok, null)
-                .create();
-    }
-
-    private void showError(int resID)
-    {
-        progressDialog.hide();
-        alertDialog.setMessage(getString(resID));
-//        alertDialog.show();
     }
 
         @Override
@@ -435,9 +321,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         UpdateManager.unregister();
     }
 
-    public void setSocialData(ArrayList<SocialPost>posts){
-        socialFragment.setCallbackData(posts);
-    }
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
