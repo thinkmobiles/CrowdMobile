@@ -31,18 +31,31 @@ public class YoutubeResponse {
     public class Items{
         private Id id;
         private Snippet snippet;
+        private ContentDetails contentDetails;
 
         public Snippet getSnippet() {
             return snippet;
         }
 
-        public void setSnippet(Snippet snippet) {
-            this.snippet = snippet;
+        public Id getId() {
+            return id;
+        }
+
+        public ContentDetails getContentDetails() {
+            return contentDetails;
         }
     }
 
     public class Id{
         private String videoId;
+
+        public String getVideoId() {
+            return videoId;
+        }
+
+        public void setVideoId(String videoId) {
+            this.videoId = videoId;
+        }
     }
 
     public class Snippet{
@@ -55,24 +68,20 @@ public class YoutubeResponse {
             return publishedAt;
         }
 
-        public void setPublishedAt(String publishedAt) {
-            this.publishedAt = publishedAt;
-        }
-
         public String getTitle() {
             return title;
-        }
-
-        public void setTitle(String title) {
-            this.title = title;
         }
 
         public Thumbnail getThumbnails() {
             return thumbnails;
         }
+    }
 
-        public void setThumbnails(Thumbnail thumbnails) {
-            this.thumbnails = thumbnails;
+    public class ContentDetails{
+        String duration;
+
+        public String getDuration() {
+            return duration;
         }
     }
 
