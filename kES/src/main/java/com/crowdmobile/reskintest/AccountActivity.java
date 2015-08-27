@@ -45,29 +45,12 @@ public class AccountActivity extends Activity {
         TwitterUtil.getInstance(activity.getApplicationContext()).logout();
 
         if (facebookUtil == null)
-            facebookUtil =new FacebookUtil(activity, new LogoutCallback());
+            facebookUtil =new FacebookUtil(activity);
 
         facebookUtil.logout(activity.getApplicationContext());
 
         AccountActivity.open(activity.getApplicationContext());
         PreferenceUtils.setActiveFragment(activity.getApplicationContext(), NavigationBar.Attached.Feed.ordinal());
-    }
-
-    static class LogoutCallback implements FacebookUtil.FacebookCallback{
-        @Override
-        public void onFail(FacebookUtil.Fail fail) {
-
-        }
-
-        @Override
-        public void onUserInfo(FacebookUtil.UserInfo userInfo) {
-
-        }
-
-        @Override
-        public void onStatuses(Response response) {
-
-        }
     }
 
 	public static void open(Context context)
@@ -103,7 +86,7 @@ public class AccountActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_login);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
-		facebookUtil = new FacebookUtil(this, fbCallback);
+		facebookUtil = new FacebookUtil(this);
         btFacebook = findViewById(R.id.btFacebook);
 		btFacebook.setOnClickListener(onClickListener);
         btTwitter = findViewById(R.id.btTwitter);
@@ -234,10 +217,6 @@ public class AccountActivity extends Activity {
             KES.shared().getAccountManager().loginFacebook(userInfo.token,userInfo.uid);
         }
 
-        @Override
-        public void onStatuses(Response response) {
-
-        }
     };
 
     TwitterUtil.TwitterLoginCallback twitterCallback = new TwitterUtil.TwitterLoginCallback() {

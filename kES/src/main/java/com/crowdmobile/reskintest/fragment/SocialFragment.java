@@ -74,9 +74,6 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private SocialAdapter socialAdapter;
     private LinearLayoutManager mLayoutManager;
     private ArrayList<SocialPost> postsList, feedFacebook, feedTwitter, feedYoutube;
-    private View footer;
-    private Button btnRetry;
-    private ProgressBar progress;
     private State state = State.FACEBOOK;
     private int twittre_paging = 1;
     private boolean isRefresh = false;
@@ -89,11 +86,11 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         switch (state){
             case FACEBOOK:
                 activity.clearFacebookNextInfo();
-                activity.executeFacebookGetPost();
+                activity.executeFacebookGetPost(this);
                 break;
             case TWITTER:
                 activity.clearTwitterNextInfo();
-                activity.executeTwitterGetPost(1);
+                activity.executeTwitterGetPost(this,1);
                 break;
             case YOUTUBE:
                 activity.executeYoutubeGetPost(this);
@@ -139,10 +136,6 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         selectTab(State.FACEBOOK, feedFacebook);
 
         return root;
-    }
-
-    public void setCallbackData(ArrayList<SocialPost> data){
-        socialAdapter.updateData(data);
     }
 
     private void findUI(View v){
@@ -229,10 +222,10 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
             progressBar.setVisibility(View.VISIBLE);
             switch (state) {
                 case FACEBOOK:
-                    activity.executeFacebookGetPost();
+                    activity.executeFacebookGetPost(this);
                     break;
                 case TWITTER:
-                    activity.executeTwitterGetPost(twittre_paging);
+                    activity.executeTwitterGetPost(this, twittre_paging);
                     break;
                 case YOUTUBE:
                     activity.executeYoutubeGetPost(this);
@@ -242,16 +235,8 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         }
     }
 
-
-
     private boolean isFilledList(ArrayList<SocialPost> list){
         return (list != null && list.size() != 0);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        activity.setFragment(this);
     }
 
     private void setTabsVisibility(boolean isVisible){
@@ -293,10 +278,10 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         isRefresh = false;
         switch (state){
             case FACEBOOK:
-                activity.executeFacebookGetPost();
+                activity.executeFacebookGetPost(this);
                 break;
             case TWITTER:
-                activity.executeTwitterGetPost(++twittre_paging);
+                activity.executeTwitterGetPost(this,++twittre_paging);
                 break;
             case YOUTUBE:
                 activity.executeYoutubeGetNextPost(this);

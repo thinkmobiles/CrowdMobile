@@ -4,10 +4,12 @@ package com.crowdmobile.reskintest.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.crowdmobile.reskintest.R;
+import com.crowdmobile.reskintest.fragment.SocialFragment;
 import com.crowdmobile.reskintest.model.PostOwner;
 import com.crowdmobile.reskintest.model.SocialPost;
 import com.facebook.FacebookException;
@@ -43,6 +45,7 @@ public class FacebookUtil {
     private boolean userInfoCalled;
     private String nextToken = "";
     private String until = "";
+    private SocialFragment socialFragment;
 
     public static class UserInfo {
         public String token;
@@ -59,7 +62,6 @@ public class FacebookUtil {
 
         public void onUserInfo(UserInfo userInfo);
 
-        void onStatuses(Response response);
     }
 
     public void clearNextToken() {
@@ -79,11 +81,8 @@ public class FacebookUtil {
         }
     }
 
-    public FacebookUtil(Activity activity, FacebookCallback callback) {
+    public FacebookUtil(Activity activity) {
         mActivity = activity;
-        if (callback == null)
-            throw new IllegalStateException("callback can't be null");
-        this.callback = callback;
     }
 
     private void closeSession() {
@@ -122,8 +121,8 @@ public class FacebookUtil {
         }
     }
 
-    public void executeGetPosts() {
-
+    public void executeGetPosts(SocialFragment socialFragment) {
+        this.socialFragment = socialFragment;
         session = Session.getActiveSession();
         if (session != null) {
             makeGetPostRequest(session, nextToken, until);
@@ -171,8 +170,6 @@ public class FacebookUtil {
 
     }
 
-    ;
-
     class FBStatusForGetPosts implements Session.StatusCallback {
 
         @Override
@@ -193,7 +190,7 @@ public class FacebookUtil {
 
         @Override
         public void onCompleted(Response response) {
-            callback.onStatuses(response);
+            new AsyncFacebookPosts().execute(response);
         }
     }
 
@@ -251,6 +248,27 @@ public class FacebookUtil {
 
         return socialPosts;
     }
+    private class AsyncFacebookPosts extends AsyncTask<Response, Void, ArrayList<SocialPost>> {
+
+        @Override
+        protected ArrayList<SocialPost> doInBackground(Response... params) {
+            ArrayList<SocialPost> socialPosts= new ArrayList<>();
+            try {
+                socialPosts = getListPosts(params[0]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return socialPosts;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<SocialPost> result) {
+            socialFragment.clearFeed();
+            socialFragment.updateFeedFacebook(result);
+            socialFragment.cancelRefresh();
+        }
+    }
+
 
     private Map<String, String> extractParamsFromURL(final String url) throws URISyntaxException {
         return new HashMap<String, String>() {{

@@ -90,15 +90,10 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private float startScaleFinal;
     private ImageView thumbView;
     private boolean layerVisible = false;
-    private FacebookUtil.FacebookCallback fbCallback;
-//    private FacebookLogin facebookLogin;
     private YoutubeUtil youtubeUtil;
     private FacebookUtil facebookUtil;
     private TwitterUtil.LoginManager twitterLogin;
     TwitterUtil.TwitterLoginCallback twitterCallback;
-    private SocialFragment socialFragment;
-//    private  int paging=1;
-
 
     public static void open(Context context)
 	{
@@ -142,11 +137,9 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 	protected void onCreate(Bundle savedInstanceState) {
 //        Configuration configuration = getResources().getConfiguration();
 //        Log.d("HEIGHT",Float.toString(configuration.screenHeightDp));
-//        createProgressDialog();
-        initFacebookCallback();
-//        initTwitterCallback();
 
-        facebookUtil = new FacebookUtil(this, fbCallback);
+
+        facebookUtil = new FacebookUtil(this);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
         youtubeUtil = new YoutubeUtil(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -223,12 +216,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         navigationBar.navigateTo(a[saved], false);
     }
 
-    public void executeFacebookGetPost(){
-//        progressDialog.setMessage(getString(R.string.fb_login));
-//        facebookLogin.execute();
-        facebookUtil.executeGetPosts();
-
-
+    public void executeFacebookGetPost(SocialFragment socialFragment){
+        facebookUtil.executeGetPosts(socialFragment);
     }
 
     public void clearTwitterNextInfo(){
@@ -239,17 +228,8 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         facebookUtil.clearNextToken();
     }
 
-    public void executeTwitterGetPost(int paging){
-//        this.paging = paging;
-//        progressDialog.setMessage(getString(R.string.twitter_login));
-
-//        if(TwitterUtil.getInstance(getApplicationContext()).isAuthenticated()) {
-         TwitterUtil.getInstance(getApplicationContext()).executeGetPosts(socialFragment,paging);
-//            new AsyncTwitterPosts(progressDialog, paging).execute();
-//        } else {
-////            progressDialog.show();
-//            twitterLogin.login(this);
-//        }
+    public void executeTwitterGetPost(SocialFragment socialFragment,int paging){
+         TwitterUtil.getInstance(getApplicationContext()).executeGetPosts(socialFragment, paging);
     }
 
     public void executeYoutubeGetPost(SocialFragment fragment){
@@ -260,60 +240,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         youtubeUtil.getNextPosts(fragment);
     }
 
-    private void initFacebookCallback() {
-
-        fbCallback = new FacebookUtil.FacebookCallback() {
-            @Override
-            public void onFail(FacebookUtil.Fail fail) {
-                //Log.d(TAG,"Facebook fail");
-
-//                progressDialog.hide();
-                //if (fail == FacebookUtil.Fail.SessionOpen)
-//                showError(R.string.error_fb_login);
-            }
-
-            @Override
-            public void onUserInfo(FacebookUtil.UserInfo userInfo) {
-
-
-            }
-
-            @Override
-            public void onStatuses(Response response ) {
-                new AsyncFacebookPosts(response).execute();
-            }
-        };
-    }
-
-    private class AsyncFacebookPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {
-        Response response;
-        AsyncFacebookPosts(Response response){
-            this.response =response;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<SocialPost> result) {
-            Log.i(TAG, "onPostExecute");
-//            socialFragment.setCallbackData(result);
-            socialFragment.clearFeed();
-            socialFragment.updateFeedFacebook(result);
-//            progressDialog.dismiss();
-            socialFragment.cancelRefresh();
-        }
-
-        @Override
-        protected ArrayList<SocialPost> doInBackground(Void... params) {
-            ArrayList<SocialPost> socialPosts= new ArrayList<>();
-            try {
-                socialPosts = facebookUtil.getListPosts(response);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return socialPosts;
-        }
-    }
-
-        @Override
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         KES.shared().getAccountManager().unRegisterListener(accountListener);
@@ -433,11 +360,6 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         }
 
     };
-
-    public void setFragment(SocialFragment fragment){
-        socialFragment =fragment;
-    }
-
 
     @Override
     protected void onResume() {
