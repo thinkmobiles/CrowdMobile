@@ -35,8 +35,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class YoutubeUtil {
 
+    public static final String API_KEY = "AIzaSyDxcOyknQ5yWoK60YODjRdVkD_t5sSLQJs";
     private static final String TAG = YoutubeUtil.class.getSimpleName();
-    private static final String API_KEY = "AIzaSyDxcOyknQ5yWoK60YODjRdVkD_t5sSLQJs";
     private static final String CHANNELID = "UC1UHSsR2ZL52UExsJAQaGzg";
     private String nextPageToken;
     private AsynkYoutubeFeed youtubeTask;
@@ -141,13 +141,28 @@ public class YoutubeUtil {
                                 channelSnippet.getTitle(),
                                 channelSnippet.getThumbnails().getHigh().getUrl()
                         );
+
+                        httpGet.setURI(URI.create(
+                                "https://www.googleapis.com/youtube/v3/videos?" +
+                                        "part=contentDetails" +
+                                        "&id=" + item.getId().getVideoId() +
+                                        "&fields=items%2FcontentDetails" +
+                                        "&key=" + YoutubeUtil.API_KEY
+                        ));
+                        response = httpclient.execute(httpGet);
+
+                        reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                        YoutubeResponse videoResponse = gson.fromJson(reader, YoutubeResponse.class);
+                        reader.close();
+
                         SocialPost socialPost = new SocialPost(
-                                "0",
+                                item.getId().getVideoId(),
                                 item.getSnippet().getTitle(),
                                 item.getSnippet().getThumbnails().getHigh().getUrl(),
                                 DateParser.dateParce(DateParser.getDateFormatYoutube(item.getSnippet().getPublishedAt())),
                                 postOwner
                         );
+                        socialPost.setDuration(videoResponse.getItems().get(0).getContentDetails().getDuration());
                         socialPosts.add(socialPost);
                     }
                 }

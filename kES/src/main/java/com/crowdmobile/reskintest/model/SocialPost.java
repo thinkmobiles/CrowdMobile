@@ -5,7 +5,7 @@ package com.crowdmobile.reskintest.model;
  */
 public class SocialPost {
 
-    private String id, message, full_picture, created_time;
+    private String id, message, full_picture, created_time, duration;
     private PostOwner postOwner;
 
     public SocialPost() {
@@ -18,6 +18,7 @@ public class SocialPost {
         this.message = description;
         this.full_picture = image;
         this.created_time = create_date;
+        this.duration = "0";
         this.postOwner = postOwner;
     }
 
@@ -59,6 +60,14 @@ public class SocialPost {
 
     public void setCreate_date(String create_date) {
         this.created_time = create_date;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     @Override

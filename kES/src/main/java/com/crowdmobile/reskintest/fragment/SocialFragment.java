@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ import com.crowdmobile.reskintest.model.YoutubeResponse;
 import com.crowdmobile.reskintest.util.AnimationUtils;
 import com.crowdmobile.reskintest.util.PreferenceUtils;
 import com.crowdmobile.reskintest.util.YoutubeUtil;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -60,7 +63,7 @@ import java.util.List;
 /**
  * Created by john on 18.08.15.
  */
-public class SocialFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class SocialFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener, SocialAdapter.OnItemClick {
 
     private static final String TAG = SocialFragment.class.getSimpleName();
     private static final String CHANNELID = "UCEeYPJ1GSYWf0RXS8nARHjg";
@@ -81,7 +84,8 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private int twittre_paging = 1;
     private boolean isRefresh = false;
 
-    private enum State {FACEBOOK, TWITTER, YOUTUBE}
+
+    public enum State {FACEBOOK, TWITTER, YOUTUBE}
 
     @Override
     public void onRefresh() {
@@ -107,19 +111,16 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
 
     public void updateFeedFacebook(ArrayList<SocialPost> list){
         feedFacebook.addAll(list);
-        postsList = feedFacebook;
-        updateList(postsList);
+        updateList(feedFacebook);
     }
 
     public void updateFeedTwitter(ArrayList<SocialPost> list) {
         feedTwitter.addAll(list);
-        postsList = feedTwitter;
-        updateList(postsList);
+        updateList(feedTwitter);
     }
 
     public void updateFeedYoutube(ArrayList<SocialPost> list) {
         feedYoutube.addAll(list);
-        postsList = feedYoutube;
         updateList(feedYoutube);
     }
 
@@ -142,7 +143,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     }
 
     public void setCallbackData(ArrayList<SocialPost> data){
-        socialAdapter.updateData(data);
+        socialAdapter.updateData(data, state);
     }
 
     private void findUI(View v){
@@ -165,12 +166,13 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         youtube.setOnClickListener(this);
         arrowRight.setOnClickListener(this);
         recyclerView.addOnScrollListener(scrollListener);
+        recyclerView.setOnClickListener(this);
         refreshLayout.setOnRefreshListener(this);
     }
 
     private void setAdapter() {
-        postsList = new ArrayList<>();
-        socialAdapter = new SocialAdapter(activity, postsList);
+        socialAdapter = new SocialAdapter(activity);
+        socialAdapter.setOnItemClickListener(this);
         recyclerView.setAdapter(socialAdapter);
     }
 
@@ -199,7 +201,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     private void updateList(ArrayList<SocialPost> list){
         socialAdapter.setIsLoading(false);
         progressBar.setVisibility(View.GONE);
-        socialAdapter.updateData(list);
+        socialAdapter.updateData(list, state);
     }
 
     @Override
@@ -214,8 +216,23 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
                 break;
             case R.id.btnYoutube:
                 selectTab(State.YOUTUBE, feedYoutube);
-                break;            case R.id.btnArrowRight:
+                break;
+            case R.id.btnArrowRight:
                 setTabsVisibility(true);
+                break;
+        }
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        SocialPost post = socialAdapter.getItem(position);
+        switch (state) {
+            case FACEBOOK:
+                break;
+            case TWITTER:
+                break;
+            case YOUTUBE:
+                startPlayer(post.getId());
                 break;
         }
     }
@@ -242,6 +259,34 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         }
     }
 
+    private static final int REQ_START_STANDALONE_PLAYER = 1;
+    private static final int REQ_RESOLVE_SERVICE_MISSING = 2;
+
+    public void startPlayer(String videoId){
+
+        Intent intent = YouTubeStandalonePlayer.createVideoIntent(
+                    activity,
+                    YoutubeUtil.API_KEY,
+                    videoId,
+                    0,
+                    true,
+                    true);
+
+        if (intent != null) {
+            if (canResolveIntent(intent)) {
+                startActivityForResult(intent, REQ_START_STANDALONE_PLAYER);
+            } else {
+                // Could not resolve the intent - must need to install or update the YouTube API service.
+                YouTubeInitializationResult.SERVICE_MISSING
+                        .getErrorDialog(activity, REQ_RESOLVE_SERVICE_MISSING).show();
+            }
+        }
+    }
+
+    private boolean canResolveIntent(Intent intent) {
+        List<ResolveInfo> resolveInfo = activity.getPackageManager().queryIntentActivities(intent, 0);
+        return resolveInfo != null && !resolveInfo.isEmpty();
+    }
 
 
     private boolean isFilledList(ArrayList<SocialPost> list){
@@ -281,7 +326,6 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            Log.e("pos", mLayoutManager.findLastVisibleItemPosition() + " " + socialAdapter.getItemCount());
             if(mLayoutManager.findLastVisibleItemPosition() == socialAdapter.getItemCount() - 2 && !socialAdapter.isLoading()){
                 socialAdapter.setIsLoading(true);
                 loadMorePosts();
@@ -303,4 +347,6 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
                 break;
         }
     }
+
+
 }

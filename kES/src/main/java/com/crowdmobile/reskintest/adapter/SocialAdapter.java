@@ -10,7 +10,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.crowdmobile.reskintest.R;
+import com.crowdmobile.reskintest.fragment.SocialFragment;
 import com.crowdmobile.reskintest.model.SocialPost;
+import com.crowdmobile.reskintest.util.DateParser;
+import com.crowdmobile.reskintest.widget.FixedARImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -23,14 +26,17 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
     private static final int TYPE_FOOTER = 0;
     private static final int TYPE_ITEM = 1;
 
+    private OnItemClick mOnItemClickListener;
+
     private Activity activity;
     private ArrayList<SocialPost> items;
     private boolean isLoading = false;
     private int countItems = 0;
+    private SocialFragment.State state = SocialFragment.State.FACEBOOK;
 
-    public SocialAdapter(Activity activity, ArrayList<SocialPost> data) {
+    public SocialAdapter(Activity activity) {
         this.activity = activity;
-        items = data;
+        items = new ArrayList<>();
         countItems = items.size();
     }
 
@@ -70,6 +76,8 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
             }
         } else {
 
+            holder.setPosition(position);
+
             SocialPost post = items.get(position);
             holder.ownerName.setText(post.getPostOwner().getName());
             Picasso.with(activity.getApplicationContext())
@@ -83,6 +91,19 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
                 holder.image.setVisibility(View.VISIBLE);
                 Picasso.with(activity.getApplicationContext())
                         .load(post.getImage()).resize(600, 600).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
+
+                if(state == SocialFragment.State.YOUTUBE){
+                    holder.image.setVisibility(View.GONE);
+                    holder.image.setAspectRatio(3f / 4f);
+                    holder.image.setVisibility(View.VISIBLE);
+                    holder.duration.setText(DateParser.parseDuration(post.getDuration()));
+                    holder.duration.setVisibility(View.VISIBLE);
+                } else {
+                    holder.image.setVisibility(View.GONE);
+                    holder.image.setAspectRatio(1f);
+                    holder.image.setVisibility(View.VISIBLE);
+                    holder.duration.setVisibility(View.GONE);
+                }
             } else
                 holder.image.setVisibility(View.GONE);
 
@@ -92,11 +113,17 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
 
     SocialPost footer = new SocialPost();
 
-    public void updateData(ArrayList<SocialPost>socialPosts){
-        socialPosts.add(footer);
-        items = socialPosts;
+    public void updateData(ArrayList<SocialPost>socialPosts, SocialFragment.State state){
+        this.state = state;
+        items = new ArrayList<>();
+        items.addAll(socialPosts);
+        items.add(footer);
         countItems = items.size();
         notifyDataSetChanged();
+    }
+
+    public  void setOnItemClickListener(final OnItemClick _onItemClick) {
+        mOnItemClickListener = _onItemClick;
     }
 
     @Override
@@ -104,11 +131,17 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
         return countItems;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public SocialPost getItem(int position){
+        return items.get(position);
+    }
 
-        TextView ownerName, description, create_time;
-        ImageView avatar, image;
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        TextView ownerName, description, create_time, duration;
+        FixedARImageView image;
+        ImageView avatar;
         ProgressBar progressBar;
+        int posItem;
 
         public ViewHolder(View itemView, int type) {
             super(itemView);
@@ -116,15 +149,32 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
                 ownerName = (TextView) itemView.findViewById(R.id.tvNameOwner);
                 description = (TextView) itemView.findViewById(R.id.tvDescription);
                 avatar = (ImageView) itemView.findViewById(R.id.imgAvatar);
-                image = (ImageView) itemView.findViewById(R.id.imgFeedPic);
+                image = (FixedARImageView) itemView.findViewById(R.id.imgFeedPic);
                 create_time = (TextView) itemView.findViewById(R.id.createDate);
+                duration = (TextView) itemView.findViewById(R.id.tvDuration);
+                image.setOnClickListener(this);
             } else {
                 progressBar = (ProgressBar) itemView.findViewById(R.id.progress);
                 itemView.findViewById(R.id.btRetry).setVisibility(View.GONE);
             }
+
         }
 
+        @Override
+        public void onClick(View v) {
+            if (mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClicked(posItem);
+            }
+        }
 
+        public void setPosition(int position){
+            posItem = position;
+        }
+
+    }
+
+    public interface OnItemClick {
+        void onItemClicked(int position);
     }
 }
 

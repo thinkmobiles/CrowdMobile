@@ -1,5 +1,7 @@
 package com.crowdmobile.reskintest.util;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +41,53 @@ public abstract class DateParser {
             e.printStackTrace();
         }
         return date;
+    }
+
+    public static String parseDuration(String duration){
+        String result = "";
+        String time = duration.substring(2);
+        int indexH = time.lastIndexOf("H");
+        int indexM = time.lastIndexOf("M");
+        int indexS = time.lastIndexOf("S");
+        Log.e("index", indexH + " " + indexM + " " + indexS);
+        if(indexH != -1){
+            result = result + time.substring(0, indexH) + ":";
+            if(indexM != -1){
+                result = result +
+                        ((indexM - indexH > 2) ? time.substring(indexH + 1, indexM) : "0" + time.substring(indexH + 1, indexM))
+                        + ":";
+                if(indexS != -1){
+                    result = result +
+                            (indexS - indexM > 2 ? time.substring(indexM + 1, indexS) : "0" + time.substring(indexM + 1, indexS));
+                } else {
+                    result += "00";
+                }
+            } else {
+                if(indexS != -1){
+                    result = result +
+                            "00:" +
+                            (indexS - indexH > 2 ? time.substring(indexH + 1, indexS) : "0" + time.substring(indexH + 1, indexS));
+                } else {
+                    result += "00:00";
+                }
+            }
+        } else {
+            if(indexM != -1){
+                result = result + time.substring(0, indexM) + ":";
+                if(indexS != -1){
+                    result = result +
+                            (indexS - indexM > 2 ? time.substring(indexM + 1, indexS) : "0" + time.substring(indexM + 1, indexS));
+                } else {
+                    result += "00";
+                }
+            } else {
+                if(indexS != -1)
+                    result = result + "0:" + time.substring(0, indexS);
+                else
+                    result += "00:00";
+            }
+        }
+        return result;
     }
 
 
