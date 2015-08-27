@@ -81,8 +81,11 @@ public class FacebookUtil {
         }
     }
 
-    public FacebookUtil(Activity activity) {
+    public FacebookUtil(Activity activity, FacebookCallback callback) {
         mActivity = activity;
+        if (callback == null)
+            throw new IllegalStateException("callback can't be null");
+        this.callback = callback;
     }
 
     private void closeSession() {

@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
     private FacebookUtil facebookUtil;
     private TwitterUtil.LoginManager twitterLogin;
     TwitterUtil.TwitterLoginCallback twitterCallback;
+    private FacebookUtil.FacebookCallback fbCallback;
 
     public static void open(Context context)
 	{
@@ -137,9 +138,9 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 	protected void onCreate(Bundle savedInstanceState) {
 //        Configuration configuration = getResources().getConfiguration();
 //        Log.d("HEIGHT",Float.toString(configuration.screenHeightDp));
+        initFacebookCallback();
 
-
-        facebookUtil = new FacebookUtil(this);
+        facebookUtil = new FacebookUtil(this,fbCallback);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
         youtubeUtil = new YoutubeUtil(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -246,6 +247,26 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
         KES.shared().getAccountManager().unRegisterListener(accountListener);
         mHandler.removeCallbacksAndMessages(null);
         UpdateManager.unregister();
+    }
+    private void initFacebookCallback() {
+
+        fbCallback = new FacebookUtil.FacebookCallback() {
+            @Override
+            public void onFail(FacebookUtil.Fail fail) {
+                //Log.d(TAG,"Facebook fail");
+
+//                progressDialog.hide();
+                //if (fail == FacebookUtil.Fail.SessionOpen)
+//                showError(R.string.error_fb_login);
+            }
+
+            @Override
+            public void onUserInfo(FacebookUtil.UserInfo userInfo) {
+
+
+            }
+
+        };
     }
 
     @Override
@@ -842,7 +863,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
                 .ofFloat(expandedImageView, View.X, startBounds.left))
                 .with(ObjectAnimator
                         .ofFloat(expandedImageView,
-                                View.Y,startBounds.top))
+                                View.Y, startBounds.top))
                 .with(ObjectAnimator
                         .ofFloat(expandedImageView,
                                 View.SCALE_X, startScaleFinal))
