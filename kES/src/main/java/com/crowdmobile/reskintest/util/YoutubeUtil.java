@@ -1,12 +1,6 @@
 package com.crowdmobile.reskintest.util;
 
-import android.accounts.AccountManagerCallback;
-import android.accounts.AccountManagerFuture;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.crowdmobile.reskintest.MainActivity;
@@ -160,7 +154,7 @@ public class YoutubeUtil {
                                 item.getSnippet().getTitle(),
                                 item.getSnippet().getThumbnails().getHigh().getUrl(),
                                 DateParser.dateParce(DateParser.getDateFormatYoutube(item.getSnippet().getPublishedAt())),
-                                postOwner
+                                "", postOwner
                         );
                         socialPost.setDuration(videoResponse.getItems().get(0).getContentDetails().getDuration());
                         socialPosts.add(socialPost);

@@ -9,6 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -87,14 +88,14 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
     @Override
     public void onRefresh() {
         isRefresh = true;
-        switch (state){
+        switch (state) {
             case FACEBOOK:
                 activity.clearFacebookNextInfo();
                 activity.executeFacebookGetPost(this);
                 break;
             case TWITTER:
                 activity.clearTwitterNextInfo();
-                activity.executeTwitterGetPost(this,1);
+                activity.executeTwitterGetPost(this, 1);
                 break;
             case YOUTUBE:
                 activity.executeYoutubeGetPost(this);
@@ -106,7 +107,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         refreshLayout.setRefreshing(false);
     }
 
-    public void updateFeedFacebook(ArrayList<SocialPost> list){
+    public void updateFeedFacebook(ArrayList<SocialPost> list) {
         feedFacebook.addAll(list);
         updateList(feedFacebook);
     }
@@ -139,14 +140,10 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         return root;
     }
 
-    public void setCallbackData(ArrayList<SocialPost> data){
-        socialAdapter.updateData(data, state);
-    }
-
-    private void findUI(View v){
-        facebook = (ImageView)v.findViewById(R.id.btnFacebook);
-        twitter = (ImageView)v.findViewById(R.id.btnTwitter);
-        youtube = (ImageView)v.findViewById(R.id.btnYoutube);
+    private void findUI(View v) {
+        facebook = (ImageView) v.findViewById(R.id.btnFacebook);
+        twitter = (ImageView) v.findViewById(R.id.btnTwitter);
+        youtube = (ImageView) v.findViewById(R.id.btnYoutube);
         arrowRight = (ImageView) v.findViewById(R.id.btnArrowRight);
         refreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swipe_container);
         recyclerView = (RecyclerView) v.findViewById(R.id.rvFeed);
@@ -179,8 +176,8 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         feedYoutube = new ArrayList<>();
     }
 
-    public void clearFeed(){
-        if(isRefresh) {
+    public void clearFeed() {
+        if (isRefresh) {
             switch (state) {
                 case FACEBOOK:
                     feedFacebook.clear();
@@ -195,7 +192,7 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         }
     }
 
-    private void updateList(ArrayList<SocialPost> list){
+    private void updateList(ArrayList<SocialPost> list) {
         socialAdapter.setIsLoading(false);
         progressBar.setVisibility(View.GONE);
         socialAdapter.updateData(list, state);
@@ -225,8 +222,10 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         SocialPost post = socialAdapter.getItem(position);
         switch (state) {
             case FACEBOOK:
+                startActivity(getOpenFacebookIntent(post));
                 break;
             case TWITTER:
+                startActivity(getOpenTwitterPost(post));
                 break;
             case YOUTUBE:
                 startPlayer(post.getId());
@@ -234,11 +233,11 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
         }
     }
 
-    private void selectTab(State _state, ArrayList<SocialPost> feedList){
+    private void selectTab(State _state, ArrayList<SocialPost> feedList) {
         state = _state;
-        if(isFilledList(feedList)){
+        if (isFilledList(feedList)) {
             updateList(feedList);
-            mLayoutManager.scrollToPositionWithOffset(0,0);
+            mLayoutManager.scrollToPositionWithOffset(0, 0);
         } else {
             progressBar.setVisibility(View.VISIBLE);
             switch (state) {
@@ -258,6 +257,27 @@ public class SocialFragment extends Fragment implements View.OnClickListener, Sw
 
     private static final int REQ_START_STANDALONE_PLAYER = 1;
     private static final int REQ_RESOLVE_SERVICE_MISSING = 2;
+
+    public Intent getOpenFacebookIntent(SocialPost post) {
+        try {
+            activity.getPackageManager().getPackageInfo("com.facebook.katana", 0);
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("fb://post/" + post.getId() + "?owner=" + post.getPostOwner().getId()));
+        } catch (Exception e) {
+            return new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLink()));
+        }
+    }
+
+    public Intent getOpenTwitterPost(SocialPost post){
+        try {
+            // get the Twitter app if possible
+            activity.getPackageManager().getPackageInfo("com.twitter.android", 0);
+            return new Intent(Intent.ACTION_VIEW, Uri.parse("twitter://status?status_id=" + post.getId()));
+//            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } catch (Exception e) {
+            // no Twitter app, revert to browser
+            return new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLink()));
+        }
+    }
 
     public void startPlayer(String videoId){
 

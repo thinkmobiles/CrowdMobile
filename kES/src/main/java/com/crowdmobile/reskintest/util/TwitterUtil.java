@@ -1,7 +1,6 @@
 package com.crowdmobile.reskintest.util;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.widget.RelativeLayout;
 
 import com.crowdmobile.reskintest.AppCfg;
-import com.crowdmobile.reskintest.MainActivity;
 import com.crowdmobile.reskintest.R;
 import com.crowdmobile.reskintest.TwitterActivity;
 import com.crowdmobile.reskintest.fragment.SocialFragment;
@@ -322,6 +320,8 @@ public class TwitterUtil {
             for (Status status : statuses) {
                 String image_data = null;
 
+
+
                 if (status.getMediaEntities() != null && status.getMediaEntities().length != 0)
                     if (status.getMediaEntities()[0].getType().equals("photo"))
                         image_data = status.getMediaEntities()[0].getMediaURLHttps();
@@ -336,7 +336,7 @@ public class TwitterUtil {
                     desc = str.substring(0, ((str.lastIndexOf("http") != -1) ? str.lastIndexOf("http") : str.length() - 1));
 
                 PostOwner postOwner = new PostOwner(String.valueOf(status.getUser().getId()), status.getUser().getScreenName(), status.getUser().getOriginalProfileImageURLHttps());
-                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()), desc, image_data, date, postOwner);
+                SocialPost socialPost = new SocialPost(String.valueOf(status.getId()), desc, image_data, date, getTweetLink(status), postOwner);
                 socialPosts.add(socialPost);
             }
         } catch (TwitterException te) {
@@ -351,6 +351,11 @@ public class TwitterUtil {
         this.socialFragment = socialFragment;
         this.paging = paging;
         new AsyncTwitterPosts().execute();
+    }
+
+    private String getTweetLink(Status status) {
+        return "http://twitter.com/" + status.getUser().getScreenName()
+                + "/status/" + status.getId();
     }
 
     private class AsyncTwitterPosts extends AsyncTask<Void, Void, ArrayList<SocialPost>> {

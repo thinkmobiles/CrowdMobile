@@ -207,7 +207,7 @@ public class FacebookUtil {
 
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,message,full_picture, created_time,from");
+        parameters.putString("fields", "id,message,full_picture, created_time,from,link");
         parameters.putString("paging_token", nextPaginToken);
         parameters.putString("limit", "9");
         parameters.putString("until", until);
