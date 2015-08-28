@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crowdmobile.reskintest.AppCfg;
 import com.crowdmobile.reskintest.MainActivity;
 import com.crowdmobile.reskintest.fragment.SocialFragment;
 import com.crowdmobile.reskintest.model.PostOwner;
@@ -24,6 +25,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
@@ -64,13 +66,12 @@ public class YoutubeUtil {
                         "&fields=items(id%2Csnippet)%2CnextPageToken" +
                         "&key=" + API_KEY
         );
-        try {
-            fragment.clearFeed();
-            fragment.updateFeedYoutube(youtubeTask.get());
+//        try {
+//            fragment.clearFeed();
 //            fragment.setCallbackData(youtubeTask.get());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+//        } catch (InterruptedException | ExecutionException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void getNextPosts(SocialFragment fragment){
@@ -93,11 +94,11 @@ public class YoutubeUtil {
                             "&fields=items(id%2Csnippet)%2CnextPageToken" +
                             "&key=" + API_KEY
             );
-            try {
-                fragment.updateFeedYoutube(youtubeTask.get());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                fragment.updateFeedYoutube(youtubeTask.get());
+//            } catch (InterruptedException | ExecutionException e) {
+//                e.printStackTrace();
+//            }
         } else {
             fragment.updateFeedYoutube(new ArrayList<SocialPost>());
         }
@@ -162,8 +163,13 @@ public class YoutubeUtil {
                                 DateParser.dateParce(DateParser.getDateFormatYoutube(item.getSnippet().getPublishedAt())),
                                 postOwner
                         );
-                        socialPost.setDuration(videoResponse.getItems().get(0).getContentDetails().getDuration());
-                        socialPosts.add(socialPost);
+                        if (!videoResponse.getItems().isEmpty()) {
+                            socialPost.setDuration(videoResponse.getItems().get(0).getContentDetails().getDuration());
+                        }
+
+                        if (item.getId() != null && item.getId().getVideoId() != null) {
+                            socialPosts.add(socialPost);
+                        }
                     }
                 }
 
@@ -179,6 +185,7 @@ public class YoutubeUtil {
         @Override
         protected void onPostExecute(ArrayList<SocialPost> socialPosts) {
             super.onPostExecute(socialPosts);
+            fragment.updateFeedYoutube(socialPosts);
             fragment.cancelRefresh();
         }
     }
