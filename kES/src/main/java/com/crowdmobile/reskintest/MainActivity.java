@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationBar.Nav
 
         facebookUtil = new FacebookUtil(this,fbCallback);
         twitterLogin = TwitterUtil.getInstance(this).getLoginManager(twitterCallback);
-        youtubeUtil = new YoutubeUtil(this);
+        youtubeUtil = new YoutubeUtil();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         if (Build.VERSION.SDK_INT >= 21) {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);

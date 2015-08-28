@@ -49,7 +49,6 @@ public abstract class DateParser {
         int indexH = time.lastIndexOf("H");
         int indexM = time.lastIndexOf("M");
         int indexS = time.lastIndexOf("S");
-        Log.e("index", indexH + " " + indexM + " " + indexS);
         if(indexH != -1){
             result = result + time.substring(0, indexH) + ":";
             if(indexM != -1){
@@ -93,7 +92,6 @@ public abstract class DateParser {
 
     public static String dateParce(Date _date) {
         SimpleDateFormat format = new SimpleDateFormat("MM-dd HH:mm");
-        String formatedDate = format.format(_date);
-        return formatedDate;
+        return format.format(_date);
     }
 }

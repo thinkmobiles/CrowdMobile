@@ -1,6 +1,11 @@
 package com.crowdmobile.reskintest.util;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 
 import com.crowdmobile.reskintest.AppCfg;
@@ -9,6 +14,7 @@ import com.crowdmobile.reskintest.fragment.SocialFragment;
 import com.crowdmobile.reskintest.model.PostOwner;
 import com.crowdmobile.reskintest.model.SocialPost;
 import com.crowdmobile.reskintest.model.YoutubeResponse;
+import com.facebook.Response;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -34,24 +40,21 @@ public class YoutubeUtil {
     public static final String API_KEY = "AIzaSyDxcOyknQ5yWoK60YODjRdVkD_t5sSLQJs";
     private static final String TAG = YoutubeUtil.class.getSimpleName();
     private static final String CHANNELID = "UC1UHSsR2ZL52UExsJAQaGzg";
-    private String nextPageToken;
+    private static final String HTTPS_GET_CHANNEL = "https://www.googleapis.com/youtube/v3/channels?" +
+            "part=snippet" +
+            "&id=" + CHANNELID +
+            "&fields=items%2Fsnippet" +
+            "&key=" + API_KEY;
+
     private AsynkYoutubeFeed youtubeTask;
     private MainActivity activity;
     private SocialFragment fragment;
 
-    public YoutubeUtil(MainActivity activity) {
-        this.activity = activity;
-    }
-
     public void executeGetPosts(SocialFragment fragment){
         this.fragment = fragment;
+        fragment.clearFeed();
         youtubeTask = new AsynkYoutubeFeed();
-        youtubeTask.execute(
-                "https://www.googleapis.com/youtube/v3/channels?" +
-                        "part=snippet" +
-                        "&id=" + CHANNELID +
-                        "&fields=items%2Fsnippet" +
-                        "&key=" + API_KEY,
+        youtubeTask.execute(HTTPS_GET_CHANNEL,
                 "https://www.googleapis.com/youtube/v3/search?" +
                         "part=snippet" +
                         "&maxResults=10" +
@@ -60,25 +63,14 @@ public class YoutubeUtil {
                         "&fields=items(id%2Csnippet)%2CnextPageToken" +
                         "&key=" + API_KEY
         );
-//        try {
-//            fragment.clearFeed();
-//            fragment.setCallbackData(youtubeTask.get());
-//        } catch (InterruptedException | ExecutionException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public void getNextPosts(SocialFragment fragment){
         this.fragment = fragment;
-        nextPageToken = youtubeTask.getPageToken();
+        String nextPageToken = youtubeTask.getPageToken();
         youtubeTask = new AsynkYoutubeFeed();
         if(nextPageToken != null) {
-            youtubeTask.execute(
-                    "https://www.googleapis.com/youtube/v3/channels?" +
-                            "part=snippet" +
-                            "&id=" + CHANNELID +
-                            "&fields=items%2Fsnippet" +
-                            "&key=" + API_KEY,
+            youtubeTask.execute(HTTPS_GET_CHANNEL,
                     "https://www.googleapis.com/youtube/v3/search?" +
                             "part=snippet" +
                             "&maxResults=10" +
@@ -88,11 +80,6 @@ public class YoutubeUtil {
                             "&fields=items(id%2Csnippet)%2CnextPageToken" +
                             "&key=" + API_KEY
             );
-//            try {
-//                fragment.updateFeedYoutube(youtubeTask.get());
-//            } catch (InterruptedException | ExecutionException e) {
-//                e.printStackTrace();
-//            }
         } else {
             fragment.updateFeedYoutube(new ArrayList<SocialPost>());
         }
@@ -100,6 +87,10 @@ public class YoutubeUtil {
 
     public class AsynkYoutubeFeed extends AsyncTask<String, Void, ArrayList<SocialPost>> {
         private String pageToken;
+        private HttpClient httpclient = new DefaultHttpClient();
+        private Gson gson = new GsonBuilder().create();
+        private HttpGet httpGet = new HttpGet();
+        private HttpResponse response;
 
         public String getPageToken() {
             return pageToken;
@@ -108,23 +99,10 @@ public class YoutubeUtil {
         @Override
         protected ArrayList<SocialPost> doInBackground(String... params) {
             ArrayList<SocialPost> socialPosts = new ArrayList<>();
-            HttpClient httpclient = new DefaultHttpClient();
-            Gson gson = new GsonBuilder().create();
-            HttpResponse response;
             try {
-                HttpGet httpGet = new HttpGet(params[0]);
-                response = httpclient.execute(httpGet);
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                YoutubeResponse channelResponse = gson.fromJson(reader, YoutubeResponse.class);
-                reader.close();
-
-                httpGet.setURI(URI.create(params[1]));
-                response = httpclient.execute(httpGet);
-
-                reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                YoutubeResponse feedResponse = gson.fromJson(reader, YoutubeResponse.class);
-                reader.close();
+                YoutubeResponse channelResponse = executeRequest(URI.create(params[0]));
+                YoutubeResponse feedResponse = executeRequest(URI.create(params[1]));
 
                 pageToken = feedResponse.getNextPageToken();
                 List<YoutubeResponse.Items> list = feedResponse.getItems();
@@ -137,25 +115,21 @@ public class YoutubeUtil {
                                 channelSnippet.getThumbnails().getHigh().getUrl()
                         );
 
-                        httpGet.setURI(URI.create(
+                        YoutubeResponse videoResponse = executeRequest(URI.create(
                                 "https://www.googleapis.com/youtube/v3/videos?" +
                                         "part=contentDetails" +
                                         "&id=" + item.getId().getVideoId() +
                                         "&fields=items%2FcontentDetails" +
                                         "&key=" + YoutubeUtil.API_KEY
                         ));
-                        response = httpclient.execute(httpGet);
-
-                        reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-                        YoutubeResponse videoResponse = gson.fromJson(reader, YoutubeResponse.class);
-                        reader.close();
 
                         SocialPost socialPost = new SocialPost(
                                 item.getId().getVideoId(),
                                 item.getSnippet().getTitle(),
                                 item.getSnippet().getThumbnails().getHigh().getUrl(),
                                 DateParser.dateParce(DateParser.getDateFormatYoutube(item.getSnippet().getPublishedAt())),
-                                "", postOwner
+                                "",
+                                postOwner
                         );
                         if (!videoResponse.getItems().isEmpty()) {
                             socialPost.setDuration(videoResponse.getItems().get(0).getContentDetails().getDuration());
@@ -166,14 +140,22 @@ public class YoutubeUtil {
                         }
                     }
                 }
-
-
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e(TAG, "getYoutubeResponse error");
             }
-
             return socialPosts;
+        }
+
+        private YoutubeResponse executeRequest(URI uri) throws IOException {
+
+            httpGet.setURI(uri);
+            response = httpclient.execute(httpGet);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+            YoutubeResponse response = gson.fromJson(reader, YoutubeResponse.class);
+            reader.close();
+            return response;
         }
 
         @Override
