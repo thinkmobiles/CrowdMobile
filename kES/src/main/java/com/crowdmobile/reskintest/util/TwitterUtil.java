@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import twitter4j.MediaEntity;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -319,8 +320,6 @@ public class TwitterUtil {
 
             for (Status status : statuses) {
                 String image_data = null;
-
-
 
                 if (status.getMediaEntities() != null && status.getMediaEntities().length != 0)
                     if (status.getMediaEntities()[0].getType().equals("photo"))

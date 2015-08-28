@@ -32,7 +32,7 @@
 
                 <com.crowdmobile.reskintest.widget.FixedARImageView
                     android:id="@+id/imgFeedPic"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/holo_blue_dark"

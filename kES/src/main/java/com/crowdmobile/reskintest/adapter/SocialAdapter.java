@@ -90,7 +90,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
             if (post.getImage() != null) {
                 holder.image.setVisibility(View.VISIBLE);
                 Picasso.with(activity.getApplicationContext())
-                        .load(post.getImage()).resize(600, 600).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
+                        .load(post.getImage()).placeholder(R.drawable.ic_feed_loading_image).error(R.drawable.ic_access_bongo).into(holder.image);
 
                 if(state == SocialFragment.State.YOUTUBE){
                     holder.image.setVisibility(View.GONE);
@@ -152,7 +152,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
                 image = (FixedARImageView) itemView.findViewById(R.id.imgFeedPic);
                 create_time = (TextView) itemView.findViewById(R.id.createDate);
                 duration = (TextView) itemView.findViewById(R.id.tvDuration);
-                image.setOnClickListener(this);
+                itemView.setOnClickListener(this);
             } else {
                 progressBar = (ProgressBar) itemView.findViewById(R.id.progress);
                 itemView.findViewById(R.id.btRetry).setVisibility(View.GONE);
