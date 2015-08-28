@@ -60,7 +60,8 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        if(items.get(position).getId().equals("-1"))
+        if(items.get(position).getId() != null &&
+                items.get(position).getId().equals("-1"))
             return TYPE_FOOTER;
         return TYPE_ITEM;
     }
@@ -96,7 +97,9 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
                     holder.image.setVisibility(View.GONE);
                     holder.image.setAspectRatio(3f / 4f);
                     holder.image.setVisibility(View.VISIBLE);
-                    holder.duration.setText(DateParser.parseDuration(post.getDuration()));
+                    if (post.getDuration() != null && !post.getDuration().equals("0")) {
+                        holder.duration.setText(DateParser.parseDuration(post.getDuration()));
+                    }
                     holder.duration.setVisibility(View.VISIBLE);
                 } else {
                     holder.image.setVisibility(View.GONE);
@@ -115,6 +118,8 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.ViewHolder
 
     public void updateData(ArrayList<SocialPost>socialPosts, SocialFragment.State state){
         this.state = state;
+
+        footer = new SocialPost();
         items = new ArrayList<>();
         items.addAll(socialPosts);
         items.add(footer);
